@@ -1,0 +1,33 @@
+nav {
+    background-color: #37474f;
+}
+
+.sidebar {
+    width:250px;
+    position: relative;
+    float: left;
+}
+
+.sidenav-header {
+background: url("/static/img/sidenav.svg") no-repeat center center;
+background-size: cover;
+margin-bottom: 0px;
+padding: 15px 0 0 15px;
+}
+
+/*// FIX SIDENAV SPACING*/
+.side-nav li>a {
+  padding: 0 16px;
+}
+/*//FIX SIDEBAR DIVIDERS*/
+.side-nav .divider {
+  margin:0;
+  height:8px;
+  border-bottom:1px solid #e0e0e0;
+  background-color: transparent;
+}
+
+
+
+
+
