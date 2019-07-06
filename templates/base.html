@@ -11,6 +11,8 @@
     <!-- Materialize CSS -->
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    {% include 'material/includes/material_css.html' %}
+    {% include 'material/includes/material_js.html' %}
     <!-- Datatables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"
           media="screen,projection">
@@ -60,8 +62,13 @@
         </ul>
 
     </div>
-<div class="breadcrumb">{% block breadcrumbs %}{% endblock %}</div>
+
 <div class="content">
+
+    <div class="breadcrumbs">
+            {% block breadcrumbs_items %}{% endblock %}
+    </div>
+
     {% block content %}{% endblock %}
 </div>
 

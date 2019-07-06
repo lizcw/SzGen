@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Study Details{% endblock %}
+{% block breadcrumbs_items %}
+<ul>
+    <li><a href="/">Studies</a></li>
+    <li>&nbsp;&gt;&nbsp;</li>
+    <li>Study</li>
+</ul>
+{%  endblock %}
+{% block content %}
+<div class="container">
+    <div class="row col-md-8">
+        <div class="col-md-6">
+            <h3>Study {{study.title|force_escape}}</h3>
+            <div class="well">
+                <table id="view-table" class="ui-responsive table table-hover">
+                    <tbody>
+                    <tr>
+                        <th>Study ID</th>
+                        <td>{{study.id|force_escape}}</td>
+                    </tr>
+                    <tr>
+                        <th>Title</th>
+                        <td>{{study.title|force_escape}}</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>{{study.get_status_display}}</td>
+                    </tr>
+                    <tr>
+                        <th>ID Precursor</th>
+                        <td>{{study.precursor|force_escape}}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{study.description|force_escape}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="fixed-action-btn">
+                  <a class="btn-floating btn-large red" title="Edit study"
+                  href="{% url 'study_update' study.id %}">
+                    <i class="large material-icons">edit</i>
+                  </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -9,17 +9,37 @@
                     </div>
                     <div class="card-action">
                         <a href="#">View all Studies</a>
+                        <a href="{% url 'study_create' %}">Add a Study</a>
                     </div>
                 </div>
+                {% if studies %}
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Filter</span>
+                        <p>Filter on Status</p>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-        {%  if studies %}
+        {% if studies %}
             <ul class="card-list">
             <li>
                 {%  for study in studies %}
             <div class="card">
-                <div class="card-title"></div>
-                <div class="card-content"></div>
-                <div class="card-action"></div>
+                <div class="card-title">
+                    <span class="left"><a href="{%  url 'study_detail' study.id %}" title="View Study Details">{{ study.title }}</a></span>
+                    <span class="right">{{ study.get_status_display }}</span></div>
+                <div class="card-content">
+                    <dl>
+                        <dt><strong>Code:</strong> {{ study.precursor }}</dt>
+                        <dt>{{ study.description }}</dt></dl>
+                </div>
+                <div class="card-action">
+                    <a href="#">Participants</a>
+                    <a href="#">Samples</a>
+                    <a href="#">Clinical</a>
+                    <a href="#">Genetics</a>
+                </div>
             </div>
             {%  endfor %}
             </li>
@@ -34,7 +54,8 @@
             </div>
             <div class="card-action">
                 <div class="fixed-action-btn">
-                  <a class="btn-floating btn-large red" title="Add new study">
+                  <a class="btn-floating btn-large red" title="Add new study"
+                  href="{% url 'study_create' %}">
                     <i class="large material-icons">add_circle</i>
                   </a>
                 </div>

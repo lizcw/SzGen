@@ -14,6 +14,10 @@ footer {
     /*width: 100%;*/
 }
 
+.breadcrumbs ul {
+    display: inline-flex;
+}
+
 .sidenav-header {
     background: url("/static/img/sidenav.svg") no-repeat center center;
     background-size: cover;

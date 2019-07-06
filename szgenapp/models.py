@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.urls import reverse
 
 class Study(models.Model):
     STATUS_CHOICES = (('STUDY_COMPLETED', 'Completed'),
@@ -12,6 +12,7 @@ class Study(models.Model):
     precursor = models.CharField(max_length=10, blank=False)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    notes = models.TextField(blank=True)
 
     class Meta:
         ordering = ('precursor',)
@@ -21,5 +22,5 @@ class Study(models.Model):
     def __str__(self):
         return '[%s] %s' % (self.status, self.title)
 
-    # def get_absolute_url(self):
-    #     return reverse('study_detail', args=[str(self.id)])
+    def get_absolute_url(self):
+        return reverse('study_detail', args=[str(self.id)])
