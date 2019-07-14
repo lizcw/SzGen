@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Participant Details{% endblock %}
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="/">Studies</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li>Participant</li>
+    </ul>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="col-md-8">
+
+            <h3>Participant {{ Participant.id|force_escape }}</h3>
+            <div class="panel">
+                <div class="panel-heading" data-toggle="collapse" data-target="#panel_{{ participant.id }}">General
+                    Info
+                </div>
+                <div id="panel_{{ participant.id }}" class="panel-body collapse">
+                    <p><strong>Country:</strong>{{ participant.get_country_display }}</p>
+                    <p><strong>Status:</strong>{{ participant.get_status_display }}</p>
+                    <p><strong>Family:</strong>{{ participant.family }}</p>
+                    <p><strong>Individual:</strong>{{ participant.individual }}</p>
+                    <p><strong>Arrival Date:</strong>{{ participant.arrival_date|date:"c" }}</p>
+                    <p><strong>Country:</strong>{{ participant.get_country_display }}</p>
+                    <hr/>
+                    <h4>Studies</h4>
+                    <table id="view-table" class="ui-responsive table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Study</th>
+                            <th>Code</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for study in participant.study %}
+                            <tr>
+                                <td>{{ study.title|force_escape }}</td>
+                                <td>{{ study.precursor|force_escape }}</td>
+                                <td>{{ study.description|force_escape }}</td>
+                                <td>{{ study.get_status_display }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="fixed-action-btn">
+                        <a class="btn-floating btn-large red" title="Edit Participant"
+                           href="{% url 'participant_update' participant.id %}">
+                            <i class="large material-icons">edit</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
