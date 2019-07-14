@@ -14,6 +14,10 @@ footer {
     /*width: 100%;*/
 }
 
+.breadcrumbs {
+    margin-left: 2rem;
+}
+
 .breadcrumbs ul {
     display: inline-flex;
 }
@@ -29,23 +33,29 @@ footer {
 .wrapper {
     display: grid;
     grid-gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    /*grid-template-columns: repeat(auto-fit, minmax(250px,1fr));*/
     background-color: #fff;
     color: #444;
     padding: 2rem;
-    align-items: center;
-    align-content: stretch;
+    /*align-items: center;*/
+    /*align-content: stretch;*/
+    flex-wrap: wrap;
 }
 
 .card {
     padding: 0.5rem;
-    /*grid-column: span 2;*/
+    min-width: 320px;
+}
 
+.card-action {
+    height: 50px;
 }
 
 .title-card {
     grid-column: span 2;
     grid-row: span 2;
+    width: auto;
+    height: auto;
 }
 
 .fixed-action-btn {
@@ -53,14 +63,106 @@ footer {
     float: right;
 }
 
+#search {
+    color: #fffad7;
+}
+
+/********************************
+Dropdown menus
+*********************************/
+.filter-group {
+    position: relative;
+    display: inline-block;
+}
+
+#filter-by-status {
+    display: none;
+    position: absolute;
+    /*background-color: #546e7a !important;*/
+    /*width: 160px;*/
+    /*height: 140px;*/
+    box-shadow: 5px 5px 5px;
+    z-index: 100;
+
+}
+
+#filter-by-status option {
+    line-height: 2em;
+    display: block;
+    /*color: #fff;*/
+    padding: 1rem;
+}
+
+.filter-group:hover #filter-by-status {
+    display: block;
+}
+
+.subactions {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.subactions-items {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    background-color: #fff;
+    padding: 2rem;
+    box-shadow: 5px 5px 5px;
+    right: 0;
+
+}
+
+.subactions-items a {
+    display: block;
+}
+
+.subactions button {
+    background-color: #fff;
+    border: none;
+    color: #ffab40;
+    /*pointer: cursor;*/
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0;
+    min-width: 0;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    line-height: 40px;
+    border-radius: 50%;
+}
+
+/********************************
+Pagination
+*********************************/
+.pagination {
+    background-color: #546e7a;
+    padding: 1rem 2rem;
+    display: flex;
+    flex: 1 1 auto;
+    color: #F0F8FF;
+    justify-content: center;
+}
+
+.pagination a {
+    margin: 0 1rem;
+}
+
+/********************************
+Media sizes
+*********************************/
+
 @media only screen and (min-width: 993px) {
     .sidenav.sidenav-fixed {
-        -webkit-transform:translateX(105%);
+        -webkit-transform: translateX(105%);
         transform: translateX(105%)
     }
 
     .content {
-        margin-left: 350px;
+        margin-left: 300px;
         -webkit-transition: margin-left 2s;
         transition: margin-left 2s;
     }

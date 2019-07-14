@@ -1,11 +1,12 @@
 from django.db import models
 from django.urls import reverse
 
-class Study(models.Model):
-    STATUS_CHOICES = (('STUDY_COMPLETED', 'Completed'),
+STATUS_CHOICES = (('STUDY_COMPLETED', 'Completed'),
                       ('STUDY_ONGOING', 'Ongoing'),
                       ('STUDY_NOTFUNDED', 'Not funded'),
                       ('STUDY_OMIT', 'Omit'))
+
+class Study(models.Model):
 
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=60, blank=False)

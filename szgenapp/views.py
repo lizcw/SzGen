@@ -1,16 +1,44 @@
 from django.shortcuts import render
 from django.views.generic import FormView, CreateView, DetailView, UpdateView, RedirectView
 from django.db import IntegrityError
+from django.db.models import Q
 from django.urls import reverse
-from .models import Study
+from django.core.paginator import Paginator
+
+from .models import Study, STATUS_CHOICES
 from .forms import StudyForm
 
 
 def index(request):
+    """
+    Home page - list of studies with filtering
+    :param request:
+    :return:
+    """
     template = 'app/index.html'
-    studies = Study.objects.all()
-    context = {'studies': studies}
+    # filter on status
+    status_options = STATUS_CHOICES
+    if request.GET.get('filter-by-status'):
+        status_filter = request.GET.get('filter-by-status')
+        # Currently only allows single selection
+        if isinstance(status_filter, list):
+            studies = Study.objects.filter(status__in=status_filter)
+        else:
+            studies = Study.objects.filter(status=status_filter)
+    else:
+        studies = Study.objects.all()
+    # Search query
+    if request.GET.get('search'):
+        searchtext = request.GET.get('search')
+        studies = studies.filter(Q(title__icontains=searchtext) |
+                                 Q(precursor__icontains=searchtext) |
+                                 Q(description__icontains=searchtext))
+    paginator = Paginator(studies, 4)
+    page = request.GET.get('page')
+    studies_page = paginator.get_page(page)
+    context = {'studies': studies_page, 'statusOptions': status_options}
     return render(request, template, context)
+
 
 ######## STUDY ########
 class StudyDetail(DetailView):
@@ -18,7 +46,7 @@ class StudyDetail(DetailView):
     View details of a study
     """
     model = Study
-    template_name = 'app/study.html'
+    template_name = 'study/study.html'
     context_object_name = 'study'
 
 
@@ -27,7 +55,7 @@ class StudyCreate(CreateView):
     Enter study data for new study
     """
     model = Study
-    template_name = 'app/study-create.html'
+    template_name = 'study/study-create.html'
     form_class = StudyForm
 
     def form_valid(self, form):
@@ -47,7 +75,7 @@ class StudyUpdate(UpdateView):
     Enter study data for new study
     """
     model = Study
-    template_name = 'app/study-create.html'
+    template_name = 'study/study-create.html'
     form_class = StudyForm
 
     def form_valid(self, form):

@@ -1,68 +1,112 @@
 {% extends "base.html" %}
 {% block content %}
     <section class="wrapper">
-            <div class="row title-card">
-                <div class="card blue-grey darken-1">
-                    <div class="card-content white-text">
-                        <span class="card-title">Welcome to the SZGEN Database</span>
-                        <p>Studies of Schizophrenic patients from the research of Professor Bryan Mowry.  Contains genetic samples and associated diagnostics.</p>
-                    </div>
-                    <div class="card-action">
-                        <a href="#">View all Studies</a>
-                        <a href="{% url 'study_create' %}">Add a Study</a>
-                    </div>
-                </div>
-                {% if studies %}
-                <div class="card">
-                    <div class="card-content">
-                        <span class="card-title">Filter</span>
-                        <p>Filter on Status</p>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        {% if studies %}
-            <ul class="card-list">
-            <li>
-                {%  for study in studies %}
-            <div class="card">
-                <div class="card-title">
-                    <span class="left"><a href="{%  url 'study_detail' study.id %}" title="View Study Details">{{ study.title }}</a></span>
-                    <span class="right">{{ study.get_status_display }}</span></div>
-                <div class="card-content">
-                    <dl>
-                        <dt><strong>Code:</strong> {{ study.precursor }}</dt>
-                        <dt>{{ study.description }}</dt></dl>
+        <div class="row title-card">
+            <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                    <span class="card-title">Welcome to the SZGEN Database</span>
+                    <p>Studies of Schizophrenic patients from the research of Professor Bryan Mowry. Contains genetic
+                        samples and associated diagnostics.</p>
+                    <p>
+                    <form>
+                        <div class="form-group">
+                            <input id="search" name="search" type="search" placeholder="Search"
+                                   onchange="form.submit();">
+                            <a href="#" onclick="form.submit()"><i class="material-icons prefix">search</i></a>
+                        </div>
+                    </form>
+                    </p>
                 </div>
                 <div class="card-action">
-                    <a href="#">Participants</a>
-                    <a href="#">Samples</a>
-                    <a href="#">Clinical</a>
-                    <a href="#">Genetics</a>
+                    <a href="/">View all Studies</a>
+                    {% if studies %}
+                        <div class="filter-group">
+                            <a href="#" id="filter-by">Filter by Status</a>
+                            <form>
+                                <select id="filter-by-status" name="filter-by-status"
+                                        class="select-dropdown"
+                                        onchange="form.submit();">
+                                    {% for val, name in statusOptions %}
+                                        <option value="{{ val }}">{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <a href="{% url 'study_create' %}">Add a Study</a>
                 </div>
             </div>
-            {%  endfor %}
-            </li>
-            </ul>
+
+        </div>
+        {% if studies %}
+
+                    {% for study in studies %}
+                        <div class="card">
+                            <div class="card-title">
+                                <span class="left"><a href="{% url 'study_detail' study.id %}"
+                                                      title="View Study Details">{{ study.title }}</a></span>
+                                <span class="right">{{ study.get_status_display }}</span></div>
+                            <div class="card-content">
+                                <dl>
+                                    <dt><strong>Code:</strong> {{ study.precursor }}</dt>
+                                    <dt>{{ study.description }}</dt>
+                                </dl>
+                            </div>
+                            <div class="card-action">
+                                <a href="{% url 'study_update' study.id %}">View Details</a>
+                                <div id="sub_{{ study.id }}" class="subactions">
+                                    <button onclick="showSubItems({{ study.id }})"><i class="material-icons">more_vert</i></button>
+                                    <div class="subactions-items">
+                                        <a href="#">View Participants</a>
+                                        <a href="#">View Samples</a>
+                                        <a href="#">View Clinical</a>
+                                        <a href="#">View Genetics</a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+
 
         {% else %}
             <div class="card">
 
-            <div class="card-content">
-                <span class="card-title">Studies</span>
-                <p>No studies found in the database</p>
-            </div>
-            <div class="card-action">
-                <div class="fixed-action-btn">
-                  <a class="btn-floating btn-large red" title="Add new study"
-                  href="{% url 'study_create' %}">
-                    <i class="large material-icons">add_circle</i>
-                  </a>
+                <div class="card-content">
+                    <span class="card-title">Studies</span>
+                    <p>No studies found in the database</p>
                 </div>
-            </div>
+                <div class="card-action">
+                    <div class="fixed-action-btn">
+                        <a class="btn-floating btn-large red" title="Add new study"
+                           href="{% url 'study_create' %}">
+                            <i class="large material-icons">add_circle</i>
+                        </a>
+                    </div>
+                </div>
             </div>
         {% endif %}
 
     </section>
+    <section class="row">
+        <div class="pagination">
 
+            {% if studies.has_previous %}
+                <a href="?page=1" title="Start"><i class="material-icons">first_page</i></a>
+                <a href="?page={{ studies.previous_page_number }}" title="Previous"><i class="material-icons">chevron_left</i></a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ studies.number }} of {{ studies.paginator.num_pages }}
+            </span>
+
+            {% if studies.has_next %}
+                <a href="?page={{ studies.next_page_number }}" title="Next"><i class="material-icons">chevron_right</i></a>
+                <a href="?page={{ studies.paginator.num_pages }}" title="End"><i
+                        class="material-icons">last_page</i></a>
+            {% endif %}
+
+        </div>
+    </section>
 {% endblock %}
