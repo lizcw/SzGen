@@ -4,7 +4,7 @@
         <h2>Participants</h2>
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large blue-grey" title="Add participant"
-               href="{% url 'participant_create' %}">
+               href="{% url 'studyparticipant_create' %}">
                 <i class="large material-icons">add</i>
             </a>
         </div>
@@ -26,11 +26,11 @@
                 {% for participant in participants %}
                     <tr>
                         <td>{{ participant.id }}</td>
-                        <td>{{ participant.getFullNumber }}</td>
-                        <td>{{ participant.family }}</td>
-                        <td>{{ participant.individual }}</td>
+                        <td>{{ participant.study.getFullNumber }}</td>
+                        <td>{{ participant.study.family }}</td>
+                        <td>{{ participant.study.individual }}</td>
                         <td>{{ participant.get_status_display }}</td>
-                        <td>{{ participant.arrival_date|date:"c" }}</td>
+                        <td>{{ participant.study.arrival_date|date:"c" }}</td>
                         <td>{{ participant.country }}</td>
                         <td>
                             <a class="btn-floating red" title="Edit participant"

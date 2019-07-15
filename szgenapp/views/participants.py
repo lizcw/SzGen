@@ -2,8 +2,9 @@ from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.db import IntegrityError
 from django.urls import reverse
 
-from szgenapp.models.participants import Participant
-from szgenapp.forms.participants import ParticipantForm
+from szgenapp.models.participants import Participant, StudyParticipant
+from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm
+
 
 class ParticipantDetail(DetailView):
     """
@@ -71,6 +72,87 @@ class ParticipantList(ListView):
     model = Participant
     template_name = 'participant/participant-list.html'
     queryset = Participant.objects.all()
+    context_object_name = 'participants'
+    paginate_by = 10
+    # ordering = ['']
+
+    def get_queryset(self):
+        if self.request.GET.get('filter-by-study'):
+            study = self.request.GET.get('filter-by-study')
+            qs = self.queryset.filter(study=study)
+        else:
+            qs = self.queryset
+        return qs
+
+
+######## STUDY PARTICIPANT ########
+class StudyParticipantDetail(DetailView):
+    """
+    View details of a study
+    """
+    model = StudyParticipant
+    template_name = 'participant/studyparticipant.html'
+    context_object_name = 'studyparticipant'
+
+
+class StudyParticipantCreate(CreateView):
+    """
+    Enter study data for new study
+    """
+    model = StudyParticipant
+    template_name = 'participant/studyparticipant-create.html'
+    form_class = StudyParticipantForm
+
+    def form_valid(self, form):
+        try:
+            return super(StudyParticipantCreate, self).form_valid(form)
+        except IntegrityError as e:
+            msg = 'Database Error: Unable to create StudyParticipant - see Administrator'
+            form.add_error('studyparticipant-create', msg)
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('participant_create')
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(StudyParticipantCreate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        return initial
+
+
+
+class StudyParticipantUpdate(UpdateView):
+    """
+    Enter study data for new study
+    """
+    model = StudyParticipant
+    template_name = 'participant/studyparticipant-create.html'
+    form_class = StudyParticipantForm
+
+    def form_valid(self, form):
+        try:
+            return super(StudyParticipantUpdate, self).form_valid(form)
+        except IntegrityError as e:
+            msg = 'Database Error: Unable to update Study - see Administrator'
+            form.add_error('studyparticipant-update', msg)
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('studyparticipant_detail', args=[self.object.id])
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(StudyParticipantUpdate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        return initial
+
+
+class StudyParticipantList(ListView):
+    """
+    List of Participants - filterable by study
+    """
+    model = StudyParticipant
+    template_name = 'participant/studyparticipant-list.html'
+    queryset = StudyParticipant.objects.all()
     context_object_name = 'participants'
     paginate_by = 10
     # ordering = ['']

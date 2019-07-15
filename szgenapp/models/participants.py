@@ -1,6 +1,5 @@
 from django.db import models
 from datetime import date
-from szgenapp.models import Study
 
 COUNTRY_CHOICES = (
     ('INDIA', 'India'),
@@ -9,29 +8,62 @@ COUNTRY_CHOICES = (
     ('UK', 'UK')
 )
 PARTICIPANT_STATUS_CHOICES = (
-    ('CURRENT', 'Current'),
+    ('ACTIVE', 'Active'),
     ('WITHDRAWN', 'Withdrawn'),
     ('DECEASED', 'Deceased'),
     ('UNKNOWN', 'Unknown')
 )
 
+
 class Participant(models.Model):
+    """
+    A Participant represents a single physical individual who may have multiple IDs from various datasets
+    """
     id = models.AutoField(primary_key=True)
-    study = models.ManyToManyField(Study)
-    # Alternative IDs should all be stored here
-    district = models.CharField(max_length=5, blank=True, help_text="For CBZ study enter district(1-5)")
-    fullnumber = models.CharField(max_length=30, blank=True, help_text="Provide full number if it cannot be generated from parts")
-    family = models.CharField(max_length=20, blank=True, help_text="Family number if available")
-    individual = models.CharField(max_length=20, blank=True, help_text="Individual number if available")
-    alphacode = models.CharField(max_length=30, blank=True, help_text="Alpha code if available")
-    secondary = models.CharField(max_length=30, blank=True, help_text="Alternative or additional ID")
-    npid = models.CharField(max_length=30, blank=True, help_text="NP ID if available")
-    arrival_date = models.DateField(default=date.today, help_text="Date of beginning the study, default is today")
+    study = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE)
+    # Static fields
     country = models.CharField(max_length=30, blank=False, choices=COUNTRY_CHOICES)
-    status = models.CharField(max_length=20, blank=False, choices=PARTICIPANT_STATUS_CHOICES, default="CURRENT")
+    status = models.CharField(max_length=20, blank=False, choices=PARTICIPANT_STATUS_CHOICES, default="ACTIVE")
+    # Alternative IDs should all be stored here
+    alphacode = models.CharField(max_length=30, blank=True, verbose_name="Alpha Code", help_text="Alpha code if available")
+    secondaryid = models.CharField(max_length=30, blank=True, verbose_name="Secondary ID",
+                                   help_text="Alternative or additional ID if available")
+    npid = models.CharField(max_length=30, blank=True, verbose_name="NeuroPsychiatric ID", help_text="NP ID if available")
+    # Link other participants - family, duplicates
     pedigree = models.ManyToManyField("self", blank=True, help_text="Link familial participants here")
 
-    def getFullNumber(self, studycode=""):
+    class Meta:
+        verbose_name = 'Participant'
+        verbose_name_plural = 'Participants'
+
+    def __unicode__(self):
+        return str(self.id) + " [" + self.get_status_display() + "]"
+
+
+class StudyParticipant(models.Model):
+    """
+    A Participant has one or more studies in which they have different IDs
+    """
+    id = models.AutoField(primary_key=True)
+    study = models.ForeignKey('Study', on_delete=models.CASCADE)
+    fullnumber = models.CharField(max_length=30, blank=True,
+                                  help_text="Provide full number if it cannot be generated from parts")
+    district = models.CharField(max_length=5, blank=True, help_text="For CBZ study enter district(1-5)")
+    family = models.CharField(max_length=20, blank=True, help_text="Family number if available")
+    individual = models.CharField(max_length=20, blank=True, help_text="Individual number if available")
+    arrival_date = models.DateField(default=date.today, help_text="Date of receiving sample, default is today")
+
+    class Meta:
+        verbose_name = 'Study Participant'
+        verbose_name_plural = 'Study Participants'
+
+    def __str__(self):
+        return '%s' % self.fullnumber
+
+    # def get_absolute_url(self):
+    #     return reverse('study_participant', args=[str(self.id)])
+
+    def getFullNumber(self):
         """
         Participant ID as <StudyPrefix>-<FamilyID>-<IndividualID>
         :param studycode: provided as multiple studies possible
@@ -40,41 +72,11 @@ class Participant(models.Model):
         if self.fullnumber:
             return self.fullnumber
         else:
-            if studycode == "CBZ" and self.district != None:
-                studycode += self.district
-            # find study code and add study
-            studies = self.study.all()
+            if self.study.precursor == "CBZ" and self.district is not None:
+                parts = [self.study.precursor + self.district, self.family, self.individual]
 
-            if studycode == "":
+            if self.study.precursor is None:
                 parts = [self.family, self.individual]
             else:
-                parts = [studycode, self.family, self.individual]
+                parts = [self.study.precursor, self.family, self.individual]
             return "-".join(parts)
-
-    def parseFullNumber(self, fullnumber):
-        """
-        Parse a full number of format above to appropriate fields (useful on upload only)
-        :return:
-        """
-        parts = fullnumber.split("-")
-        if len(parts) == 3:
-            self.family = parts[1]
-            self.individual = parts[2]
-            # find study code and add study
-            studies = self.study.all()
-            if studies.count() == 0:
-                studies = Study.objects.filter(precursor__exact=parts[0])
-            if studies.count() == 1:
-                self.study.create(studies.first())
-                print("study added to participant")
-                return studies.first()
-            else:
-                print("study not found")
-                return None
-
-    def __unicode__(self):
-        if self.study.all().count() == 1:
-            study = self.study.first()
-        else:
-            study = ''
-        return self.getFullNumber(study) + "[" + self.get_status_display() + "]"
