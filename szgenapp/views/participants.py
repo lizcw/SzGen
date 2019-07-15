@@ -11,7 +11,7 @@ class ParticipantDetail(DetailView):
     """
     model = Participant
     template_name = 'participant/participant.html'
-    context_object_name = 'Participant'
+    context_object_name = 'participant'
 
 
 class ParticipantCreate(CreateView):

@@ -20,7 +20,7 @@ class Study(models.Model):
         verbose_name = 'Study'
         verbose_name_plural = 'Studies'
 
-    def __str__(self):
+    def __unicode__(self):
         return '[%s] %s' % (self.get_status_display(), self.title)
 
     def get_absolute_url(self):

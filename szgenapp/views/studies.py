@@ -69,6 +69,12 @@ class StudyCreate(CreateView):
     def get_success_url(self):
         return reverse('study_detail', args=[self.object.id])
 
+    def get_initial(self, *args, **kwargs):
+        initial = super(StudyCreate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        return initial
+
+
 
 class StudyUpdate(UpdateView):
     """
@@ -88,4 +94,10 @@ class StudyUpdate(UpdateView):
 
     def get_success_url(self):
         return reverse('study_detail', args=[self.object.id])
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(StudyUpdate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        return initial
+
 
