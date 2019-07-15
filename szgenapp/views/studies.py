@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import FormView, CreateView, DetailView, UpdateView, RedirectView
+from django.views.generic import CreateView, DetailView, UpdateView
 from django.db import IntegrityError
 from django.db.models import Q
 from django.urls import reverse

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from szgenapp.views import *
 
 urlpatterns = [
@@ -9,5 +9,5 @@ urlpatterns = [
     path(r'participants/', participants.ParticipantList.as_view(), name="participants"),
     path(r'participant/create/', participants.ParticipantCreate.as_view(), name="participant_create"),
     path(r'participant/<pk>/', participants.ParticipantDetail.as_view(), name="participant_detail"),
-    path(r'p/update/<pk>/', participants.ParticipantUpdate.as_view(), name="participant_update"),
+    path(r'participant/update/<pk>/', participants.ParticipantUpdate.as_view(), name="participant_update"),
 ]
