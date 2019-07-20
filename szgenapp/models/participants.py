@@ -20,7 +20,7 @@ class Participant(models.Model):
     A Participant represents a single physical individual who may have multiple IDs from various datasets
     """
     id = models.AutoField(primary_key=True)
-    study = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE)
+
     # Static fields
     country = models.CharField(max_length=30, blank=False, choices=COUNTRY_CHOICES)
     status = models.CharField(max_length=20, blank=False, choices=PARTICIPANT_STATUS_CHOICES, default="ACTIVE")
@@ -36,8 +36,8 @@ class Participant(models.Model):
         verbose_name = 'Participant'
         verbose_name_plural = 'Participants'
 
-    def __unicode__(self):
-        return str(self.id) + " [" + self.get_status_display() + "]"
+    def __str__(self):
+        return str(self.id) + " [" + self.get_country_display() + ": " + self.get_status_display() + "]"
 
 
 class StudyParticipant(models.Model):
@@ -45,6 +45,7 @@ class StudyParticipant(models.Model):
     A Participant has one or more studies in which they have different IDs
     """
     id = models.AutoField(primary_key=True)
+    participant = models.ForeignKey('Participant', on_delete=models.CASCADE, related_name='studyparticipants')
     study = models.ForeignKey('Study', on_delete=models.CASCADE)
     fullnumber = models.CharField(max_length=30, blank=True,
                                   help_text="Provide full number if it cannot be generated from parts")
