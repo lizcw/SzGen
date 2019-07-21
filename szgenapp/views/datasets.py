@@ -45,7 +45,7 @@ class DatasetCreate(CreateView):
             return super(DatasetCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Dataset - see Administrator'
-            form.add_error('Dataset-create', msg)
+            form.add_error('dataset-create', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):

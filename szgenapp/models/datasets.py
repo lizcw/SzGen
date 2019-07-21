@@ -19,7 +19,7 @@ FIELD_TYPES = (
     (0, 'No'),
     (1, 'Yes (electronic)'),
     (2, 'Yes (hard copy only)'),
-    (3, 'Yes (exists, but yet to locate)'),
+    (3, 'Yes (not located)'),
     (9, 'Unknown'),
 )
 

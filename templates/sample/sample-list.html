@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h2>Samples</h2>
+        <div class="fixed-action-btn">
+            <a class="btn-floating btn-large blue-grey" title="Add sample"
+               href="{% url 'sample_create' %}">
+                <i class="large material-icons">add</i>
+            </a>
+        </div>
+        {% if samples.count > 0 %}
+            <table id="sample-list">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Participant</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Rebleed</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sample in samples %}
+                    <tr>
+                        <td>{{ sample.id }}</td>
+                        <td>{{ sample.participant.getFullNumber }}</td>
+                        <td>{{ sample.storage_date|date:"c" }}</td>
+                        <td>{{ sample.storage_location }}</td>
+                        <td>{{ sample.rebleed|yesno }}</td>
+                        <td>
+                            <a class="btn-floating red" title="Edit sample"
+                               href="{% url 'sample_update' sample.id %}">
+                            <i class="material-icons">edit</i>
+                        </a>
+                            <a class="btn-floating grey" title="View sample details"
+                               href="{% url 'sample_detail' sample.id %}">
+                            <i class="material-icons">visibility</i>
+                        </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No Samples found</p>
+            <a href="{% url 'sample_create' %}">Add a Sample</a>
+        {% endif %}
+    </div>
+{% endblock content %}
