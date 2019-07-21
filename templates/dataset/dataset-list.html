@@ -25,10 +25,15 @@
                         <td>{{ dataset.id }}</td>
                         <td>{{ dataset.group }}</td>
                         <td>{{ dataset.dataset_files.count }}</td>
-                        <td>{{ dataset.dataset_groups.count }}</td>
-                        <td><a class="btn-floating red" title="Edit dataset"
+                        <td>{{ dataset.dataset_participants.count }}</td>
+                        <td>
+                            <a class="btn-floating red" title="Edit dataset"
                                href="{% url 'dataset_update' dataset.id %}">
                             <i class="material-icons">edit</i>
+                        </a>
+                            <a class="btn-floating green" title="Add Participants"
+                               href="{% url 'dataset_participants_update' dataset.id %}">
+                            <i class="material-icons">people</i>
                         </a>
                             <a class="btn-floating grey" title="View dataset details"
                                href="{% url 'dataset_detail' dataset.id %}">

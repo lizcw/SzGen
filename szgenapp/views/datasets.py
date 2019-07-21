@@ -3,15 +3,15 @@ from django.db import IntegrityError, transaction
 from django.urls import reverse
 
 from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
-from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset
+from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset
 
 
 class DatasetDetail(DetailView):
     """
     View details of a Dataset
     """
-    model = DatasetRow
-    template_name = 'datasets/dataset.html'
+    model = Dataset
+    template_name = 'dataset/dataset.html'
     context_object_name = 'dataset'
 
 
@@ -65,6 +65,7 @@ class DatasetUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         data = super(DatasetUpdate, self).get_context_data(**kwargs)
         data['action'] = 'Edit'
+        data['datasetname'] = 'Dataset Files'
         if self.request.POST:
             data['datasetfiles'] = DatasetFileFormset(self.request.POST, instance=self.get_object())
         else:
@@ -91,6 +92,44 @@ class DatasetUpdate(UpdateView):
     def get_success_url(self):
         return reverse('datasets')
 
+
+class DatasetParticipantUpdate(UpdateView):
+    """
+    Enter Participant data for a Dataset
+    """
+    model = Dataset
+    template_name = 'dataset/dataset-create.html'
+    form_class = DatasetForm
+
+    def get_context_data(self, **kwargs):
+        data = super(DatasetParticipantUpdate, self).get_context_data(**kwargs)
+        data['action'] = 'Edit'
+        data['datasetname'] = 'Participants'
+        if self.request.POST:
+            data['datasetfiles'] = DatasetParticipantFormset(self.request.POST, instance=self.get_object())
+        else:
+            data['datasetfiles'] = DatasetParticipantFormset(instance=self.get_object())
+            data['datasetfiles'].extra = 1
+        return data
+
+    def form_valid(self, form):
+        try:
+            context = self.get_context_data()
+            datasetfiles = context['datasetfiles']
+            with transaction.atomic():
+                self.object = form.save()
+                if datasetfiles.is_valid():
+                    datasetfiles.save()
+
+            return super(DatasetParticipantUpdate, self).form_valid(form)
+
+        except IntegrityError as e:
+            msg = 'Database Error: Unable to update Dataset - see Administrator'
+            form.add_error('Dataset-update', msg)
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('datasets')
 
 
 class DatasetList(ListView):

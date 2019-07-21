@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import date
 
-FIELD_CODES = (
+FILE_CODES = (
     ('DIGS', 'DIGS'),
     ('FIGS', 'FIGS'),
     ('NARRATIVE', 'Narrative'),
@@ -15,6 +15,13 @@ FILE_TYPES = (
     ('HARDCOPY', 'Hard Copy')
 )
 
+FIELD_TYPES = (
+    (0, 'No'),
+    (1, 'Yes (electronic)'),
+    (2, 'Yes (hard copy only)'),
+    (3, 'Yes (exists, but yet to locate)'),
+    (9, 'Unknown'),
+)
 
 class Dataset(models.Model):
     """
@@ -29,7 +36,7 @@ class DatasetFile(models.Model):
     Dataset file corresponding to data in DatasetRow with multiple participants
     """
     dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='dataset_files')
-    type = models.CharField(max_length=100, blank=False, choices=FIELD_CODES, help_text='Type of the dataset eg, DIGS file')
+    type = models.CharField(max_length=100, blank=False, choices=FILE_CODES, help_text='Type of the dataset eg, DIGS file')
     filetype = models.CharField(max_length=60, blank=False, help_text='Digital or Hard copy resource', choices=FILE_TYPES)
     location = models.CharField(max_length=1000, blank=False, help_text='Location of the dataset file either as URL or free text')
 
@@ -41,10 +48,10 @@ class DatasetRow(models.Model):
     id = models.AutoField(primary_key=True)
     dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='dataset_participants')
     participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE)
-    digs = models.IntegerField(blank=False, default=0)
-    figs = models.IntegerField(blank=False, default=0)
-    narrative = models.IntegerField(blank=False, default=0)
-    records = models.IntegerField(blank=False, default=0)
-    consensus = models.IntegerField(blank=True, default=0)
-    ldps = models.IntegerField(blank=True, default=0)
+    digs = models.IntegerField(blank=False, default=9, choices=FIELD_TYPES)
+    figs = models.IntegerField(blank=False, default=9, choices=FIELD_TYPES)
+    narrative = models.IntegerField(blank=False, default=9, choices=FIELD_TYPES)
+    records = models.IntegerField(blank=False, default=9, choices=FIELD_TYPES)
+    consensus = models.IntegerField(blank=True, default=9, choices=FIELD_TYPES)
+    ldps = models.IntegerField(blank=True, default=9, choices=FIELD_TYPES)
     notes = models.TextField(verbose_name='Notes', blank=True)

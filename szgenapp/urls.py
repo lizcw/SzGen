@@ -18,4 +18,5 @@ urlpatterns = [
     path('dataset/<int:pk>/', datasets.DatasetDetail.as_view(), name="dataset_detail"),
     path('dataset/create/', datasets.DatasetCreate.as_view(), name="dataset_create"),
     path('dataset/update/<int:pk>/', datasets.DatasetUpdate.as_view(), name="dataset_update"),
+    path('dataset/participants/update/<int:pk>', datasets.DatasetParticipantUpdate.as_view(), name='dataset_participants_update'),
 ]
