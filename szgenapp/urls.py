@@ -12,7 +12,7 @@ urlpatterns = [
     path('participant/update/<int:pk>/', participants.ParticipantUpdate.as_view(), name="participant_update"),
     path('studyparticipants/', participants.StudyParticipantList.as_view(), name="studyparticipants"),
     path('studyparticipant/<int:pk>/', participants.StudyParticipantDetail.as_view(), name="studyparticipant_detail"),
-    path('studyparticipant/create/', participants.StudyParticipantCreate.as_view(), name="studyparticipant_create"),
+    path('studyparticipant/create/<int:participantid>', participants.StudyParticipantCreate.as_view(), name="studyparticipant_create"),
     path('studyparticipant/update/<int:pk>/', participants.StudyParticipantUpdate.as_view(),
          name="studyparticipant_update"),
     path('datasets/', datasets.DatasetList.as_view(), name="datasets"),

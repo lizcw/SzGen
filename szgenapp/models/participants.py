@@ -37,7 +37,14 @@ class Participant(models.Model):
         verbose_name_plural = 'Participants'
 
     def __str__(self):
-        return str(self.id) + " [" + self.get_country_display() + ": " + self.get_status_display() + "]"
+        pid = None
+        if (self.studyparticipants.first()):
+            pid = self.studyparticipants.first().getFullNumber()
+        elif (self.alphacode):
+            pid = self.alphacode
+        else:
+            pid = self.id
+        return str(pid) + " (" + self.get_country_display() + ": " + self.get_status_display() + ")"
 
 
 class StudyParticipant(models.Model):
@@ -47,7 +54,7 @@ class StudyParticipant(models.Model):
     id = models.AutoField(primary_key=True)
     participant = models.ForeignKey('Participant', on_delete=models.CASCADE, related_name='studyparticipants')
     study = models.ForeignKey('Study', on_delete=models.CASCADE)
-    fullnumber = models.CharField(max_length=30, blank=True,
+    fullnumber = models.CharField(max_length=30, blank=True, verbose_name="Full Number",
                                   help_text="Provide full number if it cannot be generated from parts")
     district = models.CharField(max_length=5, blank=True, help_text="For CBZ study enter district(1-5)")
     family = models.CharField(max_length=20, blank=True, help_text="Family number if available")
@@ -79,5 +86,5 @@ class StudyParticipant(models.Model):
             if self.study.precursor is None:
                 parts = [self.family, self.individual]
             else:
-                parts = [self.study.precursor, self.family, self.individual]
+                parts = [self.study.precursor + self.family, self.individual]
             return "-".join(parts)

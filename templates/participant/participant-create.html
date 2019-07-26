@@ -3,7 +3,7 @@
 {% load material_form %}
 {% block breadcrumbs_items %}
 <ul>
-    <li><a href="/participants">Participants</a></li>
+    <li><a href="/studyparticipants">Participants</a></li>
     <li>&gt;</li>
     <li>Participant</li>
 </ul>
@@ -17,6 +17,15 @@
                 {% csrf_token %}
 
                 {% form form=form %}{% endform %}
+                <ul class="dsfileform">
+                {{ studyparticipant.management_form }}
+                {% for child_form in studyparticipant.forms %}
+                    <li class="dsfileform-row">
+                    {% form form=child_form %}{% endform %}
+                    </li>
+
+                {% endfor %}
+                </ul>
 
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
             </form>

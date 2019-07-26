@@ -79,8 +79,8 @@ class SubSample(models.Model):
     sample_num = models.IntegerField(blank=False, default=1, help_text='For example, number 1 of 5 subsamples')
     sample_type = models.CharField(max_length=30, choices=SUBSAMPLE_TYPES, help_text='Type of the sub sample')
     used = models.BooleanField(default=False, help_text='If used, location should be blank')
-    storage_date = models.DateField(verbose_name='Storage Date', blank=True)
-    used_date = models.DateField(verbose_name='Used Date', blank=True)
+    storage_date = models.DateField(verbose_name='Storage Date', blank=True, null=True, help_text="Date stored")
+    used_date = models.DateField(verbose_name='Used Date', blank=True, null=True, help_text="Date sample used")
     extraction_date = models.DateField(verbose_name='Extraction Date', blank=True, null=True,
                                        help_text='Date of DNA Extraction')
     notes = models.TextField(blank=True)

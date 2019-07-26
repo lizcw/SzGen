@@ -1,9 +1,9 @@
 from django.views.generic import CreateView, DetailView, UpdateView, ListView
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.urls import reverse
 
 from szgenapp.models.participants import Participant, StudyParticipant
-from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm
+from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm, StudyParticipantFormset
 
 
 class ParticipantDetail(DetailView):
@@ -23,8 +23,25 @@ class ParticipantCreate(CreateView):
     template_name = 'participant/participant-create.html'
     form_class = ParticipantForm
 
+    def get_context_data(self, **kwargs):
+        data = super(ParticipantCreate, self).get_context_data(**kwargs)
+        data['action'] = 'Create'
+        if self.request.POST:
+            data['studyparticipant'] = StudyParticipantFormset(self.request.POST)
+        else:
+            data['studyparticipant'] = StudyParticipantFormset()
+        return data
+
     def form_valid(self, form):
         try:
+            context = self.get_context_data()
+            subform = context['studyparticipant']
+            with transaction.atomic():
+                self.object = form.save()
+
+            if subform.is_valid():
+                subform.instance = self.object
+                subform.save()
             return super(ParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Participant - see Administrator'
@@ -34,10 +51,6 @@ class ParticipantCreate(CreateView):
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.id])
 
-    def get_initial(self, *args, **kwargs):
-        initial = super(ParticipantCreate, self).get_initial(**kwargs)
-        initial['action'] = 'Create'
-        return initial
 
 
 class ParticipantUpdate(UpdateView):
@@ -91,7 +104,7 @@ class StudyParticipantDetail(DetailView):
     View details of a study
     """
     model = StudyParticipant
-    template_name = 'participant/studyparticipant.html'
+    template_name = 'participant/participant.html'
     context_object_name = 'studyparticipant'
 
 
@@ -105,18 +118,24 @@ class StudyParticipantCreate(CreateView):
 
     def form_valid(self, form):
         try:
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+            self.object.participant = form.initial['participant']
+            self.object.save()
             return super(StudyParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create StudyParticipant - see Administrator'
-            form.add_error('studyparticipant-create', msg)
+            form.add_error('error', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('participant_create')
+        return reverse('participant_detail', args=[self.object.participant.id])
 
     def get_initial(self, *args, **kwargs):
+        pid = self.kwargs.get('participantid')
         initial = super(StudyParticipantCreate, self).get_initial(**kwargs)
         initial['action'] = 'Create'
+        initial['participant'] = Participant.objects.get(pk=pid)
         return initial
 
 

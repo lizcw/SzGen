@@ -2,7 +2,7 @@
 {% block title %}Participant Details{% endblock %}
 {% block breadcrumbs_items %}
     <ul>
-        <li><a href="/">Studies</a></li>
+        <li><a href="/studyparticipants">Participants</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
         <li>Participant</li>
     </ul>
@@ -10,37 +10,36 @@
 {% block content %}
     <div class="container">
         <div class="well col-md-12">
-            <h3>Participant {{ participant|force_escape }}</h3>
-            <div class="fixed-action-btn">
-                <a class="btn-floating red" title="Edit Participant"
-                   href="{% url 'participant_update' participant.id %}">
-                    <i class="material-icons">edit</i>
-                </a>
-            </div>
-        </div>
+            <h3>{{ participant|force_escape }}</h3>
 
+        </div>
+        <div id="error"> {{ error }}</div>
         <div id="panel-group" class="accordion">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">General Information</a>
+                        <div class="fixed-action-btn">
+                <a class="btn-floating red" title="Edit Participant"
+                   href="{% url 'participant_update' participant.id %}">
+                    <i class="material-icons">edit</i>
+                </a>
+            </div>
                     </h3>
 
                 </div>
                 <div id="collapse1" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
-                        <p><strong>ID:</strong> {{ participant.id }}</p>
-                        <p><strong>Country:</strong> {{ participant.get_country_display }}</p>
-                        <p><strong>Status:</strong> {{ participant.get_status_display }}</p>
-                        <hr/>
-                        <strong>Other IDs</strong>
-                        <p><strong>Alpha code:</strong> {{ participant.alphacode }}</p>
-                        <p><strong>Secondary ID:</strong> {{ participant.secondaryid }}</p>
-                        <p><strong>NP ID:</strong> {{ participant.npid }}</p>
-
-                        <hr/>
-                        <strong>Linked Participants</strong>
-
+                        <table class="table table-condensed">
+                            <tbody>
+                            <tr><th>ID:</th><td>{{ participant.id }}</td></tr>
+                            <tr><th>Country:</th><td>{{ participant.get_country_display }}</td></tr>
+                            <tr><th>Status:</th><td>{{ participant.get_status_display }}</td></tr>
+                            <tr><th>Alpha code:</th><td>{{ participant.alphacode }}</td></tr>
+                            <tr><th>Secondary ID:</th><td>{{ participant.secondaryid }}</td></tr>
+                            <tr><th>NP ID:</th><td>{{ participant.npid }}</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
@@ -50,6 +49,12 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Studies</a>
+                        <div class="fixed-action-btn">
+                <a class="btn-floating blue-grey small" title="Add Study Participant"
+                   href="{% url 'studyparticipant_create' participant.id %}">
+                    <i class="material-icons">add</i>
+                </a>
+            </div>
                     </h3>
                 </div>
                 <div id="collapse2" class="collapse" data-parent="#panel-group">
@@ -114,6 +119,45 @@
                                         <td>{{ dataset.get_consensus_display }}</td>
                                         <td>{{ dataset.get_ldps_display }}</td>
                                         <td>{{ dataset.notes }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-footer"></div>
+                </div>
+            </div>
+
+        <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse4">Samples</a>
+                    </h3>
+                </div>
+                <div id="collapse4" class="collapse" data-parent="#panel-group">
+                    <div class="panel-body">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Sample</th>
+                                <th>Stage</th>
+                                <th>Rebleed</th>
+                                <th>Storage date</th>
+                                <th>Location</th>
+                                <th>Notes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ps in participant.studyparticipants.all %}
+                                {% for sample in ps.sample_set.all %}
+                                    <tr>
+                                        <td>{{ sample.get_sample_type_display }}</td>
+                                        <td>{{ sample.get_stage_type_display }}</td>
+                                        <td>{{ sample.rebleed|yesno }}</td>
+                                        <td>{{ sample.storage_date }}</td>
+                                        <td>{{ sample.storage_location }}</td>
+                                        <td>{{ sample.notes }}</td>
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
