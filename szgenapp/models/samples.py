@@ -65,7 +65,7 @@ class QC(models.Model):
     """
     id = models.AutoField(primary_key=True)
     subsample = models.ForeignKey('SubSample', on_delete=models.CASCADE, related_name='sample_qc')
-    qc_date = models.DateField(verbose_name='QC Date', auto_now_add=True, blank=True,
+    qc_date = models.DateField(verbose_name='QC Date', blank=True, null=True,
                                help_text='Date on which quality control ran')
     passed = models.BooleanField(default=True, help_text='True if passed QC')
 
@@ -84,7 +84,13 @@ class SubSample(models.Model):
     extraction_date = models.DateField(verbose_name='Extraction Date', blank=True, null=True,
                                        help_text='Date of DNA Extraction')
     notes = models.TextField(blank=True)
-    location = models.ForeignKey('Location', blank=True, on_delete=models.CASCADE)
+    location = models.ForeignKey('Location', blank=True, null=True, on_delete=models.CASCADE)
+
+    def get_QC_final(self):
+        if self.sample_qc.count() > 0:
+            return self.sample_qc.order_by('-qc_date').first()
+        else:
+            return None
 
 
 class Shipment(models.Model):

@@ -3,7 +3,8 @@ from django.db import IntegrityError, transaction
 from django.urls import reverse
 
 from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
-from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset
+from szgenapp.models.participants import Participant
+from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset, DatasetRowForm
 
 
 class DatasetDetail(DetailView):
@@ -151,3 +152,33 @@ class DatasetList(ListView):
             qs = self.queryset
         return qs
 
+
+class DatasetRowCreate(CreateView):
+    """
+    Enter Dataset data for Participant
+    """
+    model = DatasetRow
+    template_name = 'dataset/dataset-create.html'
+    form_class = DatasetRowForm
+
+    def get_initial(self, *args, **kwargs):
+        pid = self.kwargs.get('participantid')
+        initial = super(DatasetRowCreate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        initial['participant'] = Participant.objects.get(pk=pid)
+        return initial
+
+    def form_valid(self, form):
+        try:
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+            self.object.participant = form.initial['participant']
+            self.object.save()
+            return super(DatasetRowCreate, self).form_valid(form)
+        except IntegrityError as e:
+            msg = 'Database Error: Unable to create Dataset - see Administrator'
+            form.add_error('error', msg)
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('datasets')

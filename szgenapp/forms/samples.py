@@ -40,4 +40,7 @@ class LocationForm(ModelForm):
         fields = '__all__'
 
 LocationFormset = modelform_factory(Location, form=LocationForm)
+ShipmentFormset = inlineformset_factory(Sample, Shipment, form=ShipmentForm, extra=1)
+HarvestFormset = inlineformset_factory(Sample, HarvestSample, form=HarvestSampleForm, extra=1)
+TransformFormset = inlineformset_factory(Sample, TransformSample, form=TransformSampleForm, extra=1)
 

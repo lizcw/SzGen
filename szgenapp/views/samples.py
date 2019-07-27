@@ -3,8 +3,10 @@ from django.db import IntegrityError, transaction
 from django.urls import reverse
 
 from szgenapp.models.samples import Sample, SubSample, HarvestSample, TransformSample, SUBSAMPLE_TYPES
+from szgenapp.models.participants import Participant
 from szgenapp.forms.samples import SampleForm, SubSampleForm, \
-    LocationFormset, TransformSampleForm, HarvestSampleForm
+    LocationFormset, TransformSampleForm, HarvestSampleForm, \
+    ShipmentFormset, TransformFormset, HarvestFormset
 
 
 class SampleDetail(DetailView):
@@ -17,10 +19,12 @@ class SampleDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         data = super(SampleDetail, self).get_context_data(**kwargs)
-        subsamples = data['sample'].subsample_set.all()
-        data['lcytes'] = subsamples.filter(sample_type='LCTYE')
-        data['lcl'] = subsamples.filter(sample_type='LCL')
-        data['dna'] = subsamples.filter(sample_type='DNA')
+        sample = data['sample']
+        if sample:
+            # subsamples = sample.subsample_set.all()
+            data['lcytes'] = sample.subsample_set.filter(sample_type='LCYTE')
+            data['lcl'] = sample.subsample_set.filter(sample_type='LCL')
+            data['dna'] = sample.subsample_set.filter(sample_type='DNA')
         return data
 
 
@@ -32,30 +36,59 @@ class SampleCreate(CreateView):
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
 
+    def get_initial(self, *args, **kwargs):
+        studyparticipant = None
+        if (self.kwargs):
+            pid = self.kwargs.get('participantid')
+            participant = Participant.objects.get(pk=pid)
+            studyparticipant = participant.studyparticipants.first() # TODO First of set by default
+        initial = super(SampleCreate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        initial['participant'] = studyparticipant
+        return initial
+
     def get_context_data(self, **kwargs):
         data = super(SampleCreate, self).get_context_data(**kwargs)
         data['title'] = 'Create Sample'
         if self.request.POST:
             data['location'] = LocationFormset(self.request.POST)
+            data['shipment'] = ShipmentFormset(self.request.POST)
+            data['transform'] = TransformFormset(self.request.POST)
+            data['harvest'] = HarvestFormset(self.request.POST)
         else:
             data['location'] = LocationFormset()
+            data['shipment'] = ShipmentFormset(instance=self.get_object())
+            data['transform'] = TransformFormset(instance=self.get_object())
+            data['harvest'] = HarvestFormset(instance=self.get_object())
         return data
 
     def form_valid(self, form):
         try:
             context = self.get_context_data()
             location = context['location']
-            # Save new location then add to storage_location
+            shipment = context['shipment']
+            transform = context['transform']
+            harvest = context['harvest']
             with transaction.atomic():
                 self.object = form.save(commit=False)
+            if form.initial['participant']:
+                self.object.participant = form.initial['participant']
+            # Add additional subforms
+            if shipment.is_valid():
+                shipment.save()
+            if transform.is_valid():
+                transform.save()
+            if harvest.is_valid():
+                harvest.save()
             if location.is_valid():
                 storage_location = location.save()
                 self.object.storage_location = storage_location
-                self.object.save()
+            # final commit
+            self.object.save()
             return super(SampleCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Sample - see Administrator'
-            form.add_error('sample-create', msg)
+            # form.add_error('sample-create', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):

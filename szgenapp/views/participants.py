@@ -3,6 +3,7 @@ from django.db import IntegrityError, transaction
 from django.urls import reverse
 
 from szgenapp.models.participants import Participant, StudyParticipant
+from szgenapp.models.samples import SUBSAMPLE_TYPES
 from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm, StudyParticipantFormset
 
 
@@ -13,6 +14,11 @@ class ParticipantDetail(DetailView):
     model = Participant
     template_name = 'participant/participant.html'
     context_object_name = 'participant'
+
+    def get_context_data(self, **kwargs):
+        context = super(ParticipantDetail, self).get_context_data(**kwargs)
+        context['subsampletypes'] = SUBSAMPLE_TYPES
+        return context
 
 
 class ParticipantCreate(CreateView):

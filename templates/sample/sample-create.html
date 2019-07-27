@@ -22,6 +22,21 @@
                 {{ location.management_form }}
                 {% form form=location %}{% endform %}
             {% endif %}
+            {% if shipment %}
+                <h5>Add Shipment</h5>
+                {{ shipment.management_form }}
+                {% form form=shipment %}{% endform %}
+            {% endif %}
+            {% if transform %}
+                <h5>Add Transform</h5>
+                {{ transform.management_form }}
+                {% form form=transform %}{% endform %}
+            {% endif %}
+            {% if harvest %}
+                <h5>Add Harvest</h5>
+                {{ harvest.management_form }}
+                {% form form=harvest %}{% endform %}
+            {% endif %}
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
             </form>
         </div>

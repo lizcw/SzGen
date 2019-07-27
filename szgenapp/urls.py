@@ -18,15 +18,18 @@ urlpatterns = [
     path('datasets/', datasets.DatasetList.as_view(), name="datasets"),
     path('dataset/<int:pk>/', datasets.DatasetDetail.as_view(), name="dataset_detail"),
     path('dataset/create/', datasets.DatasetCreate.as_view(), name="dataset_create"),
+    path('dataset/row/create/<int:participantid>', datasets.DatasetRowCreate.as_view(), name='datasetrow_create'),
     path('dataset/update/<int:pk>/', datasets.DatasetUpdate.as_view(), name="dataset_update"),
     path('dataset/participants/update/<int:pk>', datasets.DatasetParticipantUpdate.as_view(),
          name='dataset_participants_update'),
     path('samples/', samples.SampleList.as_view(), name="samples"),
     path('sample/<int:pk>/', samples.SampleDetail.as_view(), name="sample_detail"),
     path('sample/create/', samples.SampleCreate.as_view(), name="sample_create"),
+    path('sample/create/participant/<int:participantid>/', samples.SampleCreate.as_view(), name="sample_participant_create"),
     path('sample/update/<int:pk>/', samples.SampleUpdate.as_view(), name="sample_update"),
     path('sample/transform/create/<int:sampleid>/', samples.TransformSampleCreate.as_view(), name="sample_transform_add"),
     path('sample/harvest/create/<int:sampleid>/', samples.HarvestSampleCreate.as_view(), name="sample_harvest_add"),
     path('sample/subsample/<slug:sampletype>/create/<int:sampleid>/', samples.SubSampleCreate.as_view(), name="subsample_add"),
+    path('sample/subsample/update/<int:pk>/', samples.SubSampleCreate.as_view(), name="subsample_update"),
 
 ]

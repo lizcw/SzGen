@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load sample_filters %}
 {% block title %}Participant Details{% endblock %}
 {% block breadcrumbs_items %}
     <ul>
@@ -20,11 +21,11 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">General Information</a>
                         <div class="fixed-action-btn">
-                <a class="btn-floating red" title="Edit Participant"
-                   href="{% url 'participant_update' participant.id %}">
-                    <i class="material-icons">edit</i>
-                </a>
-            </div>
+                            <a class="btn-floating red" title="Edit Participant"
+                               href="{% url 'participant_update' participant.id %}">
+                                <i class="material-icons">edit</i>
+                            </a>
+                        </div>
                     </h3>
 
                 </div>
@@ -32,12 +33,30 @@
                     <div class="panel-body">
                         <table class="table table-condensed">
                             <tbody>
-                            <tr><th>ID:</th><td>{{ participant.id }}</td></tr>
-                            <tr><th>Country:</th><td>{{ participant.get_country_display }}</td></tr>
-                            <tr><th>Status:</th><td>{{ participant.get_status_display }}</td></tr>
-                            <tr><th>Alpha code:</th><td>{{ participant.alphacode }}</td></tr>
-                            <tr><th>Secondary ID:</th><td>{{ participant.secondaryid }}</td></tr>
-                            <tr><th>NP ID:</th><td>{{ participant.npid }}</td></tr>
+                            <tr>
+                                <th>ID:</th>
+                                <td>{{ participant.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Country:</th>
+                                <td>{{ participant.get_country_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>{{ participant.get_status_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Alpha code:</th>
+                                <td>{{ participant.alphacode }}</td>
+                            </tr>
+                            <tr>
+                                <th>Secondary ID:</th>
+                                <td>{{ participant.secondaryid }}</td>
+                            </tr>
+                            <tr>
+                                <th>NP ID:</th>
+                                <td>{{ participant.npid }}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -50,11 +69,11 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Studies</a>
                         <div class="fixed-action-btn">
-                <a class="btn-floating blue-grey small" title="Add Study Participant"
-                   href="{% url 'studyparticipant_create' participant.id %}">
-                    <i class="material-icons">add</i>
-                </a>
-            </div>
+                            <a class="btn-floating blue-grey small" title="Add Study Participant"
+                               href="{% url 'studyparticipant_create' participant.id %}">
+                                <i class="material-icons">add</i>
+                            </a>
+                        </div>
                     </h3>
                 </div>
                 <div id="collapse2" class="collapse" data-parent="#panel-group">
@@ -90,6 +109,12 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse3">Datasets</a>
+                        <div class="fixed-action-btn">
+                            <a class="btn-floating blue-grey small" title="Add Dataset"
+                               href="{% url 'datasetrow_create' participant.id %}">
+                                <i class="material-icons">add</i>
+                            </a>
+                        </div>
                     </h3>
                 </div>
                 <div id="collapse3" class="collapse" data-parent="#panel-group">
@@ -129,10 +154,16 @@
                 </div>
             </div>
 
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse4">Samples</a>
+                        <div class="fixed-action-btn">
+                            <a class="btn-floating blue-grey small" title="Add Sample"
+                               href="{% url 'sample_participant_create' participant.id %}">
+                                <i class="material-icons">add</i>
+                            </a>
+                        </div>
                     </h3>
                 </div>
                 <div id="collapse4" class="collapse" data-parent="#panel-group">
@@ -141,11 +172,11 @@
                             <thead>
                             <tr>
                                 <th>Sample</th>
-                                <th>Stage</th>
                                 <th>Rebleed</th>
-                                <th>Storage date</th>
-                                <th>Location</th>
+                                <th>Transform</th>
+                                <th>Harvest</th>
                                 <th>Notes</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -153,11 +184,29 @@
                                 {% for sample in ps.sample_set.all %}
                                     <tr>
                                         <td>{{ sample.get_sample_type_display }}</td>
-                                        <td>{{ sample.get_stage_type_display }}</td>
                                         <td>{{ sample.rebleed|yesno }}</td>
-                                        <td>{{ sample.storage_date }}</td>
-                                        <td>{{ sample.storage_location }}</td>
+                                        <td>
+                                            <ul>
+                                                {% for transform in sample.transformsample_set.all %}
+                                                    <li>{{ transform.transform_date }}
+                                                        - {{ transform.failed|failpass }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul>
+                                                {% for harvest in sample.harvestsample_set.all %}
+                                                    <li>Regrow: {{ harvest.regrow_date }}
+                                                        Harvest: {{ harvest.harvest_date }}
+                                                        - {{ harvest.notes }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
                                         <td>{{ sample.notes }}</td>
+                                        <td><a class="btn-floating green small" title="Edit Sample"
+                                               href="{% url 'sample_update' sample.id %}">
+                                            <i class="material-icons">edit</i>
+                                        </a></td>
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
@@ -166,8 +215,69 @@
                     </div>
                     <div class="panel-footer"></div>
                 </div>
+
             </div>
         </div>
+
+        {% for type, val in subsampletypes %}
+            <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" href="#subpanel{{ forloop.counter0 }}">{{ val }}s</a>
+                </h3>
+            </div>
+            <div id="subpanel{{ forloop.counter0 }}" class="collapse" data-parent="#panel-group">
+                <div class="panel-body">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Sample</th>
+                            <th>Location</th>
+                            <th>Used</th>
+                            <th>Storage date</th>
+                            <th>Used date</th>
+                            {% if type == 'DNA' %}
+                                <th>Extraction date</th>
+                            {% endif %}
+                            <th>QC</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ps in participant.studyparticipants.all %}
+                            {% for sample in ps.sample_set.all %}
+                                {% for subsample in sample.subsample_set|filtersamples:type %}
+                                    <tr>
+                                        <td>{{ subsample.get_sample_type_display }}</td>
+                                        <td>{{ subsample.location }}</td>
+                                        <td>{{ subsample.used|yesno }}</td>
+                                        <td>{{ subsample.storage_date }}</td>
+                                        <td>{{ subsample.used_date }}</td>
+                                        {% if type == 'DNA' %}
+                                            <td>{{ subsample.extraction_date }}</td>
+                                        {% endif %}
+                                        <td>{% if subsample.get_QC_final %}
+                                            {{ subsample.get_QC_final.passed|yesno }}
+                                        {% endif %}</td>
+                                        <td>{{ subsample.notes }}</td>
+                                        <td><a class="btn-floating green small" title="Edit Sample"
+                                               href="{% url 'subsample_update' subsample.id %}">
+                                            <i class="material-icons">edit</i>
+                                        </a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
+        {% endfor %}
+
+        </div>
+    </div>
 
     </div>
 
