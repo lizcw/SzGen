@@ -23,3 +23,15 @@ def failpass(value):
         return 'fail'
     else:
         return 'pass'
+
+@register.filter(name='passfail')
+def passfail(value):
+    """
+    Provide 'failed' if false or 'passed' if true #TODO Fix these inconsistent fields
+    :param value: boolean
+    :return:
+    """
+    if not value:
+        return 'fail'
+    else:
+        return 'pass'

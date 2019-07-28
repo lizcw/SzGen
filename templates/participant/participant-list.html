@@ -16,7 +16,6 @@
                     <th>Country</th>
                     <th>Full ID</th>
                     <th>Status</th>
-                    <th>Date</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -27,8 +26,6 @@
                         <td>{{ participant.country }}</td>
                         <td>{{ participant.study.getFullNumber }}</td>
                         <td>{{ participant.get_status_display }}</td>
-                        <td>{{ participant.study.arrival_date|date:"c" }}</td>
-
                         <td>
                             <a class="btn-floating red" title="Edit participant"
                                href="{% url 'participant_update' participant.id %}">

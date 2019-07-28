@@ -14,8 +14,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Participant</th>
-                    <th>Date</th>
-                    <th>Location</th>
+                    <th>Arrival Date</th>
+                    <th>Type</th>
                     <th>Rebleed</th>
                     <th>Actions</th>
                 </tr>
@@ -25,8 +25,8 @@
                     <tr>
                         <td>{{ sample.id }}</td>
                         <td>{{ sample.participant.getFullNumber }}</td>
-                        <td>{{ sample.storage_date|date:"c" }}</td>
-                        <td>{{ sample.storage_location }}</td>
+                        <td>{{ sample.arrival_date|date:"c" }}</td>
+                        <td>{{ sample.get_sample_type_display }}</td>
                         <td>{{ sample.rebleed|yesno }}</td>
                         <td>
                             <a class="btn-floating red" title="Edit sample"

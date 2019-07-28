@@ -1,12 +1,13 @@
-from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.db import IntegrityError, transaction
 from django.urls import reverse
+from django.views.generic import CreateView, DetailView, UpdateView, ListView
 
-from szgenapp.models.samples import Sample, SubSample, HarvestSample, TransformSample, SUBSAMPLE_TYPES
-from szgenapp.models.participants import Participant
 from szgenapp.forms.samples import SampleForm, SubSampleForm, \
     LocationFormset, TransformSampleForm, HarvestSampleForm, \
-    ShipmentFormset, TransformFormset, HarvestFormset
+    ShipmentFormset, TransformFormset, HarvestFormset, ShipmentForm, QCFormset
+from szgenapp.models.participants import Participant
+from szgenapp.models.samples import Sample, SubSample, \
+    HarvestSample, TransformSample, SUBSAMPLE_TYPES, Shipment, QC
 
 
 class SampleDetail(DetailView):
@@ -21,14 +22,36 @@ class SampleDetail(DetailView):
         data = super(SampleDetail, self).get_context_data(**kwargs)
         sample = data['sample']
         if sample:
-            # subsamples = sample.subsample_set.all()
-            data['lcytes'] = sample.subsample_set.filter(sample_type='LCYTE')
-            data['lcl'] = sample.subsample_set.filter(sample_type='LCL')
-            data['dna'] = sample.subsample_set.filter(sample_type='DNA')
+            data['subsampletypes'] = SUBSAMPLE_TYPES
+            data['LCYTE'] = sample.subsample_set.filter(sample_type='LCYTE')
+            data['LCL'] = sample.subsample_set.filter(sample_type='LCL')
+            data['DNA'] = sample.subsample_set.filter(sample_type='DNA')
         return data
 
 
 class SampleCreate(CreateView):
+    """
+    Create a sample - basic fields only
+    """
+    model = Sample
+    template_name = 'sample/sample-create.html'
+    form_class = SampleForm
+
+    # def form_valid(self, form):
+    #     try:
+    #         with transaction.atomic():
+    #             self.object = form.save()
+    #         return super(SampleCreate, self).form_valid(form)
+    #     except IntegrityError as e:
+    #         msg = 'Database Error: Unable to create Sample - see Administrator'
+    #         # form.add_error('sample-create', msg)
+    #         return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('sample_detail', args=[self.object.id])
+
+
+class SampleParticipantCreate(CreateView):
     """
     Enter Sample data for new Sample
     """
@@ -41,14 +64,14 @@ class SampleCreate(CreateView):
         if (self.kwargs):
             pid = self.kwargs.get('participantid')
             participant = Participant.objects.get(pk=pid)
-            studyparticipant = participant.studyparticipants.first() # TODO First of set by default
-        initial = super(SampleCreate, self).get_initial(**kwargs)
+            studyparticipant = participant.studyparticipants.first()  # TODO First of set by default
+        initial = super(SampleParticipantCreate, self).get_initial(**kwargs)
         initial['action'] = 'Create'
         initial['participant'] = studyparticipant
         return initial
 
     def get_context_data(self, **kwargs):
-        data = super(SampleCreate, self).get_context_data(**kwargs)
+        data = super(SampleParticipantCreate, self).get_context_data(**kwargs)
         data['title'] = 'Create Sample'
         if self.request.POST:
             data['location'] = LocationFormset(self.request.POST)
@@ -85,7 +108,7 @@ class SampleCreate(CreateView):
                 self.object.storage_location = storage_location
             # final commit
             self.object.save()
-            return super(SampleCreate, self).form_valid(form)
+            return super(SampleParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Sample - see Administrator'
             # form.add_error('sample-create', msg)
@@ -131,6 +154,10 @@ class SampleList(ListView):
     paginate_by = 10
     # ordering = ['']
 
+    # def get_initial(self, *args, **kwargs):
+    #     initial = super(SampleList, self).get_initial()
+    #     initial['collections'] = ['All', 'Serum', 'Plasma', 'PAXGene', 'Lymphocyte', 'LCL', 'DNA']
+    #     return initial
     # def get_queryset(self):
     #     if self.request.GET.get('filter-by-study'):
     #         study = self.request.GET.get('filter-by-study')
@@ -138,6 +165,49 @@ class SampleList(ListView):
     #     else:
     #         qs = self.queryset
     #     return qs
+
+
+"""
+SHIPMENT
+"""
+
+
+class ShipmentCreate(CreateView):
+    """
+    Add Shipment data to new Sample
+    """
+    model = Shipment
+    template_name = 'sample/sample-create.html'
+    form_class = ShipmentForm
+    sample = Sample
+
+    def get_initial(self):
+        data = super(ShipmentCreate, self).get_initial()
+        sample_id = self.kwargs.get('sampleid')
+        self.sample = Sample.objects.get(pk=sample_id)
+        data['subtitle'] = 'Create Shipment for Sample'
+        data['sample'] = self.sample
+        return data
+
+    def get_success_url(self):
+        return reverse('sample_detail', args=[self.sample.id])
+
+
+class ShipmentUpdate(UpdateView):
+    """
+    Update Shipment data only
+    """
+    model = Shipment
+    template_name = 'sample/sample-create.html'
+    form_class = ShipmentForm
+
+    def get_success_url(self):
+        return reverse('sample_detail', args=[self.object.sample.id])
+
+
+"""
+TRANSFORMS
+"""
 
 
 class TransformSampleCreate(CreateView):
@@ -153,12 +223,30 @@ class TransformSampleCreate(CreateView):
         data = super(TransformSampleCreate, self).get_initial()
         sample_id = self.kwargs.get('sampleid')
         self.sample = Sample.objects.get(pk=sample_id)
-        data['title'] = 'Create Transform for Sample'
+        data['subtitle'] = 'Create Transform for Sample'
         data['sample'] = self.sample
         return data
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.sample.id])
+
+
+class TransformSampleUpdate(UpdateView):
+    """
+    Update TransformSample data only
+    """
+    model = TransformSample
+    template_name = 'sample/sample-create.html'
+    form_class = TransformSampleForm
+
+    def get_success_url(self):
+        return reverse('sample_detail', args=[self.object.sample.id])
+
+
+"""
+HARVESTS
+"""
+
 
 class HarvestSampleCreate(CreateView):
     """
@@ -173,12 +261,29 @@ class HarvestSampleCreate(CreateView):
         data = super(HarvestSampleCreate, self).get_initial()
         sample_id = self.kwargs.get('sampleid')
         self.sample = Sample.objects.get(pk=sample_id)
-        data['title'] = 'Create Harvest record for Sample'
+        data['subtitle'] = 'Create Harvest record for Sample'
         data['sample'] = self.sample
         return data
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.sample.id])
+
+
+class HarvestSampleUpdate(UpdateView):
+    """
+    Update HarvestSample data only
+    """
+    model = HarvestSample
+    template_name = 'sample/sample-create.html'
+    form_class = HarvestSampleForm
+
+    def get_success_url(self):
+        return reverse('sample_detail', args=[self.object.sample.id])
+
+
+"""
+SUBSAMPLES
+"""
 
 class SubSampleCreate(CreateView):
     """
@@ -189,32 +294,43 @@ class SubSampleCreate(CreateView):
     form_class = SubSampleForm
     sample = Sample
 
-    def get_initial(self):
-        data = super(SubSampleCreate, self).get_initial()
-        sample_id = self.kwargs.get('sampleid')
-        sample_type_key = self.kwargs.get('sampletype')
-        sample_type = [item for item in SUBSAMPLE_TYPES if item[0] == sample_type_key]
-        self.sample = Sample.objects.get(pk=sample_id)
-        data['title'] = 'Create % subsample from Sample' % sample_type[0][1]
-        data['sample'] = self.sample
-        data['sample_type'] = sample_type[0]
-        return data
+    def get_initial(self, **kwargs):
+        initial = super(SubSampleCreate, self).get_initial(**kwargs)
+        if self.kwargs:
+            sample_id = self.kwargs.get('sampleid')
+            sample_type_key = self.kwargs.get('sampletype')
+            sample_type = [item for item in SUBSAMPLE_TYPES if item[0] == sample_type_key]
+            self.sample = Sample.objects.get(pk=sample_id)
+            self.subtitle = 'Create %s subsample from Sample' % sample_type[0][1]
+            initial['sample'] = self.sample
+            initial['sample_type'] = sample_type[0]
+            initial['sample_num'] = self.sample.get_next_subsample_num(sample_type[0][1])
+        return initial
 
     def get_context_data(self, **kwargs):
         data = super(SubSampleCreate, self).get_context_data(**kwargs)
+        data['subtitle'] = self.subtitle
+        data['bookmark'] = 'SubSample'
+        data['sample'] = self.sample
         if self.request.POST:
             data['location'] = LocationFormset(self.request.POST)
+            data['qc'] = QCFormset(self.request.POST)
         else:
             data['location'] = LocationFormset()
+            data['qc'] = QCFormset()
         return data
 
     def form_valid(self, form):
         try:
             context = self.get_context_data()
             location = context['location']
+            qc = context['qc']
             # Save new location then add to storage_location
             with transaction.atomic():
-                self.object = form.save(commit=False)
+                self.object = form.save()
+            if qc.is_valid():
+                qc.instance = self.object
+                qc.save()
             if location.is_valid():
                 subsample_location = location.save()
                 self.object.location = subsample_location
@@ -227,3 +343,48 @@ class SubSampleCreate(CreateView):
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.sample.id])
+
+
+class SubSampleUpdate(UpdateView):
+    """
+    Update Sample data for new Sample
+    """
+    model = SubSample
+    template_name = 'sample/sample-create.html'
+    form_class = SubSampleForm
+
+    def get_context_data(self, **kwargs):
+        data = super(SubSampleUpdate, self).get_context_data(**kwargs)
+        data['subtitle'] = 'Edit SubSample'
+        data['bookmark'] = self.get_object().get_sample_type_display()
+        data['sample'] = self.get_object().sample
+        if self.request.POST:
+            data['location'] = LocationFormset(self.request.POST)
+            data['qc'] = QCFormset(self.request.POST, instance=self.get_object())
+        else:
+            data['location'] = LocationFormset(instance=self.get_object().location)
+            data['qc'] = QCFormset(instance=self.get_object())
+        return data
+
+    def form_valid(self, form):
+        try:
+            context = self.get_context_data()
+            location = context['location']
+            qc = context['qc']
+            # Save new location then add to storage_location
+            with transaction.atomic():
+                self.object = form.save()
+            if location.is_valid():
+                subsample_location = location.save()
+                self.object.location = subsample_location
+            if qc.is_valid():
+                qc.save()
+            self.object.save()
+            return super(SubSampleUpdate, self).form_valid(form)
+        except IntegrityError as e:
+            msg = 'Database Error: Unable to update SubSample - see Administrator'
+            form.add_error('Sample-update', msg)
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('sample_detail', args=[self.object.sample.id])

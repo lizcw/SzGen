@@ -12,7 +12,7 @@ class ParticipantForm(ModelForm):
 class StudyParticipantForm(ModelForm):
   class Meta:
       model = StudyParticipant
-      fields = ['study', 'arrival_date', 'fullnumber', 'district', 'family', 'individual']
+      fields = ['study', 'fullnumber', 'district', 'family', 'individual']
 
 StudyParticipantFormset = inlineformset_factory(Participant, StudyParticipant,
                                                 form=StudyParticipantForm, extra=1,

@@ -16,7 +16,6 @@
                     <th>Full ID</th>
                     <th>Study</th>
                     <th>Status</th>
-                    <th>Date</th>
                     <th>Country</th>
                     <th>Actions</th>
                 </tr>
@@ -28,7 +27,6 @@
                         <td>{{ participant.getFullNumber }}</td>
                         <td>{{ participant.study.title }}</td>
                         <td>{{ participant.participant.get_status_display }}</td>
-                        <td>{{ participant.arrival_date|date:"c" }}</td>
                         <td>{{ participant.participant.get_country_display }}</td>
                         <td>
                             <a class="btn-floating red" title="Edit participant"

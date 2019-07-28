@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load sample_filters %}
 {% block title %}Sample Details{% endblock %}
 {% block breadcrumbs_items %}
     <ul>
@@ -43,20 +44,12 @@
                                 <td>{{ sample.get_sample_type_display }}</td>
                             </tr>
                             <tr>
-                                <th>Stage:</th>
-                                <td>{{ sample.get_stage_type_display }}</td>
-                            </tr>
-                            <tr>
                                 <th>Rebleed:</th>
                                 <td>{{ sample.rebleed|yesno }}</td>
                             </tr>
                             <tr>
                                 <th>Notes:</th>
                                 <td>{{ sample.notes }}</td>
-                            </tr>
-                            <tr>
-                                <th>Location:</th>
-                                <td>{{ sample.storage_location }}</td>
                             </tr>
                         </table>
                     </div>
@@ -67,10 +60,10 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse2">Transforms</a>
+                        <a data-toggle="collapse" href="#collapse2">Shipments</a>
                         <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey" title="Add transform"
-                               href="{% url 'sample_transform_add' sample.id %}">
+                            <a class="btn-floating blue-grey" title="Add shipment"
+                               href="{% url 'sample_shipment_add' sample.id %}">
                                 <i class="material-icons">add</i>
                             </a>
                         </div>
@@ -81,17 +74,24 @@
                         <table class="table table-hover">
                             <thead>
                             <tr>
-                                <th>Transform date</th>
-                                <th>Transform failed</th>
+                                <th>Shipment date</th>
+                                <th>Reference</th>
+                                <th>Rutgers number</th>
                                 <th>Notes</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for transform in sample.transformsample_set.all %}
+                            {% for ship in sample.shipment_set.all %}
                                 <tr>
-                                    <th>{{ transform.transform_date }}</th>
-                                    <th>{{ transform.failed|yesno }}</th>
-                                    <th>{{ transform.notes }}</th>
+                                    <td>{{ ship.shipment_date }}</td>
+                                    <td>{{ ship.reference }}</td>
+                                    <td>{{ ship.rutgers_number }}</td>
+                                    <td>{{ ship.notes }}</td>
+                                    <td><a class="btn-floating small red" title="Edit Shipment"
+                                           href="{% url 'sample_shipment_update' ship.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -99,13 +99,14 @@
                     </div>
                 </div>
             </div>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse3">Harvests</a>
+                        <a data-toggle="collapse" href="#collapse3">Transforms</a>
                         <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey" title="Add harvest"
-                               href="{% url 'sample_harvest_add' sample.id %}">
+                            <a class="btn-floating blue-grey" title="Add transform"
+                               href="{% url 'sample_transform_add' sample.id %}">
                                 <i class="material-icons">add</i>
                             </a>
                         </div>
@@ -116,19 +117,22 @@
                         <table class="table table-hover">
                             <thead>
                             <tr>
-                                <th>Regrow date</th>
-                                <th>Harvest date</th>
-                                <th>Complete</th>
+                                <th>Transform date</th>
+                                <th>Transform failed</th>
                                 <th>Notes</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for harvest in sample.harvestsample_set.all %}
+                            {% for transform in sample.transformsample_set.all %}
                                 <tr>
-                                    <th>{{ harvest.regrow_date }}</th>
-                                    <th>{{ harvest.harvest_date }}</th>
-                                    <th>{{ harvest.complete|yesno }}</th>
-                                    <th>{{ harvest.notes }}</th>
+                                    <td>{{ transform.transform_date }}</td>
+                                    <td>{{ transform.failed|failpass }}</td>
+                                    <td>{{ transform.notes }}</td>
+                                    <td><a class="btn-floating small red" title="Edit Transform"
+                                           href="{% url 'sample_transform_update' transform.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -139,10 +143,10 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse4">Lymphocytes</a>
+                        <a data-toggle="collapse" href="#collapse4">Harvests</a>
                         <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey" title="Add subsample"
-                               href="{% url 'subsample_add' 'LCYTE' sample.id %}">
+                            <a class="btn-floating blue-grey" title="Add harvest"
+                               href="{% url 'sample_harvest_add' sample.id %}">
                                 <i class="material-icons">add</i>
                             </a>
                         </div>
@@ -153,34 +157,92 @@
                         <table class="table table-hover">
                             <thead>
                             <tr>
-                                <th>Number</th>
-                                <th>Used</th>
-                                <th>Used date</th>
-                                <th>Storage date</th>
-                                <th>Location</th>
-                                <th>QC</th>
+                                <th>Regrow date</th>
+                                <th>Harvest date</th>
+                                <th>Complete</th>
                                 <th>Notes</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for sub in lcytes %}
+                            {% for harvest in sample.harvestsample_set.all %}
                                 <tr>
-                                    <td>{{ sub.sample_num }}</td>
-                                    <td>{{ sub.used|yesno }}</td>
-                                    <td>{{ sub.used_date }}</td>
-                                    <td>{{ sub.storage_date }}</td>
-                                    <td>{{ sub.location }}</td>
-                                    <td></td>
-                                    <td>{{ sub.notes }}</td>
+                                    <td>{{ harvest.regrow_date }}</td>
+                                    <td>{{ harvest.harvest_date }}</td>
+                                    <td>{{ harvest.complete|yesno }}</td>
+                                    <td>{{ harvest.notes }}</td>
+                                    <td><a class="btn-floating small red" title="Edit Harvest"
+                                           href="{% url 'sample_harvest_update' harvest.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                    <div class="panel-footer"></div>
                 </div>
             </div>
+            {% for type, val in subsampletypes %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <a data-toggle="collapse" href="#subpanel{{ forloop.counter0 }}">{{ val }}s</a>
+                            <div class="fixed-action-btn">
+                                <a class="btn-floating blue-grey" title="Add subsample"
+                                   href="{% url 'subsample_add' type sample.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
+                            </div>
+                        </h3>
+                    </div>
+                    <div id="subpanel{{ forloop.counter0 }}" class="collapse" data-parent="#panel-group">
+                        <div class="panel-body">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Number</th>
+                                    <th>Storage date</th>
+                                    <th>Used</th>
+                                    <th>Used date</th>
+                                    {% if type == 'DNA' %}
+                                        <th>Extraction date</th>
+                                    {% endif %}
+                                    <th>Location</th>
+                                    <th>QC</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for sub in sample.subsample_set.all|filtersamples:type %}
+                                    <tr>
+                                        <td>{{ sub.sample_num }}</td>
+                                        <td>{{ sub.storage_date }}</td>
+                                        <td>{{ sub.used|yesno }}</td>
+                                        <td>{{ sub.used_date }}</td>
+                                        {% if type == 'DNA' %}
+                                            <td>{{ sub.extraction_date }}</td>
+                                        {% endif %}
+                                        <td>{{ sub.location }}</td>
+                                        <td>{% if sub.get_qc_result %}
+                                            {{ sub.get_qc_result.qc_date }} - {{ sub.get_qc_result.passed|passfail }}
+                                        {% endif %}</td>
+                                        <td>{{ sub.notes }}</td>
+                                        <td><a class="btn-floating small red" title="Edit SubSample"
+                                               href="{% url 'subsample_update' sub.id %}">
+                                            <i class="material-icons">edit</i>
+                                        </a></td>
+                                    </tr>
 
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="panel-footer"></div>
+                    </div>
+
+                </div>
+            {% endfor %}
         </div>
 
     </div>

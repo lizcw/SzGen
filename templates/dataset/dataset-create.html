@@ -20,18 +20,18 @@
                 {% form form=form %}{% endform %}
                 <hr/>
                 <h5>Add {{ datasetname }}
-                <a class="btn-floating grey add-formset" title="Add another Dataset File">
-                    <i class="material-icons">add</i>
-                </a>
-               </h5>
+                    <a class="btn-floating grey add-formset" title="Add another Dataset File">
+                        <i class="material-icons">add</i>
+                    </a>
+                </h5>
                 {{ datasetfiles.management_form }}
                 <ul class="well dsfileform">
-                {% for child_form in datasetfiles.forms %}
-                    <li class="dsfileform-row">
-                    {% form form=child_form %}{% endform %}
-                    </li>
+                    {% for child_form in datasetfiles.forms %}
+                        <li class="dsfileform-row">
+                            {% form form=child_form %}{% endform %}
+                        </li>
 
-                {% endfor %}
+                    {% endfor %}
                 </ul>
 
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
@@ -41,16 +41,16 @@
 
     <script type="text/javascript">
 
-    $(document).on('click', '.add-formset', function(e){
-        console.log('add another');
-        e.preventDefault();
-        var newform = $('li.dsfileform-row:first').clone();
-        var numforms = $('#id_dataset_files-TOTAL_FORMS').val();
-        newform.html().replace('dataset_files-0', 'dataset_files-' + numforms);
-        $('ul.dsfileform').children().append(newform);
-        $('#id_dataset_files-TOTAL_FORMS').val(parseInt(numforms) + 1);
-        return false;
-    });
+        $(document).on('click', '.add-formset', function (e) {
+            console.log('add another');
+            e.preventDefault();
+            var newform = $('li.dsfileform-row:first').clone();
+            var numforms = $('#id_dataset_files-TOTAL_FORMS').val();
+            newform.html().replace('dataset_files-0', 'dataset_files-' + numforms);
+            $('ul.dsfileform').children().append(newform);
+            $('#id_dataset_files-TOTAL_FORMS').val(parseInt(numforms) + 1);
+            return false;
+        });
 
     </script>
 {% endblock %}

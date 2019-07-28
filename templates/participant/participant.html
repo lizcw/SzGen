@@ -172,9 +172,11 @@
                             <thead>
                             <tr>
                                 <th>Sample</th>
+                                <th>Date</th>
                                 <th>Rebleed</th>
                                 <th>Transform</th>
                                 <th>Harvest</th>
+                                <th>Shipment</th>
                                 <th>Notes</th>
                                 <th>Actions</th>
                             </tr>
@@ -184,6 +186,7 @@
                                 {% for sample in ps.sample_set.all %}
                                     <tr>
                                         <td>{{ sample.get_sample_type_display }}</td>
+                                        <td>{{ sample.arrival_date }}</td>
                                         <td>{{ sample.rebleed|yesno }}</td>
                                         <td>
                                             <ul>
@@ -202,10 +205,19 @@
                                                 {% endfor %}
                                             </ul>
                                         </td>
+                                        <td>
+                                            <ul>
+                                                {% for ship in sample.shipmentsample_set.all %}
+                                                    <li>Rutgers: {{ ship.rutgers_number }}
+                                                        Date: {{ ship.shipment_date }}
+                                                        - {{ ship.notes }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
                                         <td>{{ sample.notes }}</td>
-                                        <td><a class="btn-floating green small" title="Edit Sample"
-                                               href="{% url 'sample_update' sample.id %}">
-                                            <i class="material-icons">edit</i>
+                                        <td><a class="btn-floating grey small" title="View Sample"
+                                               href="{% url 'sample_detail' sample.id %}">
+                                            <i class="material-icons">visibility</i>
                                         </a></td>
                                     </tr>
                                 {% endfor %}
@@ -221,62 +233,64 @@
 
         {% for type, val in subsampletypes %}
             <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <a data-toggle="collapse" href="#subpanel{{ forloop.counter0 }}">{{ val }}s</a>
-                </h3>
-            </div>
-            <div id="subpanel{{ forloop.counter0 }}" class="collapse" data-parent="#panel-group">
-                <div class="panel-body">
-                    <table class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th>Sample</th>
-                            <th>Location</th>
-                            <th>Used</th>
-                            <th>Storage date</th>
-                            <th>Used date</th>
-                            {% if type == 'DNA' %}
-                                <th>Extraction date</th>
-                            {% endif %}
-                            <th>QC</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for ps in participant.studyparticipants.all %}
-                            {% for sample in ps.sample_set.all %}
-                                {% for subsample in sample.subsample_set|filtersamples:type %}
-                                    <tr>
-                                        <td>{{ subsample.get_sample_type_display }}</td>
-                                        <td>{{ subsample.location }}</td>
-                                        <td>{{ subsample.used|yesno }}</td>
-                                        <td>{{ subsample.storage_date }}</td>
-                                        <td>{{ subsample.used_date }}</td>
-                                        {% if type == 'DNA' %}
-                                            <td>{{ subsample.extraction_date }}</td>
-                                        {% endif %}
-                                        <td>{% if subsample.get_QC_final %}
-                                            {{ subsample.get_QC_final.passed|yesno }}
-                                        {% endif %}</td>
-                                        <td>{{ subsample.notes }}</td>
-                                        <td><a class="btn-floating green small" title="Edit Sample"
-                                               href="{% url 'subsample_update' subsample.id %}">
-                                            <i class="material-icons">edit</i>
-                                        </a></td>
-                                    </tr>
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a data-toggle="collapse" href="#subpanel{{ forloop.counter0 }}">{{ val }}s</a>
+                    </h3>
+                </div>
+                <div id="subpanel{{ forloop.counter0 }}" class="collapse" data-parent="#panel-group">
+                    <div class="panel-body">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Sample Arrival</th>
+                                <th>Num</th>
+                                <th>Storage date</th>
+                                <th>Location</th>
+                                <th>Used</th>
+                                <th>Used date</th>
+                                {% if type == 'DNA' %}
+                                    <th>Extraction date</th>
+                                {% endif %}
+                                <th>QC</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ps in participant.studyparticipants.all %}
+                                {% for sample in ps.sample_set.all %}
+                                    {% for subsample in sample.subsample_set|filtersamples:type %}
+                                        <tr>
+                                            <td>{{ sample.arrival_date }}</td>
+                                            <td>{{ subsample.sample_num }}</td>
+                                            <td>{{ subsample.storage_date }}</td>
+                                            <td>{{ subsample.location }}</td>
+                                            <td>{{ subsample.used|yesno }}</td>
+                                            <td>{{ subsample.used_date }}</td>
+                                            {% if type == 'DNA' %}
+                                                <td>{{ subsample.extraction_date }}</td>
+                                            {% endif %}
+                                            <td>{% if subsample.get_qc_result %}
+                                                {{ subsample.get_qc_result.passed|passfail }}
+                                            {% endif %}</td>
+                                            <td>{{ subsample.notes }}</td>
+                                            <td><a class="btn-floating green small" title="Edit SubSample"
+                                                   href="{% url 'subsample_update' subsample.id %}">
+                                                <i class="material-icons">edit</i>
+                                            </a></td>
+                                        </tr>
+                                    {% endfor %}
                                 {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-footer"></div>
                 </div>
-                <div class="panel-footer"></div>
+
             </div>
         {% endfor %}
-
-        </div>
     </div>
 
     </div>

@@ -25,11 +25,15 @@ urlpatterns = [
     path('samples/', samples.SampleList.as_view(), name="samples"),
     path('sample/<int:pk>/', samples.SampleDetail.as_view(), name="sample_detail"),
     path('sample/create/', samples.SampleCreate.as_view(), name="sample_create"),
-    path('sample/create/participant/<int:participantid>/', samples.SampleCreate.as_view(), name="sample_participant_create"),
+    path('sample/create/participant/<int:participantid>/', samples.SampleParticipantCreate.as_view(), name="sample_participant_create"),
     path('sample/update/<int:pk>/', samples.SampleUpdate.as_view(), name="sample_update"),
     path('sample/transform/create/<int:sampleid>/', samples.TransformSampleCreate.as_view(), name="sample_transform_add"),
     path('sample/harvest/create/<int:sampleid>/', samples.HarvestSampleCreate.as_view(), name="sample_harvest_add"),
-    path('sample/subsample/<slug:sampletype>/create/<int:sampleid>/', samples.SubSampleCreate.as_view(), name="subsample_add"),
-    path('sample/subsample/update/<int:pk>/', samples.SubSampleCreate.as_view(), name="subsample_update"),
+    path('sample/shipment/create/<int:sampleid>/', samples.ShipmentCreate.as_view(), name="sample_shipment_add"),
+    path('sample/transform/update/<int:pk>/', samples.TransformSampleUpdate.as_view(), name="sample_transform_update"),
+    path('sample/harvest/update/<int:pk>/', samples.HarvestSampleUpdate.as_view(), name="sample_harvest_update"),
+    path('sample/shipment/update/<int:pk>/', samples.ShipmentUpdate.as_view(), name="sample_shipment_update"),
+    path('subsample/create/<slug:sampletype>/<int:sampleid>/', samples.SubSampleCreate.as_view(), name="subsample_add"),
+    path('subsample/update/<int:pk>/', samples.SubSampleUpdate.as_view(), name="subsample_update"),
 
 ]

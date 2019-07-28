@@ -59,7 +59,6 @@ class StudyParticipant(models.Model):
     district = models.CharField(max_length=5, blank=True, help_text="For CBZ study enter district(1-5)")
     family = models.CharField(max_length=20, blank=True, help_text="Family number if available")
     individual = models.CharField(max_length=20, blank=True, help_text="Individual number if available")
-    arrival_date = models.DateField(default=date.today, help_text="Date of receiving sample, default is today")
 
     class Meta:
         verbose_name = 'Study Participant'
