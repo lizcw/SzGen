@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load sample_filters %}
+{% block title %}Clinical Details{% endblock %}
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="/clinical">Clinical Results</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li>Clinical Details</li>
+    </ul>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="well col-md-12">
+            <h3>Clinical {{ clinical.participant|force_escape }}</h3>
+        </div>
+
+        <div id="panel-group" class="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse1">Diagnosis</a>
+                        <div class="fixed-action-btn">
+                            <a class="btn-floating red" title="Edit diagnosis"
+                               href="{% url 'clinical_diagnosis_update' clinical.diagnosis.id %}">
+                                <i class="material-icons">edit</i>
+                            </a>
+                        </div>
+                    </h3>
+
+                </div>
+                <div id="collapse1" class="collapse" data-parent="#panel-group">
+                    <div class="panel-body">
+                        <table>
+                            {%  for f in clinical.get_sub_fields|category:'demographic' %}
+                            <tr>
+                                <th>{{ f.label }}</th>
+                                <td>{{ f.value }}</td>
+                            </tr>
+                         {% endfor %}
+                        </table>
+                    </div>
+                    <div class="panel-footer"></div>
+                </div>
+            </div>
+{#            <div class="panel panel-default">#}
+{#                <div class="panel-heading">#}
+{#                    <h3 class="panel-title">#}
+{#                        <a data-toggle="collapse" href="#collapse2">Shipments</a>#}
+{#                        <div class="fixed-action-btn">#}
+{#                            <a class="btn-floating blue-grey" title="Add shipment"#}
+{#                               href="{% url 'sample_shipment_add' sample.id %}">#}
+{#                                <i class="material-icons">add</i>#}
+{#                            </a>#}
+{#                        </div>#}
+{#                    </h3>#}
+{#                </div>#}
+{#                <div id="collapse2" class="collapse" data-parent="#panel-group">#}
+{#                    <div class="panel-body">#}
+{#                        <table class="table table-hover">#}
+{#                            <thead>#}
+{#                            <tr>#}
+{#                                <th>Shipment date</th>#}
+{#                                <th>Reference</th>#}
+{#                                <th>Rutgers number</th>#}
+{#                                <th>Notes</th>#}
+{#                                <th>Actions</th>#}
+{#                            </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% for ship in sample.shipment_set.all %}#}
+{#                                <tr>#}
+{#                                    <td>{{ ship.shipment_date }}</td>#}
+{#                                    <td>{{ ship.reference }}</td>#}
+{#                                    <td>{{ ship.rutgers_number }}</td>#}
+{#                                    <td>{{ ship.notes }}</td>#}
+{#                                    <td><a class="btn-floating small red" title="Edit Shipment"#}
+{#                                           href="{% url 'sample_shipment_update' ship.id %}">#}
+{#                                        <i class="material-icons">edit</i>#}
+{#                                    </a></td>#}
+{#                                </tr>#}
+{#                            {% endfor %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    </div>
+{% endblock %}

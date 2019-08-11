@@ -4,8 +4,7 @@ from datetime import date
 COUNTRY_CHOICES = (
     ('INDIA', 'India'),
     ('AUSTRALIA', 'Australia'),
-    ('USA', 'USA'),
-    ('UK', 'UK')
+    ('SARAWAK', 'Sarawak')
 )
 PARTICIPANT_STATUS_CHOICES = (
     ('ACTIVE', 'Active'),
