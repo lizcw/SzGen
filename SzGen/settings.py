@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'fontawesome',
     'material',
-    'szgenapp'
+    'szgenapp',
+    'django_filters',
+    'django_tables2'
 ]
 
 REST_FRAMEWORK = {

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load render_table from django_tables2 %}
 {% block content %}
     <div class="container">
         <h2>Clinical Records</h2>
@@ -8,8 +9,8 @@
                 <i class="large material-icons">add</i>
             </a>
         </div>
-        {% if clinical.count > 0 %}
-        
-        {% endif %}
+
+        {% render_table table %}
+
     </div>
 {% endblock %}

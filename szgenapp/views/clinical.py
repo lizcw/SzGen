@@ -1,8 +1,11 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.urls import reverse
+from django.shortcuts import render
+from django_tables2 import RequestConfig
 from szgenapp.forms.clinical import *
 from szgenapp.models.participants import StudyParticipant
 from szgenapp.models.clinical import *
+from szgenapp.tables import ClinicalTable
 
 
 class ClinicalDetail(DetailView):
@@ -14,9 +17,21 @@ class ClinicalDetail(DetailView):
 class ClinicalList(ListView):
     model = Clinical
     template_name = 'clinical/clinical-list.html'
-    queryset = Clinical.objects.all()
+    # queryset = Clinical.objects.all()
     context_object_name = 'clinical'
     paginate_by = 10
+
+    def get_queryset(self):
+        table = Clinical.objects.order_by('participant')
+        return table
+
+    def get_context_data(self, **kwargs):
+        context = super(ClinicalList, self).get_context_data(**kwargs)
+        table = ClinicalTable(self.get_queryset())
+        RequestConfig(self.request, paginate={"per_page": 20}).configure(table)
+        context['table'] = table
+        return context
+
 
 
 class ClinicalCreate(CreateView):
@@ -60,7 +75,7 @@ class ClinicalCreate(CreateView):
         return data
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.id])
 
 
 class ClinicalUpdate(UpdateView):
