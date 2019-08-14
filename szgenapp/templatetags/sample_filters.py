@@ -35,3 +35,14 @@ def passfail(value):
         return 'fail'
     else:
         return 'pass'
+
+@register.filter(name='fieldvalue')
+def fieldvalue(value, fieldlist):
+    """
+    Get lookup value from values list (dict)
+    :param value: fieldname value for lookup
+    :param fieldlist: dict() for lookup
+    :return:
+    """
+    print(value)
+    return fieldlist[value]

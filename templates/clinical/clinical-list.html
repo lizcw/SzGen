@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h2>Clinical Records</h2>
+        <div class="fixed-action-btn">
+            <a class="btn-floating btn-large blue-grey" title="Add clinical record"
+               href="{% url 'clinical_create' %}">
+                <i class="large material-icons">add</i>
+            </a>
+        </div>
+        {% if clinical.count > 0 %}
+        
+        {% endif %}
+    </div>
+{% endblock %}
