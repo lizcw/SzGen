@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, modelform_factory
 from django.forms.models import inlineformset_factory
 
 from szgenapp.models.clinical import *
@@ -7,7 +7,7 @@ from szgenapp.models.clinical import *
 class ClinicalForm(ModelForm):
     class Meta:
         model = Clinical
-        fields = '__all__'
+        fields = ['participant', ]
 
 
 class DemographicForm(ModelForm):
@@ -58,11 +58,11 @@ class SymptomsBehaviourForm(ModelForm):
         fields = '__all__'
 
 
-DemographicFormset = inlineformset_factory(Clinical, Demographic, form=DemographicForm, extra=1)
-DiagnosisFormset = inlineformset_factory(Clinical, Diagnosis, form=DiagnosisForm, extra=1)
-MedicalHistoryFormset = inlineformset_factory(Clinical, MedicalHistory, form=MedicalHistoryForm, extra=1)
-SymptomsGeneralFormset = inlineformset_factory(Clinical, SymptomsGeneral, form=SymptomsGeneralForm, extra=1)
-SymptomsBehaviourFormset = inlineformset_factory(Clinical, SymptomsBehaviour, form=SymptomsBehaviourForm, extra=1)
-SymptomsDepressionFormset = inlineformset_factory(Clinical, SymptomsDepression, form=SymptomsDepressionForm, extra=1)
-SymptomsHallucinationFormset = inlineformset_factory(Clinical, SymptomsHallucination, form=SymptomsHallucinationForm, extra=1)
-SymptomsDelusionFormset = inlineformset_factory(Clinical, SymptomsDelusion, form=SymptomsDelusionForm, extra=1)
+DemographicFormset = modelform_factory(Demographic, form=DemographicForm)
+DiagnosisFormset = modelform_factory(Diagnosis, form=DiagnosisForm)
+MedicalHistoryFormset = modelform_factory(MedicalHistory, form=MedicalHistoryForm)
+SymptomsGeneralFormset = modelform_factory(SymptomsGeneral, form=SymptomsGeneralForm)
+SymptomsBehaviourFormset = modelform_factory(SymptomsBehaviour, form=SymptomsBehaviourForm)
+SymptomsDepressionFormset = modelform_factory(SymptomsDepression, form=SymptomsDepressionForm)
+SymptomsHallucinationFormset = modelform_factory(SymptomsHallucination, form=SymptomsHallucinationForm)
+SymptomsDelusionFormset = modelform_factory(SymptomsDelusion, form=SymptomsDelusionForm)

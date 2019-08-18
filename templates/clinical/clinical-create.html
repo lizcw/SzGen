@@ -18,7 +18,7 @@
                 <a href="{% url 'participant_create' %}">Add a Participant</a>
             </blockquote>
 
-            <p>Enter data in each required section then click 'Save'</p>
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
@@ -29,94 +29,55 @@
                         <li><a data-toggle="tab" href="#{{ key }}">{{ label }}</a></li>
                     {% endfor %}
                 </ul>
+                <p>Enter data in each section then click 'Save'</p>
                 <div class="tab-content">
                     <div id="demographic" class="tab-pane fade in">
                         {{ demographic.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in demographic.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=demographic %}{% endform %}
+                        </div>
                     </div>
                     <div id="diagnosis" class="tab-pane fade in">
                         {{ diagnosis.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in diagnosis.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=diagnosis %}{% endform %}
+                        </div>
                     </div>
                     <div id="medical" class="tab-pane fade in">
                         {{ medical.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in medical.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=medical %}{% endform %}
+                        </div>
                     </div>
                     <div id="symptoms_general" class="tab-pane fade in">
                         {{ symptoms_general.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in symptoms_general.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=symptoms_general %}{% endform %}
+                        </div>
                     </div>
                     <div id="symptoms_delusion" class="tab-pane fade in">
                         {{ symptoms_delusion.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in symptoms_delusion.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=symptoms_delusion %}{% endform %}
+                        </div>
                     </div>
                     <div id="symptoms_depression" class="tab-pane fade in">
                         {{ symptoms_depression.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in symptoms_depression.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=symptoms_depression %}{% endform %}
+                        </div>
                     </div>
                     <div id="symptoms_hallucination" class="tab-pane fade in">
                         {{ symptoms_hallucination.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in symptoms_hallucination.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=symptoms_hallucination %}{% endform %}
+                        </div>
                     </div>
                     <div id="symptoms_behaviour" class="tab-pane fade in">
                         {{ symptoms_behaviour.management_form }}
-                        <ul class="well dsfileform">
-                            {% for child_form in symptoms_behaviour.forms %}
-                                <li class="dsfileform-row">
-                                    {% form form=child_form %}{% endform %}
-                                </li>
-
-                            {% endfor %}
-                        </ul>
+                        <div class="well dsfileform">
+                            {% form form=symptoms_behaviour %}{% endform %}
+                        </div>
                     </div>
                 </div>
                 <br/>

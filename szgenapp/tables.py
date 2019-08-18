@@ -5,9 +5,9 @@ from szgenapp.models.clinical import Clinical
 
 class ClinicalTable(tables.Table):
     id = tables.LinkColumn('clinical_detail', text='View', args=[A('pk')], verbose_name='')
-    gender = tables.Column(verbose_name='Gender', accessor=A('demographic.first.gender'))
-    diagnosis = tables.Column(verbose_name='Diagnosis', accessor=A('diagnosis.first.summary'))
-    school = tables.Column(verbose_name='Years School', accessor=A('demographic.first.years_school'))
+    gender = tables.Column(verbose_name='Gender', accessor=A('demographic.gender'))
+    diagnosis = tables.Column(verbose_name='Diagnosis', accessor=A('diagnosis.summary'))
+    school = tables.Column(verbose_name='Years School', accessor=A('demographic.years_school'))
 
     class Meta:
         model = Clinical

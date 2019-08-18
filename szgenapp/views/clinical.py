@@ -1,5 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.urls import reverse
+from django.db import IntegrityError, transaction
 from django.shortcuts import render
 from django_tables2 import RequestConfig
 from szgenapp.forms.clinical import *
@@ -71,8 +72,48 @@ class ClinicalCreate(CreateView):
             data['symptoms_hallucination'] = SymptomsHallucinationFormset()
             data['symptoms_behaviour'] = SymptomsBehaviourFormset()
         data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if key != 'form' and
-                           key != 'view' and key != 'title']
+                           key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
         return data
+
+    def form_valid(self, form):
+        try:
+            context=self.get_context_data()
+            demographic = context['demographic']
+            diagnosis = context['diagnosis']
+            medical = context['medical']
+            symptoms_general = context['symptoms_general']
+            symptoms_delusion = context['symptoms_delusion']
+            symptoms_depression = context['symptoms_depression']
+            symptoms_hallucination = context['symptoms_hallucination']
+            symptoms_behaviour = context['symptoms_behaviour']
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+            if form.initial['participant']:
+                self.object.participant = form.initial['participant']
+            # Add additional subforms
+            if demographic.is_valid():
+                self.object.clinical_demographic = demographic.save()
+            if diagnosis.is_valid():
+                self.object.clinical_diagnosis = diagnosis.save()
+            if medical.is_valid():
+                self.object.clinical_medical = medical.save()
+            if symptoms_general.is_valid():
+                self.object.clinical_general = symptoms_general.save()
+            if symptoms_delusion.is_valid():
+                self.object.clinical_delusion = symptoms_delusion.save()
+            if symptoms_depression.is_valid():
+                self.object.clinical_depression = symptoms_depression.save()
+            if symptoms_hallucination.is_valid():
+                self.object.clinical_hallucination = symptoms_hallucination.save()
+            if symptoms_behaviour.is_valid():
+                self.object.clinical_behaviour = symptoms_behaviour.save()
+            # final commit
+            self.object.save()
+            return super(ClinicalCreate, self).form_valid(form)
+        except IntegrityError as e:
+            msg = 'Database Error: Unable to create Sample - see Administrator'
+            # form.add_error('sample-create', msg)
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.id])
@@ -101,14 +142,15 @@ class ClinicalUpdate(UpdateView):
             data['symptoms_hallucination'] = SymptomsHallucinationFormset(self.request.POST)
             data['symptoms_behaviour'] = SymptomsBehaviourFormset(self.request.POST)
         else:
-            data['demographic'] = DemographicFormset(instance=self.get_object())
-            data['diagnosis'] = DiagnosisFormset(instance=self.get_object())
-            data['medical'] = MedicalHistoryFormset(instance=self.get_object())
-            data['symptoms_general'] = SymptomsGeneralFormset(instance=self.get_object())
-            data['symptoms_delusion'] = SymptomsDelusionFormset(instance=self.get_object())
-            data['symptoms_depression'] = SymptomsDepressionFormset(instance=self.get_object())
-            data['symptoms_hallucination'] = SymptomsHallucinationFormset(instance=self.get_object())
-            data['symptoms_behaviour'] = SymptomsBehaviourFormset(instance=self.get_object())
+            data['demographic'] = DemographicFormset(instance=self.get_object().demographic)
+            data['diagnosis'] = DiagnosisFormset(instance=self.get_object().diagnosis)
+            data['medical'] = MedicalHistoryFormset(instance=self.get_object().medical)
+            data['symptoms_general'] = SymptomsGeneralFormset(instance=self.get_object().symptoms_general)
+            data['symptoms_delusion'] = SymptomsDelusionFormset(instance=self.get_object().symptoms_delusion)
+            data['symptoms_depression'] = SymptomsDepressionFormset(instance=self.get_object().symptoms_depression)
+            data['symptoms_hallucination'] = SymptomsHallucinationFormset(
+                instance=self.get_object().symptoms_hallucination)
+            data['symptoms_behaviour'] = SymptomsBehaviourFormset(instance=self.get_object().symptoms_behaviour)
         data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if key != 'form' and
                            key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
         return data
@@ -133,7 +175,7 @@ class ClinicalDemographicCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_demographic.get().id])
 
 
 class ClinicalDemographicUpdate(UpdateView):
@@ -147,7 +189,7 @@ class ClinicalDemographicUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_demographic.get().id])
 
 
 class ClinicalDiagnosisCreate(CreateView):
@@ -166,7 +208,7 @@ class ClinicalDiagnosisCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_diagnosis.get().id])
 
 
 class ClinicalDiagnosisUpdate(UpdateView):
@@ -180,7 +222,7 @@ class ClinicalDiagnosisUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_diagnosis.get().id])
 
 
 class ClinicalMedicalCreate(CreateView):
@@ -199,7 +241,7 @@ class ClinicalMedicalCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_medical.get().id])
 
 
 class ClinicalMedicalUpdate(UpdateView):
@@ -213,7 +255,7 @@ class ClinicalMedicalUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_medical.get().id])
 
 
 class ClinicalSymptomsGeneralCreate(CreateView):
@@ -232,7 +274,7 @@ class ClinicalSymptomsGeneralCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_general.get().id])
 
 
 class ClinicalSymptomsGeneralUpdate(UpdateView):
@@ -246,7 +288,7 @@ class ClinicalSymptomsGeneralUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_general.get().id])
 
 
 class ClinicalSymptomsDelusionCreate(CreateView):
@@ -265,13 +307,13 @@ class ClinicalSymptomsDelusionCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_delusion.get().id])
 
 
 class ClinicalSymptomsDelusionUpdate(UpdateView):
-    model = Demographic
+    model = SymptomsDelusion
     template_name = 'clinical/clinical-sub-create.html'
-    form_class = DemographicForm
+    form_class = SymptomsDelusionForm
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDelusionUpdate, self).get_initial(**kwargs)
@@ -279,7 +321,7 @@ class ClinicalSymptomsDelusionUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_delusion.get().id])
 
 
 class ClinicalSymptomsHallucinationCreate(CreateView):
@@ -298,7 +340,7 @@ class ClinicalSymptomsHallucinationCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_hallucination.get().id])
 
 
 class ClinicalSymptomsHallucinationUpdate(UpdateView):
@@ -312,7 +354,7 @@ class ClinicalSymptomsHallucinationUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_hallucination.get().id])
 
 
 class ClinicalSymptomsBehaviourCreate(CreateView):
@@ -331,7 +373,7 @@ class ClinicalSymptomsBehaviourCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_behaviour.get().id])
 
 
 class ClinicalSymptomsBehaviourUpdate(UpdateView):
@@ -346,7 +388,7 @@ class ClinicalSymptomsBehaviourUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_behaviour.get().id])
 
 
 class ClinicalSymptomsDepressionCreate(CreateView):
@@ -365,7 +407,7 @@ class ClinicalSymptomsDepressionCreate(CreateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_depression.get().id])
 
 
 class ClinicalSymptomsDepressionUpdate(UpdateView):
@@ -379,4 +421,4 @@ class ClinicalSymptomsDepressionUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.clinical_depression.get().id])

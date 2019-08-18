@@ -20,9 +20,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">Demographic</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.demographic.count %}
+                            {% if clinical.demographic %}
                             <a class="btn-floating red" title="Edit Demographic"
-                               href="{% url 'clinical_update' clinical.demographic.first.id %}">
+                               href="{% url 'clinical_update' clinical.demographic.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                                 {%  else %}
@@ -40,7 +40,7 @@
                         <table>
                             {%  for f in clinical.get_demographic_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -54,9 +54,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Diagnosis</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.diagnosis.count %}
+                            {% if clinical.diagnosis %}
                             <a class="btn-floating red" title="Edit diagnosis"
-                               href="{% url 'clinical_diagnosis_update' clinical.diagnosis.first.id %}">
+                               href="{% url 'clinical_diagnosis_update' clinical.diagnosis.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -74,7 +74,7 @@
                         <table>
                             {%  for f in clinical.get_diagnosis_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -88,9 +88,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse3">Medical</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.medical.count %}
+                            {% if clinical.medical %}
                             <a class="btn-floating red" title="Edit medical"
-                               href="{% url 'clinical_medical_update' clinical.medical.first.id %}">
+                               href="{% url 'clinical_medical_update' clinical.medical.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -108,7 +108,7 @@
                         <table>
                             {%  for f in clinical.get_medical_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -122,9 +122,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse4">Symptoms: General</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_general.count %}
+                            {% if clinical.symptoms_general %}
                             <a class="btn-floating red" title="Edit General Symptoms"
-                               href="{% url 'clinical_symptoms_general_update' clinical.symptoms_general.first.id %}">
+                               href="{% url 'clinical_symptoms_general_update' clinical.symptoms_general.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -142,7 +142,7 @@
                         <table>
                             {%  for f in clinical.get_symptoms_general_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -156,9 +156,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse5">Symptoms: Delusion</a>
                         <div class="fixed-action-btn">
-                           {% if clinical.symptoms_delusion.count %}
+                           {% if clinical.symptoms_delusion %}
                             <a class="btn-floating red" title="Edit Delusion Symptoms"
-                               href="{% url 'clinical_symptoms_delusion_update' clinical.symptoms_delusion.first.id %}">
+                               href="{% url 'clinical_symptoms_delusion_update' clinical.symptoms_delusion.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -176,7 +176,7 @@
                         <table>
                             {%  for f in clinical.get_symptoms_delusion_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -190,9 +190,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse6">Symptoms: Hallucination</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_hallucination.count %}
+                            {% if clinical.symptoms_hallucination %}
                             <a class="btn-floating red" title="Edit General Symptoms"
-                               href="{% url 'clinical_symptoms_hallucination_update' clinical.symptoms_hallucination.first.id %}">
+                               href="{% url 'clinical_symptoms_hallucination_update' clinical.symptoms_hallucination.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -210,7 +210,7 @@
                         <table>
                             {%  for f in clinical.get_symptoms_hallucination_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -224,9 +224,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse7">Symptoms: Behaviour</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_behaviour.count %}
+                            {% if clinical.symptoms_behaviour %}
                             <a class="btn-floating red" title="Edit Behaviour Symptoms"
-                               href="{% url 'clinical_symptoms_behaviour_update' clinical.symptoms_behaviour.first.id %}">
+                               href="{% url 'clinical_symptoms_behaviour_update' clinical.symptoms_behaviour.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -244,7 +244,7 @@
                         <table>
                             {%  for f in clinical.get_symptoms_behaviour_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
@@ -258,9 +258,9 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse8">Symptoms: Depression</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_depression.count %}
+                            {% if clinical.symptoms_depression %}
                             <a class="btn-floating red" title="Edit Depression Symptoms"
-                               href="{% url 'clinical_symptoms_depression_update' clinical.symptoms_depression.first.id %}">
+                               href="{% url 'clinical_symptoms_depression_update' clinical.symptoms_depression.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                             {%  else %}
@@ -278,7 +278,7 @@
                         <table>
                             {%  for f in clinical.get_symptoms_depression_fields %}
                                 <tr>
-                                    <th>{{ f.name }}</th>
+                                    <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
                          {% endfor %}
