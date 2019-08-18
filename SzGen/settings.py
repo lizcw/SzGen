@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'material',
     'szgenapp',
     'django_filters',
-    'django_tables2'
+    'django_tables2',
+    'bootstrap3',
 ]
 
 REST_FRAMEWORK = {

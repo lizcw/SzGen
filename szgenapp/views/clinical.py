@@ -1,12 +1,14 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.urls import reverse
 from django.db import IntegrityError, transaction
-from django.shortcuts import render
+from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
 from django_tables2 import RequestConfig
 from szgenapp.forms.clinical import *
 from szgenapp.models.participants import StudyParticipant
 from szgenapp.models.clinical import *
-from szgenapp.tables import ClinicalTable
+from szgenapp.tables import *
+from szgenapp.filters import *
 
 
 class ClinicalDetail(DetailView):
@@ -15,25 +17,127 @@ class ClinicalDetail(DetailView):
     context_object_name = 'clinical'
 
 
-class ClinicalList(ListView):
+class ClinicalList(SingleTableMixin, FilterView):
     model = Clinical
     template_name = 'clinical/clinical-list.html'
-    # queryset = Clinical.objects.all()
-    context_object_name = 'clinical'
+    # context_object_name = 'summary'
     paginate_by = 10
-
-    def get_queryset(self):
-        table = Clinical.objects.order_by('participant')
-        return table
+    filterset_class = ClinicalFilter
+    table_class = ClinicalTable
 
     def get_context_data(self, **kwargs):
-        context = super(ClinicalList, self).get_context_data(**kwargs)
-        table = ClinicalTable(self.get_queryset())
-        RequestConfig(self.request, paginate={"per_page": 20}).configure(table)
-        context['table'] = table
-        return context
+        data = super(ClinicalList, self).get_context_data(**kwargs)
+        data['title'] = 'Summary'
+        return data
 
 
+class ClinicalDemographicList(SingleTableMixin, FilterView):
+    model = Demographic
+    table_class = DemographicTable
+    paginate_by = 10
+    filterset_class = DemographicFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalDemographicList, self).get_context_data(**kwargs)
+        data['title'] = 'Demographics'
+        return data
+
+class ClinicalDiagnosisList(SingleTableMixin, FilterView):
+    model = Diagnosis
+    table_class = DiagnosisTable
+    paginate_by = 10
+    filterset_class = DiagnosisFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalDiagnosisList, self).get_context_data(**kwargs)
+        data['title'] = 'Diagnosis'
+        return data
+
+class ClinicalMedicalList(SingleTableMixin, FilterView):
+    model = MedicalHistory
+    table_class = MedicalHistoryTable
+    paginate_by = 10
+    filterset_class = MedicalHistoryFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalMedicalList, self).get_context_data(**kwargs)
+        data['title'] = 'Medical History'
+        return data
+
+class ClinicalSymptomsGeneralList(SingleTableMixin, FilterView):
+    model = SymptomsGeneral
+    table_class = SymptomsGeneralTable
+    paginate_by = 10
+    filterset_class = SymptomsGeneralFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalSymptomsGeneralList, self).get_context_data(**kwargs)
+        data['title'] = 'General Symptoms'
+        return data
+
+class ClinicalSymptomsDelusionList(SingleTableMixin, FilterView):
+    model = SymptomsDelusion
+    table_class = SymptomsDelusionTable
+    paginate_by = 10
+    filterset_class = SymptomsDelusionFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalSymptomsDelusionList, self).get_context_data(**kwargs)
+        data['title'] = 'Delusion Symptoms'
+        return data
+
+class ClinicalSymptomsHallucinationList(SingleTableMixin, FilterView):
+    model = SymptomsHallucination
+    table_class = SymptomsHallucinationTable
+    paginate_by = 10
+    filterset_class = SymptomsHallucinationFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalSymptomsHallucinationList, self).get_context_data(**kwargs)
+        data['title'] = 'Hallucination Symptoms'
+        return data
+
+class ClinicalSymptomsBehaviourList(SingleTableMixin, FilterView):
+    model = SymptomsBehaviour
+    table_class = SymptomsBehaviourTable
+    paginate_by = 10
+    filterset_class = SymptomsBehaviourFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalSymptomsBehaviourList, self).get_context_data(**kwargs)
+        data['title'] = 'Behaviour Symptoms'
+        return data
+
+class ClinicalSymptomsDepressionList(SingleTableMixin, FilterView):
+    model = SymptomsDepression
+    table_class = SymptomsDepressionTable
+    paginate_by = 10
+    filterset_class = SymptomsDepressionFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalSymptomsDepressionList, self).get_context_data(**kwargs)
+        data['title'] = 'Depression Symptoms'
+        return data
+
+class ClinicalSymptomsManiaList(SingleTableMixin, FilterView):
+    model = SymptomsMania
+    table_class = SymptomsManiaTable
+    paginate_by = 10
+    filterset_class = SymptomsManiaFilter
+    template_name = 'clinical/clinical-list.html'
+
+    def get_context_data(self, **kwargs):
+        data = super(ClinicalSymptomsManiaList, self).get_context_data(**kwargs)
+        data['title'] = 'Mania Symptoms'
+        return data
 
 class ClinicalCreate(CreateView):
     model = Clinical
@@ -59,33 +163,36 @@ class ClinicalCreate(CreateView):
             data['medical'] = MedicalHistoryFormset(self.request.POST)
             data['symptoms_general'] = SymptomsGeneralFormset(self.request.POST)
             data['symptoms_delusion'] = SymptomsDelusionFormset(self.request.POST)
-            data['symptoms_depression'] = SymptomsDepressionFormset(self.request.POST)
             data['symptoms_hallucination'] = SymptomsHallucinationFormset(self.request.POST)
             data['symptoms_behaviour'] = SymptomsBehaviourFormset(self.request.POST)
+            data['symptoms_depression'] = SymptomsDepressionFormset(self.request.POST)
+            data['symptoms_mania'] = SymptomsDepressionFormset(self.request.POST)
         else:
             data['demographic'] = DemographicFormset()
             data['diagnosis'] = DiagnosisFormset()
             data['medical'] = MedicalHistoryFormset()
             data['symptoms_general'] = SymptomsGeneralFormset()
             data['symptoms_delusion'] = SymptomsDelusionFormset()
-            data['symptoms_depression'] = SymptomsDepressionFormset()
             data['symptoms_hallucination'] = SymptomsHallucinationFormset()
             data['symptoms_behaviour'] = SymptomsBehaviourFormset()
+            data['symptoms_depression'] = SymptomsDepressionFormset()
+            data['symptoms_mania'] = SymptomsManiaFormset()
         data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if key != 'form' and
                            key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
         return data
 
     def form_valid(self, form):
         try:
-            context=self.get_context_data()
+            context = self.get_context_data()
             demographic = context['demographic']
             diagnosis = context['diagnosis']
             medical = context['medical']
             symptoms_general = context['symptoms_general']
             symptoms_delusion = context['symptoms_delusion']
-            symptoms_depression = context['symptoms_depression']
             symptoms_hallucination = context['symptoms_hallucination']
             symptoms_behaviour = context['symptoms_behaviour']
+            symptoms_depression = context['symptoms_depression']
+            symptoms_mania = context['symptoms_mania']
             with transaction.atomic():
                 self.object = form.save(commit=False)
             if form.initial['participant']:
@@ -107,6 +214,8 @@ class ClinicalCreate(CreateView):
                 self.object.clinical_hallucination = symptoms_hallucination.save()
             if symptoms_behaviour.is_valid():
                 self.object.clinical_behaviour = symptoms_behaviour.save()
+            if symptoms_mania.is_valid():
+                self.object.clinical_behaviour = symptoms_mania.save()
             # final commit
             self.object.save()
             return super(ClinicalCreate, self).form_valid(form)
@@ -125,7 +234,7 @@ class ClinicalUpdate(UpdateView):
     form_class = ClinicalForm
 
     def get_initial(self, *args, **kwargs):
-        initial = super(ClinicalUpdate, self).get_initial(**kwargs)
+        initial = super(ClinicalUpdate, self).get_initial()
         initial['action'] = 'Create'
         return initial
 
@@ -138,19 +247,21 @@ class ClinicalUpdate(UpdateView):
             data['medical'] = MedicalHistoryFormset(self.request.POST)
             data['symptoms_general'] = SymptomsGeneralFormset(self.request.POST)
             data['symptoms_delusion'] = SymptomsDelusionFormset(self.request.POST)
-            data['symptoms_depression'] = SymptomsDepressionFormset(self.request.POST)
             data['symptoms_hallucination'] = SymptomsHallucinationFormset(self.request.POST)
             data['symptoms_behaviour'] = SymptomsBehaviourFormset(self.request.POST)
+            data['symptoms_depression'] = SymptomsDepressionFormset(self.request.POST)
+            data['symptoms_mania'] = SymptomsManiaFormset(self.request.POST)
         else:
             data['demographic'] = DemographicFormset(instance=self.get_object().demographic)
             data['diagnosis'] = DiagnosisFormset(instance=self.get_object().diagnosis)
             data['medical'] = MedicalHistoryFormset(instance=self.get_object().medical)
             data['symptoms_general'] = SymptomsGeneralFormset(instance=self.get_object().symptoms_general)
             data['symptoms_delusion'] = SymptomsDelusionFormset(instance=self.get_object().symptoms_delusion)
-            data['symptoms_depression'] = SymptomsDepressionFormset(instance=self.get_object().symptoms_depression)
             data['symptoms_hallucination'] = SymptomsHallucinationFormset(
                 instance=self.get_object().symptoms_hallucination)
             data['symptoms_behaviour'] = SymptomsBehaviourFormset(instance=self.get_object().symptoms_behaviour)
+            data['symptoms_depression'] = SymptomsDepressionFormset(instance=self.get_object().symptoms_depression)
+            data['symptoms_mania'] = SymptomsManiaFormset(instance=self.get_object().symptoms_mania)
         data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if key != 'form' and
                            key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
         return data
@@ -422,3 +533,36 @@ class ClinicalSymptomsDepressionUpdate(UpdateView):
 
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.clinical_depression.get().id])
+
+
+class ClinicalSymptomsManiaCreate(CreateView):
+    model = SymptomsMania
+    template_name = 'clinical/clinical-sub-create.html'
+    form_class = SymptomsManiaForm
+
+    def get_initial(self, *args, **kwargs):
+        studyparticipant = None
+        if (self.kwargs):
+            pid = self.kwargs.get('clinicalid')
+            studyparticipant = Clinical.objects.get(pk=pid)
+        initial = super(ClinicalSymptomsManiaCreate, self).get_initial(**kwargs)
+        initial['title'] = 'Create Clinical Mania Symptoms Record'
+        initial['participant'] = studyparticipant
+        return initial
+
+    def get_success_url(self):
+        return reverse('clinical_detail', args=[self.object.clinical_mania.get().id])
+
+
+class ClinicalSymptomsManiaUpdate(UpdateView):
+    model = SymptomsMania
+    template_name = 'clinical/clinical-sub-create.html'
+    form_class = SymptomsManiaForm
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(ClinicalSymptomsManiaUpdate, self).get_initial(**kwargs)
+        initial['title'] = 'Update Clinical Mania Symptoms Record'
+        return initial
+
+    def get_success_url(self):
+        return reverse('clinical_detail', args=[self.object.clinical_mania.get().id])

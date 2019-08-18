@@ -57,6 +57,11 @@ class SymptomsBehaviourForm(ModelForm):
         model = SymptomsBehaviour
         fields = '__all__'
 
+class SymptomsManiaForm(ModelForm):
+    class Meta:
+        model = SymptomsMania
+        fields = '__all__'
+
 
 DemographicFormset = modelform_factory(Demographic, form=DemographicForm)
 DiagnosisFormset = modelform_factory(Diagnosis, form=DiagnosisForm)
@@ -66,3 +71,4 @@ SymptomsBehaviourFormset = modelform_factory(SymptomsBehaviour, form=SymptomsBeh
 SymptomsDepressionFormset = modelform_factory(SymptomsDepression, form=SymptomsDepressionForm)
 SymptomsHallucinationFormset = modelform_factory(SymptomsHallucination, form=SymptomsHallucinationForm)
 SymptomsDelusionFormset = modelform_factory(SymptomsDelusion, form=SymptomsDelusionForm)
+SymptomsManiaFormset = modelform_factory(SymptomsMania, form=SymptomsManiaForm)

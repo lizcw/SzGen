@@ -1,16 +1,68 @@
 {% extends "base.html" %}
 {% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
 {% block content %}
-    <div class="container">
-        <h2>Clinical Records</h2>
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large blue-grey" title="Add clinical record"
-               href="{% url 'clinical_create' %}">
-                <i class="large material-icons">add</i>
-            </a>
+    <section>
+        <div>
+            <h2>Clinical Records: {{ title }}</h2>
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large blue-grey" title="Add clinical record"
+                   href="{% url 'clinical_create' %}">
+                    <i class="large material-icons">add</i>
+                </a>
+            </div>
+            <ul class="nav nav-tabs">
+                <li><a href="{% url 'clinical_list' %}">Summary</a></li>
+                <li><a href="{% url 'clinical_demographic_list' %}">Demographics</a></li>
+                <li><a href="{% url 'clinical_diagnosis_list' %}">Diagnosis</a></li>
+                <li><a href="{% url 'clinical_medical_list' %}">Medical History</a></li>
+                <li><a href="{% url 'clinical_symptoms_general_list' %}">Symptoms: General</a></li>
+                <li><a href="{% url 'clinical_symptoms_delusion_list' %}">Symptoms: Delusion</a></li>
+                <li><a href="{% url 'clinical_symptoms_hallucination_list' %}">Symptoms: Hallucination</a></li>
+                <li><a href="{% url 'clinical_symptoms_behaviour_list' %}">Symptoms: Behaviour</a></li>
+                <li><a href="{% url 'clinical_symptoms_depression_list' %}">Symptoms: Depression</a></li>
+                <li><a href="{% url 'clinical_symptoms_mania_list' %}">Symptoms: Mania</a></li>
+            </ul>
+        </div>
+        <div class="right-panel">
+            {% if filter %}
+                <div class="card form-card">
+                    <form action="" method="get" class="form">
+                        {% bootstrap_form filter.form %}
+                        {% bootstrap_button 'filter' %}
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <div class="left-panel">
+
+            <div id="summary" class="card fade in active">
+                {% render_table table %}
+            </div>
         </div>
 
-        {% render_table table %}
 
-    </div>
+    </section>
+
+    {#        <ul class="nav nav-tabs">#}
+    {#            {% for key, label in tablist %}#}
+    {#                <li><a data-toggle="tab" href="#{{ key }}">{{ label }}</a></li>#}
+    {#            {% endfor %}#}
+    {#        </ul>#}
+    {#        <div class="tab-content">#}
+    {#            <div id="summary" class="tab-pane fade in active">#}
+    {#                {% render_table table %}#}
+    {#            </div>#}
+    {##}
+    {#            <div id="demographic" class="tab-pane fade in">#}
+    {#                {% render_table demographic %}#}
+    {#            </div>#}
+    {#        </div>#}
+
 {% endblock %}

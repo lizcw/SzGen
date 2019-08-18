@@ -70,7 +70,7 @@
                         <a data-toggle="collapse" href="#collapse2">Studies</a>
                         <div class="fixed-action-btn">
                             <a class="btn-floating blue-grey small" title="Add Study Participant"
-                               href="{% url 'studyparticipant_create' participant.id %}">
+                               href="{% url 'study_participant_create' participant.id %}">
                                 <i class="material-icons">add</i>
                             </a>
                         </div>
@@ -291,6 +291,46 @@
 
             </div>
         {% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse5">Clinical Records</a>
+                </h3>
+
+            </div>
+            <div id="collapse5" class="collapse" data-parent="#panel-group">
+                <div class="panel-body">
+                    <table class="table table-condensed">
+                        <tbody>
+                         <tr>
+                                <th>ID</th>
+                                <th>Gender</th>
+                                <th>Diagnosis</th>
+                                <th>Age at Assessment</th>
+                                <th>Symptoms Onset</th>
+                                <th>Severity Pattern</th>
+                                <th>Actions</th>
+                            </tr>
+                        {% for clinical in participant.studyparticipants.all %}
+                            <tr>
+                                <td>{{ clinical.id }}</td>
+                                <td>{{ clinical.demographic.get_gender_display }}</td>
+                                <td>{{ clinical.diagnosis.summary }}</td>
+                                <td>{{ clinical.demographic.age_assessment }}</td>
+                                <td>{{ clinical.symptoms_general.get_onset_display }}</td>
+                                <td>{{ clinical.symptoms_general.get_severity_pattern_display }}</td>
+                                <td><a class="btn-floating green small" title="Edit Clinical Record"
+                                       href="{% url 'clinical_detail' clinical.id %}">
+                                    <i class="material-icons">edit</i>
+                                </a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
     </div>
 
     </div>

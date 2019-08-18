@@ -9,9 +9,9 @@ footer {
     padding: 5px 10px 5px 400px;
 }
 
-.content {
-    /*margin: 0 30px;*/
-    /*width: 100%;*/
+.content-table {
+    display: flex;
+    max-width: 100%;
 }
 
 .breadcrumbs {
@@ -67,6 +67,21 @@ footer {
     color: #fffad7;
 }
 
+.right-panel {
+    width: 18%;
+    margin-left: .375rem;
+    margin-right: .375rem;
+    float:right;
+}
+.right-panel .card {
+    min-width: 250px;
+}
+
+.left-panel {
+    width: 80%;
+    margin-left: .375rem;
+    margin-right: .375rem;
+}
 /********************************
 Dropdown menus
 *********************************/
