@@ -1,35 +1,6 @@
 import django_filters
-from szgenapp.models.studies import Study
-from szgenapp.models.samples import Sample, SubSample
+
 from szgenapp.models.clinical import *
-
-
-class StudyFilter(django_filters.FilterSet):
-    status = django_filters.ModelMultipleChoiceFilter()
-
-    class Meta:
-        model = Study
-        fields = ['status']
-
-    @property
-    def qs(self):
-        parent = super(StudyFilter, self).qs
-        status = getattr(self.request, 'status', None)
-        return parent.filter(status=status)
-
-
-class SubSampleFilter(django_filters.FilterSet):
-    sampletype = django_filters.ModelChoiceFilter()
-
-    class Meta:
-        model = SubSample
-        fields = ['sample_type']
-
-    @property
-    def qs(self):
-        parent = super(SubSampleFilter, self).qs
-        sampletype = getattr(self.request, 'sample_type', None)
-        return parent.filter(sample_type=sampletype)
 
 
 class ClinicalFilter(django_filters.FilterSet):
@@ -140,6 +111,7 @@ class SymptomsHallucinationFilter(django_filters.FilterSet):
                   'auditory_commentary_hallucinations', 'visual_hallucinations', 'olf_gust_hallucinations',
                   'somatic_hallucinations']
 
+
 class SymptomsBehaviourFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='clinical_behaviour__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
@@ -149,8 +121,9 @@ class SymptomsBehaviourFilter(django_filters.FilterSet):
     class Meta:
         model = SymptomsBehaviour
         fields = ['participant', 'study', 'disorg_speech', 'severe_disorg_speech', 'disorg_catatonic_behav',
-                  'severe_disorg_catatonic_behav','negative_symptoms', 'affective_flattening',
+                  'severe_disorg_catatonic_behav', 'negative_symptoms', 'affective_flattening',
                   'allogia', 'avolition', 'anhedonia']
+
 
 class SymptomsDepressionFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='clinical_depression__participant__fullnumber',
@@ -158,14 +131,17 @@ class SymptomsDepressionFilter(django_filters.FilterSet):
     study = django_filters.CharFilter(field_name='clinical_depression__participant__study__title',
                                       lookup_expr='icontains', label='Study title')
     depressive_symptoms_count = django_filters.NumberFilter(field_name='depressive_symptoms_count')
-    depressive_symptoms_count__gt = django_filters.NumberFilter(field_name='depressive_symptoms_count', lookup_expr='gt')
-    depressive_symptoms_count__lt = django_filters.NumberFilter(field_name='depressive_symptoms_count', lookup_expr='lt')
+    depressive_symptoms_count__gt = django_filters.NumberFilter(field_name='depressive_symptoms_count',
+                                                                lookup_expr='gt')
+    depressive_symptoms_count__lt = django_filters.NumberFilter(field_name='depressive_symptoms_count',
+                                                                lookup_expr='lt')
 
     class Meta:
         model = SymptomsDepression
         fields = ['participant', 'study', 'final_depression', 'depressed_mood', 'depression_anhedonia',
-                  'app_wt_change','sleep_disturb', 'psych_change',
+                  'app_wt_change', 'sleep_disturb', 'psych_change',
                   'fatigue_energyloss', 'worthless_guilt', 'decreased_conc', 'death_suicide']
+
 
 class SymptomsManiaFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='clinical_mania__participant__fullnumber',
@@ -179,5 +155,5 @@ class SymptomsManiaFilter(django_filters.FilterSet):
     class Meta:
         model = SymptomsMania
         fields = ['participant', 'study', 'final_mania', 'elevated_mood', 'irritable_mood',
-                  'grandiosity','decreased_sleep', 'pressured_speech',
+                  'grandiosity', 'decreased_sleep', 'pressured_speech',
                   'racing_thoughts', 'distractibility', 'psychmotor_agitation', 'risky_behaviour']

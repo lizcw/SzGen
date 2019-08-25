@@ -1,14 +1,14 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from django.urls import reverse
 from django.db import IntegrityError, transaction
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, UpdateView
 from django_filters.views import FilterView
+from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
-from django_tables2 import RequestConfig
+
+from szgenapp.filters import *
 from szgenapp.forms.clinical import *
 from szgenapp.models.participants import StudyParticipant
-from szgenapp.models.clinical import *
 from szgenapp.tables import *
-from szgenapp.filters import *
 
 
 class ClinicalDetail(DetailView):
@@ -17,10 +17,12 @@ class ClinicalDetail(DetailView):
     context_object_name = 'clinical'
 
 
-class ClinicalList(SingleTableMixin, FilterView):
+class ClinicalList(SingleTableMixin, ExportMixin, FilterView):
+    """
+    List of top level Clinical records with filters and export
+    """
     model = Clinical
     template_name = 'clinical/clinical-list.html'
-    # context_object_name = 'summary'
     paginate_by = 10
     filterset_class = ClinicalFilter
     table_class = ClinicalTable
@@ -43,6 +45,7 @@ class ClinicalDemographicList(SingleTableMixin, FilterView):
         data['title'] = 'Demographics'
         return data
 
+
 class ClinicalDiagnosisList(SingleTableMixin, FilterView):
     model = Diagnosis
     table_class = DiagnosisTable
@@ -54,6 +57,7 @@ class ClinicalDiagnosisList(SingleTableMixin, FilterView):
         data = super(ClinicalDiagnosisList, self).get_context_data(**kwargs)
         data['title'] = 'Diagnosis'
         return data
+
 
 class ClinicalMedicalList(SingleTableMixin, FilterView):
     model = MedicalHistory
@@ -67,6 +71,7 @@ class ClinicalMedicalList(SingleTableMixin, FilterView):
         data['title'] = 'Medical History'
         return data
 
+
 class ClinicalSymptomsGeneralList(SingleTableMixin, FilterView):
     model = SymptomsGeneral
     table_class = SymptomsGeneralTable
@@ -78,6 +83,7 @@ class ClinicalSymptomsGeneralList(SingleTableMixin, FilterView):
         data = super(ClinicalSymptomsGeneralList, self).get_context_data(**kwargs)
         data['title'] = 'General Symptoms'
         return data
+
 
 class ClinicalSymptomsDelusionList(SingleTableMixin, FilterView):
     model = SymptomsDelusion
@@ -91,6 +97,7 @@ class ClinicalSymptomsDelusionList(SingleTableMixin, FilterView):
         data['title'] = 'Delusion Symptoms'
         return data
 
+
 class ClinicalSymptomsHallucinationList(SingleTableMixin, FilterView):
     model = SymptomsHallucination
     table_class = SymptomsHallucinationTable
@@ -102,6 +109,7 @@ class ClinicalSymptomsHallucinationList(SingleTableMixin, FilterView):
         data = super(ClinicalSymptomsHallucinationList, self).get_context_data(**kwargs)
         data['title'] = 'Hallucination Symptoms'
         return data
+
 
 class ClinicalSymptomsBehaviourList(SingleTableMixin, FilterView):
     model = SymptomsBehaviour
@@ -115,6 +123,7 @@ class ClinicalSymptomsBehaviourList(SingleTableMixin, FilterView):
         data['title'] = 'Behaviour Symptoms'
         return data
 
+
 class ClinicalSymptomsDepressionList(SingleTableMixin, FilterView):
     model = SymptomsDepression
     table_class = SymptomsDepressionTable
@@ -127,6 +136,7 @@ class ClinicalSymptomsDepressionList(SingleTableMixin, FilterView):
         data['title'] = 'Depression Symptoms'
         return data
 
+
 class ClinicalSymptomsManiaList(SingleTableMixin, FilterView):
     model = SymptomsMania
     table_class = SymptomsManiaTable
@@ -138,6 +148,7 @@ class ClinicalSymptomsManiaList(SingleTableMixin, FilterView):
         data = super(ClinicalSymptomsManiaList, self).get_context_data(**kwargs)
         data['title'] = 'Mania Symptoms'
         return data
+
 
 class ClinicalCreate(CreateView):
     model = Clinical

@@ -1,13 +1,18 @@
 from django.db import IntegrityError, transaction
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView, ListView
+from django_filters.views import FilterView
+from django_tables2.export.views import ExportMixin
+from django_tables2.views import SingleTableMixin
 
 from szgenapp.forms.samples import SampleForm, SubSampleForm, \
     LocationFormset, TransformSampleForm, HarvestSampleForm, \
     ShipmentFormset, TransformFormset, HarvestFormset, ShipmentForm, QCFormset
 from szgenapp.models.participants import Participant
 from szgenapp.models.samples import Sample, SubSample, \
-    HarvestSample, TransformSample, SUBSAMPLE_TYPES, Shipment, QC
+    HarvestSample, TransformSample, SAMPLE_TYPES, SUBSAMPLE_TYPES, Shipment, QC
+from szgenapp.filters.samples import *
+from szgenapp.tables import *
 
 
 class SampleDetail(DetailView):
@@ -143,7 +148,7 @@ class SampleUpdate(UpdateView):
         return initial
 
 
-class SampleList(ListView):
+class SampleList(SingleTableMixin, ExportMixin, FilterView):
     """
     List of Samples - filterable by study
     """
@@ -151,20 +156,64 @@ class SampleList(ListView):
     template_name = 'sample/sample-list.html'
     queryset = Sample.objects.all()
     context_object_name = 'samples'
-    paginate_by = 10
+    # paginate_by = 10
+    filterset_class = SampleFilter
+    table_class = SampleTable
+    # collections = SAMPLE_TYPES
     # ordering = ['']
 
-    # def get_initial(self, *args, **kwargs):
-    #     initial = super(SampleList, self).get_initial()
-    #     initial['collections'] = ['All', 'Serum', 'Plasma', 'PAXGene', 'Lymphocyte', 'LCL', 'DNA']
-    #     return initial
-    # def get_queryset(self):
-    #     if self.request.GET.get('filter-by-study'):
-    #         study = self.request.GET.get('filter-by-study')
-    #         qs = self.queryset.filter(study=study)
-    #     else:
-    #         qs = self.queryset
-    #     return qs
+    def get_context_data(self, *args, **kwargs):
+        initial = super(SampleList, self).get_context_data(*args, **kwargs)
+        initial['collections'] = SAMPLE_TYPES
+        initial['subcollections'] = SUBSAMPLE_TYPES
+        sampletype = self.kwargs.get('sampletype')
+        if sampletype is None:
+            initial['title'] = 'All'
+        else:
+            initial['title'] = [x[1] for x in SAMPLE_TYPES if x[0] == sampletype][0]
+        return initial
+
+    def get_queryset(self):
+        sampletype = self.kwargs.get('sampletype')
+        if sampletype is None:
+            qs = Sample.objects.all()
+        else:
+            print(sampletype)
+            qs = Sample.objects.filter(sample_type=sampletype)
+
+        return qs
+
+
+class SubSampleList(SingleTableMixin, ExportMixin, FilterView):
+    """
+    List of subsample by type
+    """
+    model = SubSample
+    template_name = 'sample/sample-list.html'
+    # paginate_by = 10
+    filterset_class = SubSampleListFilter
+    table_class = SubSampleTable
+
+    def get_context_data(self, *args, **kwargs):
+        initial = super(SubSampleList, self).get_context_data(*args, **kwargs)
+        initial['collections'] = SAMPLE_TYPES
+        initial['subcollections'] = SUBSAMPLE_TYPES
+        sampletype = self.kwargs.get('sampletype')
+        if sampletype is None:
+            initial['title'] = 'All'
+        else:
+            initial['title'] = [x[1] for x in SUBSAMPLE_TYPES if x[0] == sampletype][0]
+        return initial
+
+    def get_queryset(self):
+        sampletype = self.kwargs.get('sampletype')
+        if sampletype is None:
+            qs = SubSample.objects.all()
+        else:
+            print(sampletype)
+            qs = SubSample.objects.filter(sample_type=sampletype)
+
+        return qs
 
 
 """

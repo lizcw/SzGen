@@ -82,6 +82,13 @@ footer {
     margin-left: .375rem;
     margin-right: .375rem;
 }
+
+.btn-group {
+    flex: auto;
+    align-content: space-around;
+    float: right;
+;
+}
 /********************************
 Dropdown menus
 *********************************/

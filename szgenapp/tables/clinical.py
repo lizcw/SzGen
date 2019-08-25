@@ -3,19 +3,20 @@ from django_tables2.utils import A
 from szgenapp.models.clinical import *
 
 
-# Generic filtered table
-class FilteredSingleTableView(tables.SingleTableView):
-    filter_class = None
+# # Generic filtered table
+# class FilteredSingleTableView(tables.SingleTableView):
+#     filter_class = None
+#
+#     def get_table_data(self):
+#         data = super(FilteredSingleTableView, self).get_table_data()
+#         self.filter = self.filter_class(self.request.GET, queryset=data)
+#         return self.filter.qs
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(FilteredSingleTableView, self).get_context_data(**kwargs)
+#         context['filter'] = self.filter
+#         return context
 
-    def get_table_data(self):
-        data = super(FilteredSingleTableView, self).get_table_data()
-        self.filter = self.filter_class(self.request.GET, queryset=data)
-        return self.filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super(FilteredSingleTableView, self).get_context_data(**kwargs)
-        context['filter'] = self.filter
-        return context
 
 
 class ClinicalTable(tables.Table):
@@ -256,7 +257,7 @@ class SymptomsDepressionTable(tables.Table):
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
         fields = ['participant', 'final_depression', 'depressed_mood', 'depression_anhedonia',
-                  'app_wt_change','sleep_disturb', 'psych_change',
+                  'app_wt_change', 'sleep_disturb', 'psych_change',
                   'fatigue_energyloss', 'worthless_guilt', 'decreased_conc', 'death_suicide',
                   'depressive_symptoms_count']
 
@@ -281,6 +282,6 @@ class SymptomsManiaTable(tables.Table):
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
         fields = ['participant', 'final_mania', 'elevated_mood', 'irritable_mood',
-                  'grandiosity','decreased_sleep', 'pressured_speech',
+                  'grandiosity', 'decreased_sleep', 'pressured_speech',
                   'racing_thoughts', 'distractibility', 'psychmotor_agitation', 'risky_behaviour',
                   'manic_count']
