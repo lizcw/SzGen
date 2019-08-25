@@ -37,6 +37,7 @@
                     <form action="" method="get" class="form">
                         {% bootstrap_form filter.form %}
                         {% bootstrap_button 'filter' %}
+                        <a class="btn grey" href="{% url 'clinical_list' %}">Reset</a>
                     </form>
                 </div>
             {% endif %}

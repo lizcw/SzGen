@@ -1,22 +1,22 @@
 from django.urls import path, include
 from szgenapp.views import *
-from szgenapp.views.samples import *
-from szgenapp.views.clinical import *
+
 
 urlpatterns = [
     path('', studies.index, name='index'),
     path('study/<int:pk>/', studies.StudyDetail.as_view(), name="study_detail"),
     path('study/create/', studies.StudyCreate.as_view(), name="study_create"),
     path('study/update/<int:pk>/', studies.StudyUpdate.as_view(), name="study_update"),
-    path('participants/', participants.ParticipantList.as_view(), name="participants"),
-    path('participant/<int:pk>/', participants.ParticipantDetail.as_view(), name="participant_detail"),
-    path('participant/create/', participants.ParticipantCreate.as_view(), name="participant_create"),
-    path('participant/update/<int:pk>/', participants.ParticipantUpdate.as_view(), name="participant_update"),
-    path('studyparticipants/', participants.StudyParticipantList.as_view(), name="study_participants"),
-    path('studyparticipant/<int:pk>/', participants.StudyParticipantDetail.as_view(), name="study_participant_detail"),
-    path('studyparticipant/create/<int:participantid>/', participants.StudyParticipantCreate.as_view(),
+    path('participants/', ParticipantList.as_view(), name="participants"),
+    path('participant/<int:pk>/', ParticipantDetail.as_view(), name="participant_detail"),
+    path('participant/create/', ParticipantCreate.as_view(), name="participant_create"),
+    path('participant/update/<int:pk>/', ParticipantUpdate.as_view(), name="participant_update"),
+    path('studyparticipants/', StudyParticipantList.as_view(), name="study_participants"),
+    path('studyparticipants/(?:/?<slug:study>)', StudyParticipantList.as_view(), name="study_participants_list"),
+    path('studyparticipant/<int:pk>/', StudyParticipantDetail.as_view(), name="study_participant_detail"),
+    path('studyparticipant/create/<int:participantid>/', StudyParticipantCreate.as_view(),
          name="study_participant_create"),
-    path('studyparticipant/update/<int:pk>/', participants.StudyParticipantUpdate.as_view(),
+    path('studyparticipant/update/<int:pk>/', StudyParticipantUpdate.as_view(),
          name="studyparticipant_update"),
     path('datasets/', datasets.DatasetList.as_view(), name="datasets"),
     path('dataset/<int:pk>/', datasets.DatasetDetail.as_view(), name="dataset_detail"),

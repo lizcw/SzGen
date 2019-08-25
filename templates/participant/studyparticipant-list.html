@@ -1,50 +1,50 @@
 {% extends "base.html" %}
+{% load render_table export_url from django_tables2 %}
+{% load bootstrap3 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
 {% block content %}
-    <div class="container">
-        <h2>Participants</h2>
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large blue-grey" title="Add participant"
-               href="{% url 'participant_create' %}">
-                <i class="large material-icons">add</i>
-            </a>
+    <section>
+        <div>
+            <h2>Participants</h2>
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large blue-grey" title="Add participant"
+                   href="{% url 'participant_create' %}">
+                    <i class="large material-icons">add</i>
+                </a>
+            </div>
+
         </div>
-        {% if participants.count > 0 %}
-            <table id="participant-list">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Full ID</th>
-                    <th>Study</th>
-                    <th>Status</th>
-                    <th>Country</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for participant in participants %}
-                    <tr>
-                        <td>{{ participant.participant.id }}</td>
-                        <td>{{ participant.getFullNumber }}</td>
-                        <td>{{ participant.study.title }}</td>
-                        <td>{{ participant.participant.get_status_display }}</td>
-                        <td>{{ participant.participant.get_country_display }}</td>
-                        <td>
-                            <a class="btn-floating red" title="Edit participant"
-                               href="{% url 'studyparticipant_update' participant.id %}">
-                            <i class="material-icons">edit</i>
+        <div class="content-table">
+            <div class="left-panel">
+
+                <div id="summary" class="card fade in active">
+                    <div class="btn-group">
+                        <a class="btn btn-small" href="{% export_url 'csv' %}">
+                            download <code>.csv</code>
                         </a>
-                            <a class="btn-floating grey" title="View participant details"
-                               href="{% url 'participant_detail' participant.participant.id %}">
-                            <i class="material-icons">visibility</i>
+                        <a class="btn btn-small" href="{% export_url 'xls' %}">
+                            <code>.xls</code>
                         </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No Participants found</p>
-            <a href="{% url 'participant_create' %}">Add a Participant</a>
-        {% endif %}
-    </div>
+                    </div>
+
+                    {% render_table table %}
+                </div>
+            </div>
+            <div class="right-panel">
+                {% if filter %}
+                    <div class="card form-card">
+                        <form action="" method="get" class="form">
+                            {% bootstrap_form filter.form %}
+                            {% bootstrap_button 'filter' %}
+                            <a class="btn grey" href="{% url 'study_participants' %}">Reset</a>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
 {% endblock content %}

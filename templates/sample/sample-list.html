@@ -4,7 +4,6 @@
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
-
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 {% block content %}
@@ -34,6 +33,7 @@
                     <form action="" method="get" class="form">
                         {% bootstrap_form filter.form %}
                         {% bootstrap_button 'filter' %}
+                        <a class="btn grey" href="{% url 'samples' %}">Reset</a>
                     </form>
                 </div>
             {% endif %}

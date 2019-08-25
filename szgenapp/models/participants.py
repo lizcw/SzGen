@@ -55,7 +55,7 @@ class StudyParticipant(models.Model):
     study = models.ForeignKey('Study', on_delete=models.CASCADE)
     fullnumber = models.CharField(max_length=30, blank=True, verbose_name="Full Number",
                                   help_text="Provide full number if it cannot be generated from parts")
-    district = models.CharField(max_length=5, blank=True, help_text="For CBZ study enter district(1-5)")
+    district = models.CharField(max_length=5, blank=True, verbose_name="CBZ Study District", help_text="For CBZ study enter district(1-5)")
     family = models.CharField(max_length=20, blank=True, help_text="Family number if available")
     individual = models.CharField(max_length=20, blank=True, help_text="Individual number if available")
 

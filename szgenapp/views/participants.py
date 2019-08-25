@@ -1,10 +1,15 @@
 from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.db import IntegrityError, transaction
 from django.urls import reverse
+from django_filters.views import FilterView
+from django_tables2.export.views import ExportMixin
+from django_tables2.views import SingleTableMixin
 
 from szgenapp.models.participants import Participant, StudyParticipant
 from szgenapp.models.samples import SUBSAMPLE_TYPES
 from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm, StudyParticipantFormset
+from szgenapp.tables.participants import *
+from szgenapp.filters.participants import *
 
 
 class ParticipantDetail(DetailView):
@@ -171,21 +176,23 @@ class StudyParticipantUpdate(UpdateView):
         return initial
 
 
-class StudyParticipantList(ListView):
+class StudyParticipantList(SingleTableMixin, ExportMixin, FilterView):
     """
     List of Participants - filterable by study
     """
     model = StudyParticipant
     template_name = 'participant/studyparticipant-list.html'
-    queryset = StudyParticipant.objects.all()
-    context_object_name = 'participants'
-    paginate_by = 10
+    filterset_class = StudyParticipantFilter
+    table_class = StudyParticipantTable
+    # queryset = StudyParticipant.objects.all()
+    # context_object_name = 'participants'
+    # paginate_by = 10
     # ordering = ['']
 
-    def get_queryset(self):
-        if self.request.GET.get('filter-by-study'):
-            study = self.request.GET.get('filter-by-study')
-            qs = self.queryset.filter(study=study)
-        else:
-            qs = self.queryset
-        return qs
+    # def get_queryset(self):
+    #     if self.request.GET.get('filter-by-study'):
+    #         study = self.request.GET.get('filter-by-study')
+    #         qs = self.queryset.filter(study=study)
+    #     else:
+    #         qs = self.queryset
+    #     return qs
