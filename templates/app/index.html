@@ -57,10 +57,10 @@
                                 <div id="sub_{{ study.id }}" class="subactions">
                                     <button onclick="showSubItems({{ study.id }})"><i class="material-icons">more_vert</i></button>
                                     <div class="subactions-items">
-                                        <a href="/participants">View Participants</a>
-                                        <a href="/samples">View Samples</a>
-                                        <a href="/clinical">View Clinical</a>
-                                        <a href="/datasets">View Datasets</a>
+                                        <a href="/studyparticipants/?study={{ study.id }}">View Participants</a>
+                                        <a href="/samples/?study={{ study.title }}">View Samples</a>
+                                        <a href="/clinical/?study={{ study.title }}">View Clinical</a>
+                                        <a href="/datasets/?study={{ study.id }}">View Datasets</a>
                                     </div>
 
                                 </div>

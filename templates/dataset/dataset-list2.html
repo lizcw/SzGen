@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h2>Datasets</h2>
+        <div class="fixed-action-btn">
+            <a class="btn-floating btn-large blue-grey" title="Add dataset"
+               href="{% url 'dataset_create' %}">
+                <i class="large material-icons">add</i>
+            </a>
+        </div>
+        {% if datasets.count > 0 %}
+            <table id="dataset-list">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Group</th>
+                    <th>Datafiles</th>
+                    <th>Participants</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for dataset in datasets %}
+                    <tr>
+                        <td>{{ dataset.id }}</td>
+                        <td>{{ dataset.group }}</td>
+                        <td>{{ dataset.dataset_files.count }}</td>
+                        <td>{{ dataset.dataset_participants.count }}</td>
+                        <td>
+                            <a class="btn-floating red" title="Edit dataset"
+                               href="{% url 'dataset_update' dataset.id %}">
+                            <i class="material-icons">edit</i>
+                        </a>
+                            <a class="btn-floating green" title="Add Participants"
+                               href="{% url 'dataset_participants_update' dataset.id %}">
+                            <i class="material-icons">people</i>
+                        </a>
+                            <a class="btn-floating grey" title="View dataset details"
+                               href="{% url 'dataset_detail' dataset.id %}">
+                            <i class="material-icons">visibility</i>
+                        </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No Datasets found</p>
+
+            <a href="{% url 'dataset_create' %}">Add a Dataset</a>
+        {% endif %}
+    </div>
+{% endblock content %}

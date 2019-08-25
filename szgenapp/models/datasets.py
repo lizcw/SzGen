@@ -35,9 +35,9 @@ class DatasetFile(models.Model):
     """
     Dataset file corresponding to data in DatasetRow with multiple participants
     """
-    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='dataset_files')
+    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='dataset_files', verbose_name="Files")
     type = models.CharField(max_length=100, blank=False, choices=FILE_CODES, help_text='Type of the dataset eg, DIGS file')
-    filetype = models.CharField(max_length=60, blank=False, help_text='Digital or Hard copy resource', choices=FILE_TYPES)
+    filetype = models.CharField(max_length=60, blank=False, choices=FILE_TYPES, help_text='Digital or Hard copy resource')
     location = models.CharField(max_length=1000, blank=False, help_text='Location of the dataset file either as URL or free text')
 
 
@@ -46,7 +46,7 @@ class DatasetRow(models.Model):
     A Dataset row has a single participant info but is combined in a Dataset file with a configurable location
     """
     id = models.AutoField(primary_key=True)
-    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='dataset_participants')
+    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='dataset_participants', verbose_name="Participants")
     participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE)
     digs = models.IntegerField(blank=False, default=9, choices=FIELD_TYPES)
     figs = models.IntegerField(blank=False, default=9, choices=FIELD_TYPES)

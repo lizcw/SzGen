@@ -1,10 +1,16 @@
 from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.db import IntegrityError, transaction
 from django.urls import reverse
+from django_filters.views import FilterView
+from django_tables2.export.views import ExportMixin
+from django_tables2.views import SingleTableMixin
 
 from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
 from szgenapp.models.participants import Participant
+from szgenapp.models.studies import Study
 from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset, DatasetRowForm
+from szgenapp.tables.dataset import DatasetTable, DatasetFileTable, DatasetParticipantTable
+from szgenapp.filters.dataset import DatasetFilter, DatasetFileFilter, DatasetParticipantFilter
 
 
 class DatasetDetail(DetailView):
@@ -51,8 +57,6 @@ class DatasetCreate(CreateView):
 
     def get_success_url(self):
         return reverse('datasets')
-
-
 
 
 class DatasetUpdate(UpdateView):
@@ -133,24 +137,65 @@ class DatasetParticipantUpdate(UpdateView):
         return reverse('datasets')
 
 
-class DatasetList(ListView):
+class DatasetList(SingleTableMixin, ExportMixin, FilterView):
     """
     List of Datasets - filterable by group
     """
     model = Dataset
     template_name = 'dataset/dataset-list.html'
-    queryset = Dataset.objects.all()
-    context_object_name = 'datasets'
-    paginate_by = 10
-    # ordering = ['']
+    filterset_class = DatasetFilter
+    table_class = DatasetTable
 
-    def get_queryset(self):
-        if self.request.GET.get('filter-by-group'):
-            group = self.request.GET.get('filter-by-group')
-            qs = self.queryset.filter(dataset__group=group)
+    def get_context_data(self, *args, **kwargs):
+        context = super(DatasetList, self).get_context_data(*args, **kwargs)
+        context['reset_url'] = 'datasets'
+        context['title'] = 'Summary'
+        studyid = self.kwargs.get('study')
+        if studyid is None:
+            study = Study.objects.get(pk=studyid)
+            context['title'] += ' for ' + study.title
+        return context
+
+    def get_queryset(self, **kwargs):
+        study = self.kwargs.get('study')
+        if study is None:
+            qs = Dataset.objects.all()
         else:
-            qs = self.queryset
+            qs = Dataset.objects.filter(dataset_participants__participant__study_id__exact=study)
+
         return qs
+
+
+class DatasetFileList(SingleTableMixin, ExportMixin, FilterView):
+    """
+    List of Dataset Files with filters
+    """
+    model = DatasetFile
+    template_name = 'dataset/dataset-list.html'
+    filterset_class = DatasetFileFilter
+    table_class = DatasetFileTable
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(DatasetFileList, self).get_context_data(*args, **kwargs)
+        context['reset_url'] = 'dataset_files'
+        context['title'] = 'Files'
+        return context
+
+
+class DatasetParticipantList(SingleTableMixin, ExportMixin, FilterView):
+    """
+    List of Dataset Participants with filters
+    """
+    model = DatasetRow
+    template_name = 'dataset/dataset-list.html'
+    filterset_class = DatasetParticipantFilter
+    table_class = DatasetParticipantTable
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(DatasetParticipantList, self).get_context_data(*args, **kwargs)
+        context['reset_url'] = 'dataset_participants'
+        context['title'] = 'Participants'
+        return context
 
 
 class DatasetRowCreate(CreateView):

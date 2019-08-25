@@ -171,17 +171,21 @@ class SampleList(SingleTableMixin, ExportMixin, FilterView):
             initial['title'] = 'All'
         else:
             initial['title'] = [x[1] for x in SAMPLE_TYPES if x[0] == sampletype][0]
+        study = self.kwargs.get('study')
+        if study is not None:
+            initial['title'] += " for " + study
         return initial
 
-    def get_queryset(self):
-        sampletype = self.kwargs.get('sampletype')
-        if sampletype is None:
-            qs = Sample.objects.all()
-        else:
-            print(sampletype)
-            qs = Sample.objects.filter(sample_type=sampletype)
-
-        return qs
+    # def get_queryset(self):
+    #     sampletype = self.kwargs.get('sampletype')
+    #     study = self.kwargs.get('study')
+    #     qs = Sample.objects.all()
+    #     if study is not None:
+    #         qs = qs.filter(participant__study__id=study)
+    #     if sampletype is not None:
+    #         qs = qs.filter(sample_type=sampletype)
+    #
+    #     return qs
 
 
 class SubSampleList(SingleTableMixin, ExportMixin, FilterView):

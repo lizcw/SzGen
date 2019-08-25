@@ -1,7 +1,7 @@
 import django_filters
 
-from szgenapp.models.participants import Participant, StudyParticipant, PARTICIPANT_STATUS_CHOICES, COUNTRY_CHOICES
-from szgenapp.models.studies import Study
+from szgenapp.models.participants import StudyParticipant, PARTICIPANT_STATUS_CHOICES, COUNTRY_CHOICES
+
 
 class StudyParticipantFilter(django_filters.FilterSet):
     country = django_filters.MultipleChoiceFilter(choices=COUNTRY_CHOICES, field_name='participant__country')
@@ -13,4 +13,5 @@ class StudyParticipantFilter(django_filters.FilterSet):
 
     class Meta:
         model = StudyParticipant
-        fields = ['fullnumber', 'country', 'study', 'status', 'alphacode', 'secondaryid', 'npid', 'family', 'individual', 'district']
+        fields = ['fullnumber', 'country', 'study', 'status', 'alphacode', 'secondaryid', 'npid', 'family',
+                  'individual', 'district']

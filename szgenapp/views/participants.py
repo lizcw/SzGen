@@ -184,15 +184,12 @@ class StudyParticipantList(SingleTableMixin, ExportMixin, FilterView):
     template_name = 'participant/studyparticipant-list.html'
     filterset_class = StudyParticipantFilter
     table_class = StudyParticipantTable
-    # queryset = StudyParticipant.objects.all()
-    # context_object_name = 'participants'
-    # paginate_by = 10
-    # ordering = ['']
 
-    # def get_queryset(self):
-    #     if self.request.GET.get('filter-by-study'):
-    #         study = self.request.GET.get('filter-by-study')
-    #         qs = self.queryset.filter(study=study)
+    # def get_queryset(self, **kwargs):
+    #     study = self.kwargs.get('study')
+    #     if study is None:
+    #         qs = StudyParticipant.objects.all()
     #     else:
-    #         qs = self.queryset
+    #         qs = StudyParticipant.objects.filter(study__id=study)
+    #
     #     return qs

@@ -1,4 +1,5 @@
 import django_filters
+from django import forms
 
 from szgenapp.models.samples import Sample, SubSample
 from szgenapp.models.studies import Study
@@ -40,6 +41,8 @@ class SampleFilter(django_filters.FilterSet):
                                       lookup_expr='icontains', label='Study title')
 
     notes = django_filters.CharFilter(field_name='notes', lookup_expr='icontains', label='Notes')
+    arrival_date = django_filters.DateFromToRangeFilter(field_name='arrival_date', label='Arrival date from/to',
+                                                        widget=forms.DateInput(attrs={'class':'datepicker'}))
 
     class Meta:
         model = Sample

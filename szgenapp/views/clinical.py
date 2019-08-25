@@ -30,7 +30,20 @@ class ClinicalList(SingleTableMixin, ExportMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalList, self).get_context_data(**kwargs)
         data['title'] = 'Summary'
+        studyid = self.kwargs.get('study')
+        if studyid is not None:
+            study = Study.objects.get(pk=studyid)
+            data['title'] += ' for ' + study.title
         return data
+
+    def get_queryset(self, **kwargs):
+        study = self.kwargs.get('study')
+        if study is None:
+            qs = Clinical.objects.all()
+        else:
+            qs = Clinical.objects.filter(participant__study__id=study)
+
+        return qs
 
 
 class ClinicalDemographicList(SingleTableMixin, FilterView):

@@ -87,7 +87,13 @@ footer {
     flex: auto;
     align-content: space-around;
     float: right;
-;
+}
+
+li.active {
+    border-bottom: 1pt solid #37474f;
+    color: #37474f;
+    font-weight: bold;
+    transition: border-bottom-color 0.2s linear;
 }
 /********************************
 Dropdown menus
