@@ -23,15 +23,14 @@ def validate_onset_age(value):
 
 def validate_ill_duration(val):
     value = int(val)
-    print('error: value=', isinstance(value, int)) #TODO
-    if value < 3 or value > 81:
+    if value < 0 or value > 81:
         raise ValidationError(_('%(value)s is not a valid age for illness duration in years'),
                               code='invalid',
                               params={'value', val})
 
 def validate_number_hosp(value):
-    if value < 3 or value > 81:
-        raise ValidationError(_('%(value)d is not a valid age for number of hospitalisations'),
+    if value < 0 or value > 81:
+        raise ValidationError(_('%(value)d is not a valid number of hospitalisations'),
                               code='invalid',
                               params={'value', value})
 

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Participant Delete{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header"><h2>Confirm delete </h2></div>
+  <div class="row col-md-6">
+    <div class="well">
+
+    <form action="" method="post">{% csrf_token %}
+        <h5>Are you sure you want to delete Participant "{{ participant }}"?</h5>
+        <div class="">
+                    <table id="view-table" class="ui-responsive table table-hover">
+                        <tbody>
+                        <tr>
+                            <th>Participant ID</th>
+                            <td>{{ participant.id|force_escape }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full number/s</th>
+                            <td><ul>
+                                {% for p in participant.studyparticipants.all %}
+                                <li>{{ p.fullnumber }} in study:  {{  p.study }}</li>
+                                {% endfor %}
+                                </ul>
+                               </td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>{{ participant.get_status_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Country</th>
+                            <td>{{ participant.get_country_display|force_escape }}</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+        <input type="submit" class="btn btn-success" value="Confirm" />
+        <button type="button" class="btn" onclick="javascript:history.back();return false;">Cancel</button>
+    </form>
+    </div></div></div>
+{% endblock %}

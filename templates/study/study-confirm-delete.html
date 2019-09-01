@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Study Delete{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header"><h2>Confirm delete </h2></div>
+  <div class="row col-md-6">
+    <div class="well">
+
+    <form action="" method="post">{% csrf_token %}
+        <h5>Are you sure you want to delete Study "{{ object.title }}"?</h5>
+        <div class="">
+                    <table id="view-table" class="ui-responsive table table-hover">
+                        <tbody>
+                        <tr>
+                            <th>Study ID</th>
+                            <td>{{ study.id|force_escape }}</td>
+                        </tr>
+                        <tr>
+                            <th>Title</th>
+                            <td>{{ study.title|force_escape }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>{{ study.get_status_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>ID Precursor</th>
+                            <td>{{ study.precursor|force_escape }}</td>
+                        </tr>
+                        <tr>
+                            <th>Participants</th>
+                            <td>{{ study.studyparticipant_set.count|force_escape }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+        <input type="submit" class="btn btn-success" value="Confirm" />
+        <button type="button" class="btn" onclick="javascript:history.back();return false;">Cancel</button>
+    </form>
+    </div></div></div>
+{% endblock %}

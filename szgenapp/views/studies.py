@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django.db import IntegrityError
 from django.db.models import Q
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator
 
 from szgenapp.models import Study, STATUS_CHOICES
@@ -62,8 +62,8 @@ class StudyCreate(CreateView):
         try:
             return super(StudyCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Study - see Administrator'
-            form.add_error('study-create', msg)
+            msg = 'Database Error: Unable to create Study - see Administrator: %s' % e
+            form.add_error('title', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -88,8 +88,8 @@ class StudyUpdate(UpdateView):
         try:
             return super(StudyUpdate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update Study - see Administrator'
-            form.add_error('study-update', msg)
+            msg = 'Database Error: Unable to update Study - see Administrator: %s' % e
+            form.add_error('title', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -101,3 +101,10 @@ class StudyUpdate(UpdateView):
         return initial
 
 
+class StudyDelete(DeleteView):
+    """
+    Delete a Study and all participants
+    """
+    model = Study
+    success_url = reverse_lazy("index")
+    template_name = 'study/study-confirm-delete.html'

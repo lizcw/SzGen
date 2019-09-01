@@ -1,9 +1,10 @@
 from django.db import IntegrityError, transaction
-from django.urls import reverse
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
+from django.core.exceptions import ValidationError
 
 from szgenapp.filters import *
 from szgenapp.forms.clinical import *
@@ -190,7 +191,7 @@ class ClinicalCreate(CreateView):
             data['symptoms_hallucination'] = SymptomsHallucinationFormset(self.request.POST)
             data['symptoms_behaviour'] = SymptomsBehaviourFormset(self.request.POST)
             data['symptoms_depression'] = SymptomsDepressionFormset(self.request.POST)
-            data['symptoms_mania'] = SymptomsDepressionFormset(self.request.POST)
+            data['symptoms_mania'] = SymptomsManiaFormset(self.request.POST)
         else:
             data['demographic'] = DemographicFormset()
             data['diagnosis'] = DiagnosisFormset()
@@ -217,35 +218,43 @@ class ClinicalCreate(CreateView):
             symptoms_behaviour = context['symptoms_behaviour']
             symptoms_depression = context['symptoms_depression']
             symptoms_mania = context['symptoms_mania']
-            with transaction.atomic():
-                self.object = form.save(commit=False)
-            if form.initial['participant']:
-                self.object.participant = form.initial['participant']
+            # with transaction.atomic():
+            #     self.object = form.save(commit=False)
+            # if form.initial['participant']:
+            #     self.object.participant = form.initial['participant']
             # Add additional subforms
             if demographic.is_valid():
-                self.object.clinical_demographic = demographic.save()
+                form.instance.demographic = demographic.save()
+                # self.object.instance.clinical_demographic = demographic.save()
             if diagnosis.is_valid():
-                self.object.clinical_diagnosis = diagnosis.save()
+                form.instance.diagnosis = diagnosis.save()
             if medical.is_valid():
-                self.object.clinical_medical = medical.save()
+                form.instance.medical = medical.save()
             if symptoms_general.is_valid():
-                self.object.clinical_general = symptoms_general.save()
+                form.instance.symptoms_general = symptoms_general.save()
             if symptoms_delusion.is_valid():
-                self.object.clinical_delusion = symptoms_delusion.save()
+                form.instance.symptoms_delusion = symptoms_delusion.save()
             if symptoms_depression.is_valid():
-                self.object.clinical_depression = symptoms_depression.save()
+                form.instance.symptoms_depression = symptoms_depression.save()
             if symptoms_hallucination.is_valid():
-                self.object.clinical_hallucination = symptoms_hallucination.save()
+                form.instance.symptoms_hallucination = symptoms_hallucination.save()
             if symptoms_behaviour.is_valid():
-                self.object.clinical_behaviour = symptoms_behaviour.save()
+                form.instance.symptoms_behaviour = symptoms_behaviour.save()
             if symptoms_mania.is_valid():
-                self.object.clinical_behaviour = symptoms_mania.save()
+                form.instance.symptoms_mania = symptoms_mania.save()
             # final commit
-            self.object.save()
+            # self.object.save()
+            self.object = form.save()
             return super(ClinicalCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Sample - see Administrator'
-            # form.add_error('sample-create', msg)
+            msg = 'Database Error: Unable to create Clinical Record - see Administrator: %s' % e
+            form.add_error('participant', msg)
+            print('ERROR: ', msg)
+            return self.form_invalid(form)
+        except ValidationError as v:
+            msg = 'Validation Error: Unable to create Clinical Record - see Administrator: %s' % v
+            form.add_error('participant', msg)
+            print('ERROR: ', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -292,6 +301,15 @@ class ClinicalUpdate(UpdateView):
 
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.participant.id])
+
+
+class ClinicalDelete(DeleteView):
+    """
+    Delete a clinical record with all subsets
+    """
+    model = Clinical
+    success_url = reverse_lazy('clinical_list')
+    template_name = 'clinical/clinical-confirm-delete.html'
 
 
 class ClinicalDemographicCreate(CreateView):

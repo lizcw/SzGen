@@ -1,4 +1,4 @@
-from django.forms import ModelForm, modelform_factory
+from django.forms import ModelForm, modelform_factory, BooleanField
 from django.forms.models import inlineformset_factory
 
 from szgenapp.models.clinical import *
@@ -17,6 +17,7 @@ class DemographicForm(ModelForm):
 
 
 class DiagnosisForm(ModelForm):
+    dup_approx = BooleanField()
     class Meta:
         model = Diagnosis
         fields = '__all__'

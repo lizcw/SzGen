@@ -12,6 +12,16 @@
     <div class="container">
         <div class="well col-md-12">
             <h3>Clinical Record for {{ clinical.participant|force_escape }}</h3>
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large green" title="Edit Clinical Record"
+                   href="{% url 'clinical_update' clinical.id %}">
+                    <i class="material-icons">edit</i>
+                </a>
+                <a class="btn-floating btn-large red" title="Delete Clinical Record"
+                   href="{% url 'clinical_delete' clinical.id %}">
+                    <i class="large material-icons">delete</i>
+                </a>
+            </div>
         </div>
         <p><a class="btn btn-primary"
               href="{% url 'participant_detail' clinical.participant.participant.id %}">View Participant</a></p>

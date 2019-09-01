@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Sample Delete{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="page-header"><h2>Confirm delete </h2></div>
+        <div class="row col-md-6">
+            <div class="well">
+
+                <form action="" method="post">{% csrf_token %}
+                    <h5>Are you sure you want to delete Sample "{{ sample }}"?</h5>
+                    <div class="">
+                        <table id="view-table" class="ui-responsive table table-hover">
+                            <tbody>
+                            <tr>
+                                <th>Sample ID</th>
+                                <td>{{ sample.id|force_escape }}</td>
+                            </tr>
+                            <tr>
+                                <th>Participant ID</th>
+                                <td>{{ sample.participant.getFullNumber|force_escape }}</td>
+                            </tr>
+                            <tr>
+                                <th>Type</th>
+                                <td>{{ sample.get_sample_type_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Arrival Date</th>
+                                <td>{{ sample.arrival_date|date:"c" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Notes</th>
+                                <td>{{ sample.notes|force_escape }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <input type="submit" class="btn btn-success" value="Confirm"/>
+                    <button type="button" class="btn" onclick="javascript:history.back();return false;">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

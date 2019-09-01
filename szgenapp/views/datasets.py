@@ -1,6 +1,6 @@
-from django.views.generic import CreateView, DetailView, UpdateView, ListView
+from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
 from django.db import IntegrityError, transaction
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
@@ -51,7 +51,7 @@ class DatasetCreate(CreateView):
                 datasetfiles.save()
             return super(DatasetCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Dataset - see Administrator'
+            msg = 'Database Error: Unable to create Dataset - see Administrator: %s' % e
             form.add_error('dataset-create', msg)
             return self.form_invalid(form)
 
@@ -90,12 +90,20 @@ class DatasetUpdate(UpdateView):
             return super(DatasetUpdate, self).form_valid(form)
 
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update Dataset - see Administrator'
-            form.add_error('Dataset-update', msg)
+            msg = 'Database Error: Unable to update Dataset - see Administrator: %s' % e
+            form.add_error('group', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('datasets')
+
+class DatasetDelete(DeleteView):
+    """
+    Delete a Dataset and all dataset participants, files
+    """
+    model = Dataset
+    success_url = reverse_lazy("datasets")
+    template_name = 'dataset/dataset-confirm-delete.html'
 
 
 class DatasetParticipantUpdate(UpdateView):
@@ -129,8 +137,8 @@ class DatasetParticipantUpdate(UpdateView):
             return super(DatasetParticipantUpdate, self).form_valid(form)
 
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update Dataset - see Administrator'
-            form.add_error('Dataset-update', msg)
+            msg = 'Database Error: Unable to update Dataset - see Administrator: %s' % e
+            form.add_error('group', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -151,7 +159,7 @@ class DatasetList(SingleTableMixin, ExportMixin, FilterView):
         context['reset_url'] = 'datasets'
         context['title'] = 'Summary'
         studyid = self.kwargs.get('study')
-        if studyid is None:
+        if studyid is not None:
             study = Study.objects.get(pk=studyid)
             context['title'] += ' for ' + study.title
         return context
@@ -221,7 +229,7 @@ class DatasetRowCreate(CreateView):
             self.object.save()
             return super(DatasetRowCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Dataset - see Administrator'
+            msg = 'Database Error: Unable to create Dataset - see Administrator: %s' % e
             form.add_error('error', msg)
             return self.form_invalid(form)
 

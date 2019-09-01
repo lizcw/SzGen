@@ -1,4 +1,5 @@
 from .clinical import *
 from .samples import *
 from .participants import *
-from .dataset import *
+from .studies import *
+from .tests import *

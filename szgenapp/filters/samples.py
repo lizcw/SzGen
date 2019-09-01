@@ -1,9 +1,15 @@
 import django_filters
+from django_filters.widgets import RangeWidget, SuffixedMultiWidget
 from django import forms
-
 from szgenapp.models.samples import Sample, SubSample
 from szgenapp.models.studies import Study
 
+class DurationRangeWidget(RangeWidget):
+
+    def __init__(self, attrs=None):
+        super().__init__(attrs)
+        self.widgets[0].attrs.update({'class': 'datepicker', 'placeholder': 'from'})
+        self.widgets[1].attrs.update({'class': 'datepicker', 'placeholder': 'to'})
 
 class StudyFilter(django_filters.FilterSet):
     status = django_filters.ModelMultipleChoiceFilter()
@@ -34,15 +40,16 @@ class SubSampleFilter(django_filters.FilterSet):
 
 
 class SampleFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='sample__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number'
                                             )
-    study = django_filters.CharFilter(field_name='sample__participant__study__title',
-                                      lookup_expr='icontains', label='Study title')
+    study = django_filters.ModelChoiceFilter(
+        field_name='participant__study', label='Study',
+        queryset=Study.objects.all())
 
     notes = django_filters.CharFilter(field_name='notes', lookup_expr='icontains', label='Notes')
     arrival_date = django_filters.DateFromToRangeFilter(field_name='arrival_date', label='Arrival date from/to',
-                                                        widget=forms.DateInput(attrs={'class':'datepicker'}))
+                                                        widget=DurationRangeWidget)
 
     class Meta:
         model = Sample
@@ -53,8 +60,9 @@ class SubSampleListFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='sample__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number'
                                             )
-    study = django_filters.CharFilter(field_name='sample__participant__study__title',
-                                      lookup_expr='icontains', label='Study title')
+    study = django_filters.ModelChoiceFilter(
+        field_name='sample__participant__study', label='Study',
+        queryset=Study.objects.all())
 
     notes = django_filters.CharFilter(field_name='notes', lookup_expr='icontains', label='Notes')
 

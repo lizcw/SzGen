@@ -2,18 +2,18 @@
 
 {% load material_form %}
 {% block breadcrumbs_items %}
-<ul>
-    <li><a href="{% url 'samples' %}">Samples</a></li>
-    <li> &gt; </li>
-    {% if bookmark %}
-    <li><a href="{% url 'sample_detail' sample.id %}">Sample</a></li>
-        <li> &gt; </li>
-        <li>{{ bookmark }}</li>
-    {% else %}
-    <li>Sample</li>
-    {% endif %}
-</ul>
-{%  endblock %}
+    <ul>
+        <li><a href="{% url 'samples' %}">Samples</a></li>
+        <li> &gt;</li>
+        {% if bookmark %}
+            <li><a href="{% url 'sample_detail' sample.id %}">Sample</a></li>
+            <li> &gt;</li>
+            <li>{{ bookmark }}</li>
+        {% else %}
+            <li>Sample</li>
+        {% endif %}
+    </ul>
+{% endblock %}
 
 {% block content %}
     <div class="container row">
@@ -23,37 +23,40 @@
                 {% csrf_token %}
 
                 {% form form=form %}{% endform %}
-            {% if location %}
-                <h5>Add Location</h5>
-                {{ location.management_form }}
-                {% form form=location %}{% endform %}
-            {% endif %}
-            {% if shipment %}
-                <h5>Add Shipment</h5>
-                {{ shipment.management_form }}
-                {% form form=shipment %}{% endform %}
-            {% endif %}
-            {% if transform %}
-                <h5>Add Transform</h5>
-                {{ transform.management_form }}
-                {% form form=transform %}{% endform %}
-            {% endif %}
-            {% if harvest %}
-                <h5>Add Harvest</h5>
-                {{ harvest.management_form }}
-                {% form form=harvest %}{% endform %}
-            {% endif %}
-            {% if qc %}
-                <h5>Add Quality Control</h5>
-                {{ qc.management_form }}
-                {% for qc_form in qc.forms %}
-                    <div class="well">
-                {% form form=qc_form %}{% endform %}
-                    </div>
-                {% endfor %}
-            {% endif %}
+                {% if location %}
+                    <h5>Add Location</h5>
+                    {{ location.management_form }}
+                    {% form form=location %}{% endform %}
+                {% endif %}
+                {% if shipment %}
+                    <h5>Add Shipment</h5>
+                    {{ shipment.management_form }}
+                    {% form form=shipment %}{% endform %}
+                {% endif %}
+                {% if transform %}
+                    <h5>Add Transform</h5>
+                    {{ transform.management_form }}
+                    {% form form=transform %}{% endform %}
+                {% endif %}
+                {% if harvest %}
+                    <h5>Add Harvest</h5>
+                    {{ harvest.management_form }}
+                    {% form form=harvest %}{% endform %}
+                {% endif %}
+                {% if qc %}
+                    <h5>Add Quality Control</h5>
+                    {{ qc.management_form }}
+                    {% for qc_form in qc.forms %}
+                        <div class="well">
+                            {% form form=qc_form %}{% endform %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
-                <a class="btn waves-effect waves-orange" type="cancel" href="{% url 'participant_detail' sample.participant.id %}">Return to Participant</a>
+                {% if sample %}
+                    <a class="btn waves-effect waves-orange" type="cancel"
+                       href="{% url 'participant_detail' sample.participant.participant.id %}">Return to Participant</a>
+                {% endif %}
             </form>
         </div>
     </div>

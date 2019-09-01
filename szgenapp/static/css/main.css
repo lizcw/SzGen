@@ -3,10 +3,11 @@ nav {
 }
 
 footer {
-    position: fixed;
+    /*position: fixed;*/
     bottom: 10px;
     width: 100%;
     padding: 5px 10px 5px 400px;
+    clear: both;
 }
 
 .content-table {
@@ -123,6 +124,11 @@ Dropdown menus
 
 .filter-group:hover #filter-by-status {
     display: block;
+}
+
+.datepicker-modal {
+    height: 390px;
+    vertical-align: middle;
 }
 
 .subactions {

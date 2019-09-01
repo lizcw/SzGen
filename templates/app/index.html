@@ -18,8 +18,8 @@
                     </p>
                 </div>
                 <div class="card-action">
-                    <a href="/">View all Studies</a>
                     {% if studies %}
+                        <a href="/">View all Studies</a>
                         <div class="filter-group">
                             <a href="#" id="filter-by">Filter by Status</a>
                             <form>
@@ -40,34 +40,33 @@
         </div>
         {% if studies %}
 
-                    {% for study in studies %}
-                        <div class="card">
-                            <div class="card-title">
+            {% for study in studies %}
+                <div class="card">
+                    <div class="card-title">
                                 <span class="left"><a href="{% url 'study_detail' study.id %}"
                                                       title="View Study Details">{{ study.title }}</a></span>
-                                <span class="right">{{ study.get_status_display }}</span></div>
-                            <div class="card-content">
-                                <dl>
-                                    <dt><strong>Code:</strong> {{ study.precursor }}</dt>
-                                    <dd>{{ study.description }}</dd>
-                                </dl>
-                            </div>
-                            <div class="card-action">
-                                <a href="{% url 'study_detail' study.id %}">View Details</a>
-                                <div id="sub_{{ study.id }}" class="subactions">
-                                    <button onclick="showSubItems({{ study.id }})"><i class="material-icons">more_vert</i></button>
-                                    <div class="subactions-items">
-                                        <a href="/studyparticipants/?study={{ study.id }}">View Participants</a>
-                                        <a href="/samples/?study={{ study.title }}">View Samples</a>
-                                        <a href="/clinical/?study={{ study.title }}">View Clinical</a>
-                                        <a href="/datasets/?study={{ study.id }}">View Datasets</a>
-                                    </div>
-
-                                </div>
-
+                        <span class="right">{{ study.get_status_display }}</span></div>
+                    <div class="card-content">
+                        <dl>
+                            <dt><strong>Code:</strong> {{ study.precursor }}</dt>
+                            <dd>{{ study.description }}</dd>
+                        </dl>
+                    </div>
+                    <div class="card-action">
+                        <a href="{% url 'study_detail' study.id %}">View Details</a>
+                        <div id="sub_{{ study.id }}" class="subactions">
+                            <button onclick="showSubItems({{ study.id }})"><i class="material-icons">more_vert</i>
+                            </button>
+                            <div class="subactions-items">
+                                <a href="/studyparticipants/?study={{ study.id }}">View Participants</a>
+                                <a href="/samples/?study={{ study.id }}">View Samples</a>
+                                <a href="/clinical/?study={{ study.id }}">View Clinical</a>
+                                {#                                        <a href="/datasets/?study={{ study.id }}">View Datasets</a>#}
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
 
 
         {% else %}

@@ -1,6 +1,6 @@
 from django.db import IntegrityError, transaction
-from django.urls import reverse
-from django.views.generic import CreateView, DetailView, UpdateView, ListView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
@@ -48,13 +48,20 @@ class SampleCreate(CreateView):
     #             self.object = form.save()
     #         return super(SampleCreate, self).form_valid(form)
     #     except IntegrityError as e:
-    #         msg = 'Database Error: Unable to create Sample - see Administrator'
+    #         msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
     #         # form.add_error('sample-create', msg)
     #         return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.id])
 
+class SampleDelete(DeleteView):
+    """
+    Delete a Sample and all subsamples
+    """
+    model = Sample
+    success_url = reverse_lazy("samples")
+    template_name = 'sample/sample-confirm-delete.html'
 
 class SampleParticipantCreate(CreateView):
     """
@@ -115,7 +122,7 @@ class SampleParticipantCreate(CreateView):
             self.object.save()
             return super(SampleParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Sample - see Administrator'
+            msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
             # form.add_error('sample-create', msg)
             return self.form_invalid(form)
 
@@ -135,7 +142,7 @@ class SampleUpdate(UpdateView):
         try:
             return super(SampleUpdate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update Sample - see Administrator'
+            msg = 'Database Error: Unable to update Sample - see Administrator: %s' % e
             form.add_error('Sample-update', msg)
             return self.form_invalid(form)
 
@@ -390,7 +397,7 @@ class SubSampleCreate(CreateView):
             self.object.save()
             return super(SubSampleCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Sample - see Administrator'
+            msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
             form.add_error('id', msg)
             return self.form_invalid(form)
 
@@ -435,7 +442,7 @@ class SubSampleUpdate(UpdateView):
             self.object.save()
             return super(SubSampleUpdate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update SubSample - see Administrator'
+            msg = 'Database Error: Unable to update SubSample - see Administrator: %s' % e
             form.add_error('Sample-update', msg)
             return self.form_invalid(form)
 

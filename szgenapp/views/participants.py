@@ -1,15 +1,14 @@
-from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.db import IntegrityError, transaction
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 
-from szgenapp.models.participants import Participant, StudyParticipant
-from szgenapp.models.samples import SUBSAMPLE_TYPES
-from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm, StudyParticipantFormset
-from szgenapp.tables.participants import *
 from szgenapp.filters.participants import *
+from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm, StudyParticipantFormset
+from szgenapp.models.samples import SUBSAMPLE_TYPES
+from szgenapp.tables.participants import *
 
 
 class ParticipantDetail(DetailView):
@@ -55,13 +54,12 @@ class ParticipantCreate(CreateView):
                 subform.save()
             return super(ParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Participant - see Administrator'
-            form.add_error('Participant-create', msg)
+            msg = 'Database Error: Unable to create Participant - see Administrator: %s' % e
+            form.add_error('study', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.id])
-
 
 
 class ParticipantUpdate(UpdateView):
@@ -76,8 +74,8 @@ class ParticipantUpdate(UpdateView):
         try:
             return super(ParticipantUpdate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update Participant - see Administrator'
-            form.add_error('Participant-update', msg)
+            msg = 'Database Error: Unable to update Participant - see Administrator: %s' % e
+            form.add_error('study', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -98,6 +96,7 @@ class ParticipantList(ListView):
     queryset = Participant.objects.all()
     context_object_name = 'participants'
     paginate_by = 10
+
     # ordering = ['']
 
     def get_queryset(self):
@@ -107,6 +106,15 @@ class ParticipantList(ListView):
         else:
             qs = self.queryset
         return qs
+
+
+class ParticipantDelete(DeleteView):
+    """
+    Delete a Participant and all studyparticipants, samples
+    """
+    model = Participant
+    success_url = reverse_lazy("study_participants")
+    template_name = 'participant/participant-confirm-delete.html'
 
 
 ######## STUDY PARTICIPANT ########
@@ -135,8 +143,8 @@ class StudyParticipantCreate(CreateView):
             self.object.save()
             return super(StudyParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create StudyParticipant - see Administrator'
-            form.add_error('error', msg)
+            msg = 'Database Error: Unable to create StudyParticipant - see Administrator: %s' % e
+            form.add_error('participant', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -148,7 +156,6 @@ class StudyParticipantCreate(CreateView):
         initial['action'] = 'Create'
         initial['participant'] = Participant.objects.get(pk=pid)
         return initial
-
 
 
 class StudyParticipantUpdate(UpdateView):
@@ -163,8 +170,8 @@ class StudyParticipantUpdate(UpdateView):
         try:
             return super(StudyParticipantUpdate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to update Study - see Administrator'
-            form.add_error('studyparticipant-update', msg)
+            msg = 'Database Error: Unable to update Study - see Administrator: %s' % e
+            form.add_error('participant', msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -184,12 +191,3 @@ class StudyParticipantList(SingleTableMixin, ExportMixin, FilterView):
     template_name = 'participant/studyparticipant-list.html'
     filterset_class = StudyParticipantFilter
     table_class = StudyParticipantTable
-
-    # def get_queryset(self, **kwargs):
-    #     study = self.kwargs.get('study')
-    #     if study is None:
-    #         qs = StudyParticipant.objects.all()
-    #     else:
-    #         qs = StudyParticipant.objects.filter(study__id=study)
-    #
-    #     return qs

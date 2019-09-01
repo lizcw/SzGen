@@ -12,6 +12,16 @@
     <div class="container">
         <div class="well col-md-12">
             <h3>Sample {{ sample.participant|force_escape }}</h3>
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large green" title="Edit Sample"
+                   href="{% url 'sample_update' sample.id %}">
+                    <i class="material-icons">edit</i>
+                </a>
+                <a class="btn-floating btn-large red" title="Delete Sample"
+                   href="{% url 'sample_delete' sample.id %}">
+                    <i class="large material-icons">delete</i>
+                </a>
+            </div>
         </div>
 
         <div id="panel-group" class="accordion">
@@ -19,12 +29,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">General Information</a>
-                        <div class="fixed-action-btn">
-                            <a class="btn-floating red" title="Edit Sample"
-                               href="{% url 'sample_update' sample.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                        </div>
+
                     </h3>
 
                 </div>

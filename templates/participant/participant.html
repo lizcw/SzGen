@@ -12,7 +12,16 @@
     <div class="container">
         <div class="well col-md-12">
             <h3>{{ participant|force_escape }}</h3>
-
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large green" title="Edit Participant"
+                   href="{% url 'participant_update' participant.id %}">
+                    <i class="material-icons">edit</i>
+                </a>
+                <a class="btn-floating btn-large red" title="Delete Participant"
+                   href="{% url 'participant_delete' participant.id %}">
+                    <i class="large material-icons">delete</i>
+                </a>
+            </div>
         </div>
         <div id="error"> {{ error }}</div>
         <div id="panel-group" class="accordion">
@@ -20,12 +29,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">General Information</a>
-                        <div class="fixed-action-btn">
-                            <a class="btn-floating red" title="Edit Participant"
-                               href="{% url 'participant_update' participant.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                        </div>
+
                     </h3>
 
                 </div>
@@ -69,7 +73,7 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Studies</a>
                         <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey small" title="Add Study Participant"
+                            <a class="btn-floating blue-grey small" title="Add Study"
                                href="{% url 'study_participant_create' participant.id %}">
                                 <i class="material-icons">add</i>
                             </a>
@@ -108,44 +112,56 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse3">Datasets</a>
-                        <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey small" title="Add Dataset"
-                               href="{% url 'dataset_participant_create' participant.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
-                        </div>
+                        <a data-toggle="collapse" href="#collapse5">Clinical Records</a>
                     </h3>
+
                 </div>
-                <div id="collapse3" class="collapse" data-parent="#panel-group">
+                <div id="collapse5" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>Dataset</th>
-                                <th>DIGS</th>
-                                <th>FIGS</th>
-                                <th>Narrative</th>
-                                <th>Records</th>
-                                <th>Consensus</th>
-                                <th>LDPS</th>
-                                <th>Notes</th>
-                            </tr>
-                            </thead>
+                        <table class="table table-condensed">
                             <tbody>
-                            {% for ps in participant.studyparticipants.all %}
-                                {% for dataset in ps.datasetrow_set.all %}
+                            <tr>
+                                <th>ID</th>
+                                <th>Gender</th>
+                                <th>Diagnosis</th>
+                                <th>Age at Assessment</th>
+                                <th>Symptoms Onset</th>
+                                <th>Severity Pattern</th>
+                                <th>Actions</th>
+                            </tr>
+                            {% for p in participant.studyparticipants.all %}
+                                <tr>
+                                    {% if p.clinical.count == 0 %}
+                                        <td>
+                                            <a href="{% url 'study_participant_detail' p.id %}">{{ p.getFullNumber }}</a>
+                                        </td>
+                                        <td colspan="5">
+                                            No clinical record
+                                        </td>
+                                        <td><a class="btn-floating blue-grey small" title="Add Clinical Record"
+                                               href="{% url 'clinical_participant_create' p.id %}">
+                                            <i class="material-icons">add</i>
+                                        </a></td>
+                                    {% endif %}
+                                </tr>
+                                {% for clinical in p.clinical.all %}
                                     <tr>
-                                        <td>{{ dataset.dataset.group }}</td>
-                                        <td>{{ dataset.get_digs_display }}</td>
-                                        <td>{{ dataset.get_figs_display }}</td>
-                                        <td>{{ dataset.get_narrative_display }}</td>
-                                        <td>{{ dataset.get_records_display }}</td>
-                                        <td>{{ dataset.get_consensus_display }}</td>
-                                        <td>{{ dataset.get_ldps_display }}</td>
-                                        <td>{{ dataset.notes }}</td>
+                                        <td>
+                                            <a href="{% url 'study_participant_detail' p.id %}">{{ p.getFullNumber }}</a>
+                                        </td>
+                                        <td>{{ clinical.demographic.get_gender_display }}</td>
+                                        <td>{{ clinical.diagnosis.summary }}</td>
+                                        <td>{{ clinical.demographic.age_assessment }}</td>
+                                        <td>{{ clinical.symptoms_general.get_onset_display }}</td>
+                                        <td>{{ clinical.symptoms_general.get_severity_pattern_display }}</td>
+                                        <td><a class="btn-floating green small" title="View Clinical Record"
+                                               href="{% url 'clinical_detail' clinical.id %}">
+                                            <i class="material-icons">visibility</i>
+                                        </a></td>
                                     </tr>
                                 {% endfor %}
+
+
                             {% endfor %}
                             </tbody>
                         </table>
@@ -291,39 +307,48 @@
 
             </div>
         {% endfor %}
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    <a data-toggle="collapse" href="#collapse5">Clinical Records</a>
+                    <a data-toggle="collapse" href="#collapse3">Datasets</a>
+                    <div class="fixed-action-btn">
+                        <a class="btn-floating blue-grey small" title="Add Dataset"
+                           href="{% url 'dataset_participant_create' participant.id %}">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
                 </h3>
-
             </div>
-            <div id="collapse5" class="collapse" data-parent="#panel-group">
+            <div id="collapse3" class="collapse" data-parent="#panel-group">
                 <div class="panel-body">
-                    <table class="table table-condensed">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Dataset</th>
+                            <th>DIGS</th>
+                            <th>FIGS</th>
+                            <th>Narrative</th>
+                            <th>Records</th>
+                            <th>Consensus</th>
+                            <th>LDPS</th>
+                            <th>Notes</th>
+                        </tr>
+                        </thead>
                         <tbody>
-                         <tr>
-                                <th>ID</th>
-                                <th>Gender</th>
-                                <th>Diagnosis</th>
-                                <th>Age at Assessment</th>
-                                <th>Symptoms Onset</th>
-                                <th>Severity Pattern</th>
-                                <th>Actions</th>
-                            </tr>
-                        {% for clinical in participant.studyparticipants.all %}
-                            <tr>
-                                <td>{{ clinical.id }}</td>
-                                <td>{{ clinical.demographic.get_gender_display }}</td>
-                                <td>{{ clinical.diagnosis.summary }}</td>
-                                <td>{{ clinical.demographic.age_assessment }}</td>
-                                <td>{{ clinical.symptoms_general.get_onset_display }}</td>
-                                <td>{{ clinical.symptoms_general.get_severity_pattern_display }}</td>
-                                <td><a class="btn-floating green small" title="Edit Clinical Record"
-                                       href="{% url 'clinical_detail' clinical.id %}">
-                                    <i class="material-icons">edit</i>
-                                </a></td>
-                            </tr>
+                        {% for ps in participant.studyparticipants.all %}
+                            {% for dataset in ps.datasetrow_set.all %}
+                                <tr>
+                                    <td>{{ dataset.dataset.group }}</td>
+                                    <td>{{ dataset.get_digs_display }}</td>
+                                    <td>{{ dataset.get_figs_display }}</td>
+                                    <td>{{ dataset.get_narrative_display }}</td>
+                                    <td>{{ dataset.get_records_display }}</td>
+                                    <td>{{ dataset.get_consensus_display }}</td>
+                                    <td>{{ dataset.get_ldps_display }}</td>
+                                    <td>{{ dataset.notes }}</td>
+                                </tr>
+                            {% endfor %}
                         {% endfor %}
                         </tbody>
                     </table>
@@ -331,6 +356,7 @@
                 <div class="panel-footer"></div>
             </div>
         </div>
+
     </div>
 
     </div>
