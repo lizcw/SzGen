@@ -1,41 +1,41 @@
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 
+"""
+What the docs don't say is that the code must be unique from django-forms - don't use 'invalid'
+"""
 
 def validate_age(value):
-    if value < 1 or value > 120:
-        raise ValidationError(_('%(value)d is not a valid age'),
-                              code='invalid',
-                              params={'value', value})
+    if int(value) < 1 or int(value) > 120:
+        raise ValidationError(message='Value is not a valid age (0-120)',
+                              code='age_invalid')
 
 
 def validate_school_years(value):
-    if value < 0 or value > 30:
-        raise ValidationError(_('%(value)d is not a valid number of years of schooling'),
-                              code='invalid',
-                              params={'value', value})
+    if int(value) < 0 or int(value) > 30:
+        raise ValidationError(message='Value is not a valid number of years of schooling (0-30)',
+                              code='school_years_invalid')
 
 def validate_onset_age(value):
-    if value < 3 or value > 81:
-        raise ValidationError(_('%(value)d is not a valid age for onset of psychosis'),
-                              code='invalid',
-                              params={'value', value})
+    if int(value) < 3 or int(value) > 81:
+        raise ValidationError(message='Value is not a valid age for onset of psychosis (3-81)',
+                              code='onset_age_invalid')
 
-def validate_ill_duration(val):
-    value = int(val)
-    if value < 0 or value > 81:
-        raise ValidationError(_('%(value)s is not a valid age for illness duration in years'),
-                              code='invalid',
-                              params={'value', val})
+def validate_ill_duration(value):
+    if int(value) < 0 or int(value) > 100:
+        raise ValidationError(message='Value is not a valid age for illness duration in years(0-100)',
+                              code='ill_duration_invalid',)
 
 def validate_number_hosp(value):
-    if value < 0 or value > 81:
-        raise ValidationError(_('%(value)d is not a valid number of hospitalisations'),
-                              code='invalid',
-                              params={'value', value})
+    if int(value) < 0 or int(value) > 1000:
+        raise ValidationError(message='Value is not a valid number of hospitalisations (0-1000)',
+                              code='number_hosp_invalid')
 
 def validate_manic_count(value):
-    if value < 0 or value > 7:
-        raise ValidationError(_('%(value)d is not a valid count for DSMIV manic symptoms (0-7)'),
-                              code='invalid',
-                              params={'value', value})
+    if int(value) < 0 or int(value) > 7:
+        raise ValidationError(message='Value is not a valid count for DSMIV manic symptoms (0-7)',
+                              code='manic_count_invalid')
+
+def validate_depression_count(value):
+    if int(value) < 0 or int(value) > 9:
+        raise ValidationError(message='Value is not a valid count for DSMIV depressive symptoms (0-9)',
+                              code='depression_count_invalid')

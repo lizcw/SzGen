@@ -137,9 +137,7 @@
                             {% for p in participant.studyparticipants.all %}
                                 <tr>
                                     {% if p.clinical.count == 0 %}
-                                        <td>
-                                            <a href="{% url 'study_participant_detail' p.id %}">{{ p.getFullNumber }}</a>
-                                        </td>
+                                        <td>{{ p.getFullNumber }}</td>
                                         <td colspan="5">
                                             No clinical record
                                         </td>
@@ -151,9 +149,7 @@
                                 </tr>
                                 {% for clinical in p.clinical.all %}
                                     <tr>
-                                        <td>
-                                            <a href="{% url 'study_participant_detail' p.id %}">{{ p.getFullNumber }}</a>
-                                        </td>
+                                        <td>{{ p.getFullNumber }}</td>
                                         <td>{{ clinical.demographic.get_gender_display }}</td>
                                         <td>{{ clinical.diagnosis.summary }}</td>
                                         <td>{{ clinical.demographic.age_assessment }}</td>

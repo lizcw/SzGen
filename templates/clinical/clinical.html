@@ -34,7 +34,7 @@
                         <div class="fixed-action-btn">
                             {% if clinical.demographic %}
                             <a class="btn-floating red" title="Edit Demographic"
-                               href="{% url 'clinical_update' clinical.demographic.id %}">
+                               href="{% url 'clinical_demographic_update' clinical.demographic.id %}">
                                 <i class="material-icons">edit</i>
                             </a>
                                 {%  else %}

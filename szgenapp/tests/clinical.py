@@ -6,6 +6,7 @@ import datetime
 from szgenapp.models.studies import Study, STATUS_CHOICES
 from szgenapp.models.participants import Participant, PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
 from szgenapp.models.clinical import *
+from szgenapp.forms.clinical import *
 
 
 class ClinicalTests(TestCase):
@@ -88,8 +89,37 @@ class ClinicalTests(TestCase):
                                             symptoms_depression=cls.symptoms_depression,
                                             symptoms_mania=cls.symptoms_mania
                                             )
-
-
+        # < QueryDict: {'csrfmiddlewaretoken': ['ISXGN6JXUL1Nng66fWFJhopkFQ5tBNqqQThepDVgUOrWUwMfs02PD5WFnP1qReYg'],
+        #               'participant': ['2'], '_submit': [''], 'gender': ['F'], 'age_assessment': ['48'],
+        #               'marital_status': ['nevmar'], 'living_arr': ['facility'], 'years_school': ['10'],
+        #               'current_emp_status': ['never worked'], 'employment_history': ['5'], 'summary': ['SZ'],
+        #               'age_onset': ['18'], 'illness_duration': ['30'], 'age_first_treatment': ['18'], 'dup': ['0'],
+        #               'hospitalisation': ['Yes'], 'hospitalisation_number': ['11'], 'thyroid': ['No'],
+        #               'epilepsy': ['No'], 'head_injury': ['No'], 'abnormal_bed': ['No'],
+        #               'intellectual_disability': ['No'], 'alcohol': ['No'], 'cannabis': ['No'], 'other_drug': ['No'],
+        #               'other_drug_type': [''], 'suicide': ['Yes'], 'suicide_serious': ['Yes'], 'onset': ['ABRUPT'],
+        #               'severity_pattern': ['1'], 'symptom_pattern': ['1'], 'illness_course': ['1'],
+        #               'curr_gaf': ['None'], 'wl_gaf': ['Moderate'], 'current_ap_medication': ['Yes'],
+        #               'clozapine_status': ['Yes'], 'treatment_resistant': ['Yes'], 'final_delusions': ['Yes'],
+        #               'sevcur_delusions': ['Question'], 'bizarre_delusions': ['No'], 'biw_delusions': ['No'],
+        #               'control_delusions': ['Yes'], 'persecutory_delusions': ['Yes'], 'reference_delusions': ['Yes'],
+        #               'jealousy_delusions': ['Yes'], 'guilt_sin_delusions': ['Yes'], 'grandiose_delusions': ['Yes'],
+        #               'religious_delusions': ['NO'], 'somatic_delusions': ['Yes'], 'eroto_delusions': ['Yes'],
+        #               'mindread_delusions': ['No'], 'final_depression': ['Yes'], 'depressed_mood': ['Yes'],
+        #               'depression_anhedonia': ['Yes'], 'app_wt_change': ['Yes'], 'sleep_disturb': ['No'],
+        #               'psych_change': ['Yes'], 'fatigue_energyloss': ['Yes'], 'worthless_guilt': ['Yes'],
+        #               'decreased_conc': ['No'], 'death_suicide': ['Yes'], 'depressive_symptoms_count': ['4'],
+        #               'final_hallucinations': ['Yes'], 'severe_hallucinations': ['Mild'],
+        #               'auditory_hallucinations': ['Yes'], 'auditory_commentary_hallucinations': ['Yes'],
+        #               'visual_hallucinations': ['No'], 'olf_gust_hallucinations': ['Yes'],
+        #               'somatic_hallucinations': ['Yes'], 'disorg_speech': ['Yes'], 'severe_disorg_speech': ['Question'],
+        #               'disorg_catatonic_behav': ['Yes'], 'severe_disorg_catatonic_behav': ['Question'],
+        #               'negative_symptoms': ['Yes'], 'affective_flattening': ['Severe'], 'allogia': ['Severe'],
+        #               'avolition': ['Marked'], 'anhedonia': ['Marked'], 'final_mania': ['Yes'],
+        #               'elevated_mood': ['Yes'], 'irritable_mood': ['Yes'], 'grandiosity': ['Yes'],
+        #               'decreased_sleep': ['Yes'], 'pressured_speech': ['No'], 'racing_thoughts': ['Yes'],
+        #               'distractibility': ['Yes'], 'psychmotor_agitation': ['Yes'], 'risky_behaviour': ['Yes'],
+        #               'manic_count': ['5']} >
 
     def test_home_page_status_code(self):
         response = self.client.get('/clinical/')
@@ -135,4 +165,15 @@ class ClinicalTests(TestCase):
         self.assertNotEqual(self.clin1.diagnosis.illness_duration_approx, 'false')
         self.assertEqual(self.clin1.diagnosis.illness_duration_approx, False)
         self.assertEqual(self.clin1.diagnosis.illness_duration_approx, 0)
+
+    def test_clinical_diagnosis_form(self):
+        form = DiagnosisForm()
+        self.assertFalse(form.is_valid(), 'Empty form is invalid')
+        testform = DiagnosisForm(
+            {'summary': 'SAD', 'age_onset': 23, 'illness_duration': 1, 'illness_duration_approx': True,
+             'age_first_treatment': 34, 'dup': 34, 'dup_approx': False, 'hospitalisation': 'Yes',
+             'hospitalisation_number': 2, 'hospitalisation_number_approx': False})
+        self.assertTrue(testform.is_valid(), 'Full form is valid')
+        self.assertFalse(testform.cleaned_data['hospitalisation_number_approx'], 'Boolean field set to False')
+        self.assertTrue(testform.cleaned_data['illness_duration_approx'], 'Boolean field set to True')
 

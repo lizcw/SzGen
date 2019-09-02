@@ -1,7 +1,7 @@
 from django.db import models
 
 from szgenapp.validators import validate_age, validate_school_years, validate_onset_age, validate_ill_duration, \
-    validate_number_hosp, validate_manic_count
+    validate_number_hosp, validate_manic_count, validate_depression_count
 
 GENDER_CHOICES = (
     ('M', 'Male'),
@@ -248,15 +248,15 @@ class Diagnosis(models.Model):
     age_onset = models.IntegerField(help_text='Age at onset of psychosis', validators=[validate_onset_age])
     illness_duration = models.IntegerField(help_text='Illness duration (onset to current) in years',
                                            validators=[validate_ill_duration])
-    illness_duration_approx = models.BooleanField(default=False, blank=False, null=False,
+    illness_duration_approx = models.BooleanField(default=False,
                                                   verbose_name='Illness duration is approximate',
                                                   help_text='Period for illness duration is approximate (eg 20+)')
     age_first_treatment = models.IntegerField(help_text='Age at which psychiatric treatment first accessed',
                                               validators=[validate_onset_age])
     dup = models.IntegerField(verbose_name='Duration of Untreated Psychosis (DUP)',
-                              help_text='Period between onset and first treatment (in years)',
-                              validators=[validate_onset_age])
-    dup_approx = models.BooleanField(default=False, blank=False, null=False,
+                              help_text='Period between onset and first treatment (in years)'
+                              )
+    dup_approx = models.BooleanField(default=False,
                                      verbose_name="DUP is approximate",
                                      help_text='Period for DUP is approximate (eg 20+)')
     hospitalisation = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
@@ -264,7 +264,7 @@ class Diagnosis(models.Model):
     hospitalisation_number = models.IntegerField(verbose_name='Number of hospitalisations',
                                                  help_text='Number of psychiatric hospitalisations (lifetime)',
                                                  validators=[validate_number_hosp])
-    hospitalisation_number_approx = models.BooleanField(default=False, blank=False, null=False,
+    hospitalisation_number_approx = models.BooleanField(default=False,
                                                         verbose_name="Number of hospitalisations is approximate",
                                                         help_text='Number of hospitalisations is approximate (eg >5)')
 
@@ -539,6 +539,7 @@ class SymptomsDepression(models.Model):
                                      help_text='Persistent thoughts of death or suicide during depression '
                                                '(DSMIV depression symptom)')
     depressive_symptoms_count = models.IntegerField(null=True, blank=True, verbose_name='Count of Depressive Symptoms',
+                                                    validators=[validate_depression_count],
                                                     help_text='Count of DSMIV depressive symptoms used to establish '
                                                               'the presence/absence of an episode (0-9). '
                                                               'Symptoms are operationalised to correspond with the '
