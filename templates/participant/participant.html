@@ -90,6 +90,7 @@
                                 <th>Participant No</th>
                                 <th>Family Code</th>
                                 <th>Individual Code</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -100,6 +101,10 @@
                                     <td>{{ pstudy.getFullNumber }}</td>
                                     <td>{{ pstudy.family }}</td>
                                     <td>{{ pstudy.individual }}</td>
+                                    <td><a class="btn-floating green small" title="Edit Study Participant"
+                                           href="{% url 'studyparticipant_update' pstudy.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>

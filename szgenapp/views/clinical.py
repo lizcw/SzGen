@@ -174,6 +174,7 @@ class ClinicalCreate(CreateView):
         if (self.kwargs):
             pid = self.kwargs.get('participantid')
             studyparticipant = StudyParticipant.objects.get(pk=pid)
+            print('studyparticipant found')
         initial = super(ClinicalCreate, self).get_initial(**kwargs)
         initial['action'] = 'Create'
         initial['participant'] = studyparticipant
@@ -211,6 +212,21 @@ class ClinicalCreate(CreateView):
             context = self.get_context_data()
             demographic = context['demographic']
             diagnosis = context['diagnosis']
+            if diagnosis.dup_approx is None:
+                diagnosis.dup_approx = False
+            elif diagnosis.dup_approx == 'on':
+                diagnosis.dup_approx = True
+            # diagnosis.dup_approx = int(diagnosis.dup_approx)
+            if diagnosis.hospitalisation_number_approx is None:
+                diagnosis.hospitalisation_number_approx = False
+            elif diagnosis.hospitalisation_number_approx == 'on':
+                diagnosis.hospitalisation_number_approx = True
+            # diagnosis.hospitalisation_number_approx = int(diagnosis.hospitalisation_number_approx)
+            if diagnosis.illness_duration_approx is None:
+                diagnosis.illness_duration_approx = False
+            elif diagnosis.illness_duration_approx == 'on':
+                diagnosis.illness_duration_approx = True
+            # diagnosis.illness_duration_approx = int(diagnosis.illness_duration_approx)
             medical = context['medical']
             symptoms_general = context['symptoms_general']
             symptoms_delusion = context['symptoms_delusion']
@@ -218,33 +234,54 @@ class ClinicalCreate(CreateView):
             symptoms_behaviour = context['symptoms_behaviour']
             symptoms_depression = context['symptoms_depression']
             symptoms_mania = context['symptoms_mania']
-            # with transaction.atomic():
-            #     self.object = form.save(commit=False)
-            # if form.initial['participant']:
-            #     self.object.participant = form.initial['participant']
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+                print('saved obj', self.object)
+            if form.initial['participant']:
+                self.object.participant = form.initial['participant']
             # Add additional subforms
             if demographic.is_valid():
-                form.instance.demographic = demographic.save()
-                # self.object.instance.clinical_demographic = demographic.save()
+                self.object.clinical_demographic = demographic.save()
+                print('saved demo')
+            else:
+                raise ValidationError('Demographic form not valid')
             if diagnosis.is_valid():
-                form.instance.diagnosis = diagnosis.save()
+                diagnosis.dup_approx = int(diagnosis.dup_approx)
+                diagnosis.hospitalisation_number_approx = int(diagnosis.hospitalisation_number_approx)
+                diagnosis.illness_duration_approx = int(diagnosis.illness_duration_approx)
+                print(diagnosis.dup_approx)
+                self.object.clinical_diagnosis = diagnosis.save()
+                print('saved diagnosis')
+            else:
+                print(diagnosis.dup_approx)
+                print(diagnosis.hospitalisation_number_approx)
+                print(diagnosis.illness_duration_approx)
+                raise ValidationError('Diagnosis form not valid')
             if medical.is_valid():
-                form.instance.medical = medical.save()
+                self.object.clinical_medical = medical.save()
+                print('saved medical')
             if symptoms_general.is_valid():
-                form.instance.symptoms_general = symptoms_general.save()
+                self.object.clinical_general = symptoms_general.save()
+                print('saved general')
             if symptoms_delusion.is_valid():
-                form.instance.symptoms_delusion = symptoms_delusion.save()
+                self.object.clinical_delusion = symptoms_delusion.save()
+                print('saved delusion')
             if symptoms_depression.is_valid():
-                form.instance.symptoms_depression = symptoms_depression.save()
+                self.object.clinical_depression = symptoms_depression.save()
+                print('saved depression')
             if symptoms_hallucination.is_valid():
-                form.instance.symptoms_hallucination = symptoms_hallucination.save()
+                self.object.clinical_hallucination = symptoms_hallucination.save()
+                print('saved hallucination')
             if symptoms_behaviour.is_valid():
-                form.instance.symptoms_behaviour = symptoms_behaviour.save()
+                self.object.clinical_behaviour = symptoms_behaviour.save()
+                print('saved behaviour')
             if symptoms_mania.is_valid():
-                form.instance.symptoms_mania = symptoms_mania.save()
+                self.object.clinical_mania = symptoms_mania.save()
+                print('saved mania')
             # final commit
-            # self.object.save()
-            self.object = form.save()
+            self.object.save()
+            print('final save')
+            # form.save()
             return super(ClinicalCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Clinical Record - see Administrator: %s' % e
@@ -375,7 +412,7 @@ class ClinicalDiagnosisUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.clinical_diagnosis.get().id])
+        return reverse('clinical_detail', args=[self.object.clinical_diagnosis.id])
 
 
 class ClinicalMedicalCreate(CreateView):

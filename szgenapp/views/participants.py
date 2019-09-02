@@ -45,13 +45,14 @@ class ParticipantCreate(CreateView):
     def form_valid(self, form):
         try:
             context = self.get_context_data()
-            subform = context['studyparticipant']
+            studyparticipant = context['studyparticipant']
             with transaction.atomic():
                 self.object = form.save()
 
-            if subform.is_valid():
-                subform.instance = self.object
-                subform.save()
+            if studyparticipant.is_valid():
+                studyparticipant.instance = self.object
+                studyparticipant.save()
+                print('saved studyparticipant')
             return super(ParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Participant - see Administrator: %s' % e

@@ -6,13 +6,13 @@ from szgenapp.models.participants import Participant, StudyParticipant
 class ParticipantForm(ModelForm):
   class Meta:
       model = Participant
-      fields = ['alphacode', 'country', 'status', 'secondaryid', 'npid']
+      fields = ['status', 'country', 'alphacode', 'secondaryid', 'npid']
 
 
 class StudyParticipantForm(ModelForm):
   class Meta:
       model = StudyParticipant
-      fields = ['study', 'fullnumber', 'district', 'family', 'individual']
+      fields = ['study', 'family', 'individual', 'fullnumber', 'district']
 
 StudyParticipantFormset = inlineformset_factory(Participant, StudyParticipant,
                                                 form=StudyParticipantForm, extra=1,

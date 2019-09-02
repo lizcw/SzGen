@@ -66,7 +66,7 @@ class StudyParticipant(models.Model):
         verbose_name_plural = 'Study Participants'
 
     def __str__(self):
-        return '%s' % self.fullnumber
+        return '%s' % self.getFullNumber()
 
     # def get_absolute_url(self):
     #     return reverse('study_participant', args=[str(self.id)])
@@ -77,14 +77,14 @@ class StudyParticipant(models.Model):
         :param studycode: provided as multiple studies possible
         :return: string
         """
-        if self.fullnumber:
-            return self.fullnumber
+        if len(self.fullnumber) > 0:
+            parts = [self.fullnumber]
         else:
             if self.study.precursor == "CBZ" and self.district is not None:
                 parts = [self.study.precursor + self.district, self.family, self.individual]
 
-            if self.study.precursor is None:
+            elif self.study.precursor is None or self.study.precursor == '':
                 parts = [self.family, self.individual]
             else:
                 parts = [self.study.precursor + self.family, self.individual]
-            return "-".join(parts)
+        return "-".join(parts)

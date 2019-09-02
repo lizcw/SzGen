@@ -244,25 +244,27 @@ class Diagnosis(models.Model):
     Clinically recorded diagnosis
     """
     id = models.AutoField(primary_key=True)
-    summary = models.CharField(choices=DSMIV_CHOICES, max_length=30, help_text='DSMIV Diagnosis')
+    summary = models.CharField(choices=DSMIV_CHOICES, max_length=30, null=True, blank=True, help_text='DSMIV Diagnosis')
     age_onset = models.IntegerField(help_text='Age at onset of psychosis', validators=[validate_onset_age])
     illness_duration = models.IntegerField(help_text='Illness duration (onset to current) in years',
                                            validators=[validate_ill_duration])
-    illness_duration_approx = models.BooleanField(default=False, verbose_name='Illness duration is approximate',
+    illness_duration_approx = models.BooleanField(default=False, blank=False, null=False,
+                                                  verbose_name='Illness duration is approximate',
                                                   help_text='Period for illness duration is approximate (eg 20+)')
     age_first_treatment = models.IntegerField(help_text='Age at which psychiatric treatment first accessed',
                                               validators=[validate_onset_age])
     dup = models.IntegerField(verbose_name='Duration of Untreated Psychosis (DUP)',
                               help_text='Period between onset and first treatment (in years)',
                               validators=[validate_onset_age])
-    dup_approx = models.BooleanField(default=False, verbose_name="DUP is approximate",
+    dup_approx = models.BooleanField(default=False, blank=False, null=False,
+                                     verbose_name="DUP is approximate",
                                      help_text='Period for DUP is approximate (eg 20+)')
     hospitalisation = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                        help_text='Whether the individual has ever been hospitalised for psychiatric reasons')
     hospitalisation_number = models.IntegerField(verbose_name='Number of hospitalisations',
                                                  help_text='Number of psychiatric hospitalisations (lifetime)',
                                                  validators=[validate_number_hosp])
-    hospitalisation_number_approx = models.BooleanField(default=False,
+    hospitalisation_number_approx = models.BooleanField(default=False, blank=False, null=False,
                                                         verbose_name="Number of hospitalisations is approximate",
                                                         help_text='Number of hospitalisations is approximate (eg >5)')
 
