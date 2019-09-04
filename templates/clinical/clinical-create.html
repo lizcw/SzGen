@@ -11,7 +11,7 @@
 
 {% block content %}
     <div class="container row">
-        <div class="col s10">
+        <div class="col s12">
             <h3>{{ title }}</h3>
             <div class="alert alert-warning">
                 <p>
@@ -26,15 +26,16 @@
 
                 {% form form=form %}{% endform %}
 
-                <div class="col col-sm-2">
+                <div class="col col-sm-4">
                     <ul class="nav nav-tabs nav-stacked">
                         {% for key, label in tablist %}
                             <li><a data-toggle="tab" href="#{{ key }}">{{ label }}</a></li>
                         {% endfor %}
                     </ul>
+                <br/>
                     <button class="btn waves-effect waves-light" type="submit" name="_submit">Save All</button>
                 </div>
-                <div class="col col-sm-10">
+                <div class="col col-sm-8">
                     <div class="tab-content">
                         <div id="demographic" class="tab-pane fade in">
                             {{ demographic.management_form }}

@@ -8,6 +8,7 @@ class ClinicalForm(ModelForm):
     class Meta:
         model = Clinical
         fields = ['participant', ]
+        # fields = '__all__'
 
 
 class DemographicForm(ModelForm):
@@ -17,10 +18,15 @@ class DemographicForm(ModelForm):
 
 
 class DiagnosisForm(ModelForm):
-    dup_approx = BooleanField()
+    dup_approx = BooleanField(initial=False, required=False)
+    illness_duration_approx = BooleanField(initial=False, required=False)
+    hospitalisation_number_approx = BooleanField(initial=False, required=False)
+
     class Meta:
         model = Diagnosis
         fields = '__all__'
+
+
 
 
 class MedicalHistoryForm(ModelForm):

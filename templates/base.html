@@ -36,7 +36,6 @@
     <div class="container">
         <a href="#" class="brand-logo">Mowry SZGEN Lab and Clinical Database</a>
         <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-
     </div>
 </div>
 </nav>
@@ -49,20 +48,20 @@
                     <a href="#email"><span class="white-text email">admin@example.com</span></a>
                 </div>
             </li>
-            <li><a href="/" class="collapsible-header">Studies<i class="material-icons">home</i></a></li>
-            <li><a href="/studyparticipants/" class="collapsible-header">Participants<i class="material-icons">people</i></a>
+            <li><a href="{% url 'index' %}" class="collapsible-header">Studies<i class="material-icons">home</i></a></li>
+            <li><a href="{% url 'study_participants'%}" class="collapsible-header">Participants<i class="material-icons">people</i></a>
             </li>
-            <li><a href="/samples/" class="collapsible-header">Samples<i class="material-icons">group_work</i></a>
+            <li><a href="{% url 'samples' %}" class="collapsible-header">Samples<i class="material-icons">group_work</i></a>
             </li>
-            <li><a href="/clinical/" class="collapsible-header">Clinical<i class="material-icons">hotel</i></a>
+            <li><a href="{% url 'clinical_list' %}" class="collapsible-header">Clinical<i class="material-icons">hotel</i></a>
             </li>
-            <li><a href="/datasets/" class="collapsible-header">Datasets<i class="material-icons">content_copy</i></a>
+            <li><a href="{% url 'datasets' %}" class="collapsible-header">Datasets<i class="material-icons">content_copy</i></a>
             </li>
             <li>
                 <div class="divider"></div>
             </li>
             <li><a class="subheader">Admin</a></li>
-            <li><a class="waves-effect" href="#">Settings<i class="material-icons">settings</i></a></li>
+            <li><a class="waves-effect" href="/admin">Settings<i class="material-icons">settings</i></a></li>
         </ul>
 
     </div>

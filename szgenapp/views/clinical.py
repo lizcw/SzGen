@@ -31,6 +31,7 @@ class ClinicalList(SingleTableMixin, ExportMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalList, self).get_context_data(**kwargs)
         data['title'] = 'Summary'
+        data['reset_url'] = 'clinical_list'
         studyid = self.kwargs.get('study')
         if studyid is not None:
             study = Study.objects.get(pk=studyid)
@@ -44,7 +45,7 @@ class ClinicalList(SingleTableMixin, ExportMixin, FilterView):
         else:
             qs = Clinical.objects.filter(participant__study__id=study)
 
-        return qs
+        return qs.order_by('id')
 
 
 class ClinicalDemographicList(SingleTableMixin, FilterView):
@@ -57,6 +58,7 @@ class ClinicalDemographicList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalDemographicList, self).get_context_data(**kwargs)
         data['title'] = 'Demographics'
+        data['reset_url'] = 'clinical_demographic_list'
         return data
 
 
@@ -70,6 +72,7 @@ class ClinicalDiagnosisList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalDiagnosisList, self).get_context_data(**kwargs)
         data['title'] = 'Diagnosis'
+        data['reset_url'] = 'clinical_diagnosis_list'
         return data
 
 
@@ -83,6 +86,7 @@ class ClinicalMedicalList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalMedicalList, self).get_context_data(**kwargs)
         data['title'] = 'Medical History'
+        data['reset_url'] = 'clinical_medical_list'
         return data
 
 
@@ -96,6 +100,7 @@ class ClinicalSymptomsGeneralList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalSymptomsGeneralList, self).get_context_data(**kwargs)
         data['title'] = 'General Symptoms'
+        data['reset_url'] = 'clinical_symptoms_general_list'
         return data
 
 
@@ -109,6 +114,7 @@ class ClinicalSymptomsDelusionList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalSymptomsDelusionList, self).get_context_data(**kwargs)
         data['title'] = 'Delusion Symptoms'
+        data['reset_url'] = 'clinical_symptoms_delusion_list'
         return data
 
 
@@ -122,6 +128,7 @@ class ClinicalSymptomsHallucinationList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalSymptomsHallucinationList, self).get_context_data(**kwargs)
         data['title'] = 'Hallucination Symptoms'
+        data['reset_url'] = 'clinical_symptoms_hallucination_list'
         return data
 
 
@@ -135,6 +142,7 @@ class ClinicalSymptomsBehaviourList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalSymptomsBehaviourList, self).get_context_data(**kwargs)
         data['title'] = 'Behaviour Symptoms'
+        data['reset_url'] = 'clinical_symptoms_behaviour_list'
         return data
 
 
@@ -148,6 +156,7 @@ class ClinicalSymptomsDepressionList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalSymptomsDepressionList, self).get_context_data(**kwargs)
         data['title'] = 'Depression Symptoms'
+        data['reset_url'] = 'clinical_symptoms_depression_list'
         return data
 
 
@@ -161,6 +170,7 @@ class ClinicalSymptomsManiaList(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         data = super(ClinicalSymptomsManiaList, self).get_context_data(**kwargs)
         data['title'] = 'Mania Symptoms'
+        data['reset_url'] = 'clinical_symptoms_mania_list'
         return data
 
 
@@ -174,7 +184,6 @@ class ClinicalCreate(CreateView):
         if (self.kwargs):
             pid = self.kwargs.get('participantid')
             studyparticipant = StudyParticipant.objects.get(pk=pid)
-            print('studyparticipant found')
         initial = super(ClinicalCreate, self).get_initial(**kwargs)
         initial['action'] = 'Create'
         initial['participant'] = studyparticipant
@@ -212,21 +221,6 @@ class ClinicalCreate(CreateView):
             context = self.get_context_data()
             demographic = context['demographic']
             diagnosis = context['diagnosis']
-            if diagnosis.dup_approx is None:
-                diagnosis.dup_approx = False
-            elif diagnosis.dup_approx == 'on':
-                diagnosis.dup_approx = True
-            # diagnosis.dup_approx = int(diagnosis.dup_approx)
-            if diagnosis.hospitalisation_number_approx is None:
-                diagnosis.hospitalisation_number_approx = False
-            elif diagnosis.hospitalisation_number_approx == 'on':
-                diagnosis.hospitalisation_number_approx = True
-            # diagnosis.hospitalisation_number_approx = int(diagnosis.hospitalisation_number_approx)
-            if diagnosis.illness_duration_approx is None:
-                diagnosis.illness_duration_approx = False
-            elif diagnosis.illness_duration_approx == 'on':
-                diagnosis.illness_duration_approx = True
-            # diagnosis.illness_duration_approx = int(diagnosis.illness_duration_approx)
             medical = context['medical']
             symptoms_general = context['symptoms_general']
             symptoms_delusion = context['symptoms_delusion']
@@ -234,65 +228,75 @@ class ClinicalCreate(CreateView):
             symptoms_behaviour = context['symptoms_behaviour']
             symptoms_depression = context['symptoms_depression']
             symptoms_mania = context['symptoms_mania']
+            # print(self.request.POST)
+            if not form.is_valid():
+                raise ValidationError('Clinical form is not valid')
+            if not diagnosis.is_valid():
+                raise ValidationError('Diagnosis form is not valid')
+            if not demographic.is_valid():
+                raise ValidationError('Demographic form is not valid')
+            if not medical.is_valid():
+                raise ValidationError('Medical form is not valid')
+            if not symptoms_general.is_valid():
+                raise ValidationError('Symptoms general form is not valid')
+            if not symptoms_delusion.is_valid():
+                raise ValidationError('Symptoms delusion form is not valid')
+            if not symptoms_hallucination.is_valid():
+                raise ValidationError('Symptoms hallucination form is not valid')
+            if not symptoms_behaviour.is_valid():
+                raise ValidationError('Symptoms behaviour form is not valid')
+            if not symptoms_depression.is_valid():
+                raise ValidationError('Symptoms depression form is not valid')
+            if not symptoms_mania.is_valid():
+                raise ValidationError('Symptoms mania form is not valid')
+
             with transaction.atomic():
                 self.object = form.save(commit=False)
-                print('saved obj', self.object)
-            if form.initial['participant']:
-                self.object.participant = form.initial['participant']
-            # Add additional subforms
-            if demographic.is_valid():
-                self.object.clinical_demographic = demographic.save()
-                print('saved demo')
-            else:
-                raise ValidationError('Demographic form not valid')
-            if diagnosis.is_valid():
-                diagnosis.dup_approx = int(diagnosis.dup_approx)
-                diagnosis.hospitalisation_number_approx = int(diagnosis.hospitalisation_number_approx)
-                diagnosis.illness_duration_approx = int(diagnosis.illness_duration_approx)
-                print(diagnosis.dup_approx)
-                self.object.clinical_diagnosis = diagnosis.save()
-                print('saved diagnosis')
-            else:
-                print(diagnosis.dup_approx)
-                print(diagnosis.hospitalisation_number_approx)
-                print(diagnosis.illness_duration_approx)
-                raise ValidationError('Diagnosis form not valid')
-            if medical.is_valid():
-                self.object.clinical_medical = medical.save()
-                print('saved medical')
-            if symptoms_general.is_valid():
-                self.object.clinical_general = symptoms_general.save()
-                print('saved general')
-            if symptoms_delusion.is_valid():
-                self.object.clinical_delusion = symptoms_delusion.save()
-                print('saved delusion')
-            if symptoms_depression.is_valid():
-                self.object.clinical_depression = symptoms_depression.save()
-                print('saved depression')
-            if symptoms_hallucination.is_valid():
-                self.object.clinical_hallucination = symptoms_hallucination.save()
-                print('saved hallucination')
-            if symptoms_behaviour.is_valid():
-                self.object.clinical_behaviour = symptoms_behaviour.save()
-                print('saved behaviour')
-            if symptoms_mania.is_valid():
-                self.object.clinical_mania = symptoms_mania.save()
-                print('saved mania')
-            # final commit
-            self.object.save()
-            print('final save')
-            # form.save()
+                # DIAGNOSIS FORM
+                diagnosis_obj = diagnosis.save()
+                self.object.diagnosis = diagnosis_obj
+                # DEMOGRAPHIC FORM
+                demographic_obj = demographic.save()
+                self.object.demographic = demographic_obj
+                # medical FORM
+                medical_obj = medical.save()
+                self.object.medical = medical_obj
+                # symptoms_general FORM
+                symptoms_general_obj = symptoms_general.save()
+                self.object.symptoms_general = symptoms_general_obj
+                # symptoms_delusion FORM
+                symptoms_delusion_obj = symptoms_delusion.save()
+                self.object.symptoms_delusion = symptoms_delusion_obj
+                # symptoms_general FORM
+                symptoms_hallucination_obj = symptoms_hallucination.save()
+                self.object.symptoms_hallucination = symptoms_hallucination_obj
+                # symptoms_behaviour FORM
+                symptoms_behaviour_obj = symptoms_behaviour.save()
+                self.object.symptoms_behaviour = symptoms_behaviour_obj
+                # symptoms_depression FORM
+                symptoms_depression_obj = symptoms_depression.save()
+                self.object.symptoms_depression = symptoms_depression_obj
+                # symptoms_mania FORM
+                symptoms_mania_obj = symptoms_mania.save()
+                self.object.symptoms_mania = symptoms_mania_obj
+                # FINAL SAVE
+                self.object.save()
             return super(ClinicalCreate, self).form_valid(form)
         except IntegrityError as e:
-            msg = 'Database Error: Unable to create Clinical Record - see Administrator: %s' % e
+            msg = 'Database Error: Unable to create Clinical Record: %s' % e
             form.add_error('participant', msg)
             print('ERROR: ', msg)
             return self.form_invalid(form)
         except ValidationError as v:
-            msg = 'Validation Error: Unable to create Clinical Record - see Administrator: %s' % v
+            msg = 'Validation Error: Unable to create Clinical Record: %s' % v
             form.add_error('participant', msg)
             print('ERROR: ', msg)
             return self.form_invalid(form)
+
+    def save(self, *args,  **kwargs):
+        print("save:", self.object)
+
+
 
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.id])
@@ -337,7 +341,7 @@ class ClinicalUpdate(UpdateView):
         return data
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.participant.id])
+        return reverse('clinical_detail', args=[self.object.id])
 
 
 class ClinicalDelete(DeleteView):
@@ -347,6 +351,23 @@ class ClinicalDelete(DeleteView):
     model = Clinical
     success_url = reverse_lazy('clinical_list')
     template_name = 'clinical/clinical-confirm-delete.html'
+    # TODO - what does this return???
+    # def delete(self, *args, **kwargs):
+    #     id = kwargs.get('pk')
+    #     if id is not None:
+    #         clinical = Clinical.objects.get(pk=id)
+    #         # Cascade delete not working
+    #         clinical.diagnosis.delete()
+    #         clinical.demographic.delete()
+    #         clinical.medical.delete()
+    #         clinical.symptoms_general.delete()
+    #         clinical.symptoms_delusion.delete()
+    #         clinical.symptoms_hallucination.delete()
+    #         clinical.symptoms_behaviour.delete()
+    #         clinical.symptoms_depression.delete()
+    #         clinical.symptoms_mania.delete()
+    #         clinical.delete()
+    #     return self.success_url
 
 
 class ClinicalDemographicCreate(CreateView):
@@ -412,7 +433,7 @@ class ClinicalDiagnosisUpdate(UpdateView):
         return initial
 
     def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.clinical_diagnosis.id])
+        return reverse('clinical_detail', args=[self.object.clinical_diagnosis.get().id])
 
 
 class ClinicalMedicalCreate(CreateView):
