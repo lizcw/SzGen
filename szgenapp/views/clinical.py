@@ -5,7 +5,7 @@ from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 from django.core.exceptions import ValidationError
-
+from django.http import HttpResponseRedirect
 from szgenapp.filters import *
 from szgenapp.forms.clinical import *
 from szgenapp.models.participants import StudyParticipant
@@ -293,10 +293,8 @@ class ClinicalCreate(CreateView):
             print('ERROR: ', msg)
             return self.form_invalid(form)
 
-    def save(self, *args,  **kwargs):
+    def save(self, *args, **kwargs):
         print("save:", self.object)
-
-
 
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.id])
@@ -351,23 +349,28 @@ class ClinicalDelete(DeleteView):
     model = Clinical
     success_url = reverse_lazy('clinical_list')
     template_name = 'clinical/clinical-confirm-delete.html'
-    # TODO - what does this return???
-    # def delete(self, *args, **kwargs):
-    #     id = kwargs.get('pk')
-    #     if id is not None:
-    #         clinical = Clinical.objects.get(pk=id)
-    #         # Cascade delete not working
-    #         clinical.diagnosis.delete()
-    #         clinical.demographic.delete()
-    #         clinical.medical.delete()
-    #         clinical.symptoms_general.delete()
-    #         clinical.symptoms_delusion.delete()
-    #         clinical.symptoms_hallucination.delete()
-    #         clinical.symptoms_behaviour.delete()
-    #         clinical.symptoms_depression.delete()
-    #         clinical.symptoms_mania.delete()
-    #         clinical.delete()
-    #     return self.success_url
+
+
+    def delete(self, *args, **kwargs):
+        id = kwargs.get('pk')
+        if id is not None:
+            clinical = Clinical.objects.get(pk=id)
+            try:
+                # Cascade delete not applicable - manual required
+                clinical.diagnosis.delete()
+                clinical.demographic.delete()
+                clinical.medical.delete()
+                clinical.symptoms_general.delete()
+                clinical.symptoms_delusion.delete()
+                clinical.symptoms_hallucination.delete()
+                clinical.symptoms_behaviour.delete()
+                clinical.symptoms_depression.delete()
+                clinical.symptoms_mania.delete()
+                clinical.delete()
+            except IntegrityError as e:
+                print(e)
+                raise e
+        return HttpResponseRedirect(self.success_url)
 
 
 class ClinicalDemographicCreate(CreateView):
