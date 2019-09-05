@@ -2,7 +2,7 @@
 {% block title %}Dataset Details{% endblock %}
 {% block breadcrumbs_items %}
     <ul>
-        <li><a href="/datasets">Datasets</a></li>
+        <li><a href="{% url 'datasets' %}">Datasets</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
         <li>Dataset</li>
     </ul>
@@ -12,14 +12,15 @@
         <div class="well col col-md-12">
             <h3>Dataset: {{ dataset.group|force_escape }}</h3>
             <div class="fixed-action-btn">
-                <a class="btn-floating red" title="Edit dataset"
+                <a class="btn-floating btn-large green" title="Edit dataset"
                    href="{% url 'dataset_update' dataset.id %}">
                     <i class="material-icons">edit</i>
                 </a>
-                <a class="btn-floating green" title="Edit dataset participants"
-                   href="{% url 'dataset_participants_update' dataset.id %}">
-                    <i class="material-icons">people</i>
+                <a class="btn-floating btn-large red" title="Delete dataset"
+                   href="{% url 'dataset_delete' dataset.id %}">
+                    <i class="material-icons">delete</i>
                 </a>
+
             </div>
         </div>
 
@@ -29,6 +30,12 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Files</a>
+                        <div class="fixed-action-btn">
+                            <a class="btn-floating blue-grey" title="Add dataset file"
+                               href="{% url 'dataset_files_create' dataset.id %}">
+                                <i class="material-icons">add</i>
+                            </a>
+                        </div>
                     </h3>
 
                 </div>
@@ -40,6 +47,7 @@
                                 <th>Type</th>
                                 <th>Record Type</th>
                                 <th>Location</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -48,6 +56,10 @@
                                     <td>{{ file.type }}</td>
                                     <td>{{ file.filetype }}</td>
                                     <td>{{ file.location }}</td>
+                                    <td><a class="btn-floating green" title="Edit dataset file"
+                                           href="{% url 'dataset_files_update' file.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -60,6 +72,12 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse3">Participants</a>
+                        <div class="fixed-action-btn">
+                            <a class="btn-floating blue-grey" title="Add dataset participant"
+                               href="{% url 'dataset_row_create' dataset.id %}">
+                                <i class="material-icons">add</i>
+                            </a>
+                        </div>
                     </h3>
                 </div>
                 <div id="collapse3" class="collapse" data-parent="#panel-group">
@@ -75,7 +93,7 @@
                                 <th>Consensus</th>
                                 <th>LDPS</th>
                                 <th>Notes</th>
-
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -89,6 +107,10 @@
                                     <td>{{ p.get_consensus_display }}</td>
                                     <td>{{ p.get_ldps_display }}</td>
                                     <td>{{ p.notes }}</td>
+                                    <td><a class="btn-floating green" title="Edit dataset participant"
+                                           href="{% url 'dataset_participant_update' p.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>

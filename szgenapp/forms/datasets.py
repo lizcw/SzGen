@@ -13,17 +13,18 @@ class DatasetForm(ModelForm):
         model = Dataset
         fields = '__all__'
 
-class DatasetFileForm(ModelForm):
 
+class DatasetFileForm(ModelForm):
     class Meta:
         model = DatasetFile
         fields = '__all__'
 
-class DatasetRowForm(ModelForm):
 
+class DatasetRowForm(ModelForm):
     class Meta:
         model = DatasetRow
         fields = '__all__'
+
 
 DatasetFileFormset = inlineformset_factory(Dataset, DatasetFile, form=DatasetFileForm, extra=1)
 DatasetParticipantFormset = inlineformset_factory(Dataset, DatasetRow, form=DatasetRowForm, extra=1)

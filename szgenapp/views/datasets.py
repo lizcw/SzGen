@@ -6,9 +6,9 @@ from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 
 from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
-from szgenapp.models.participants import Participant
+from szgenapp.models.participants import Participant, StudyParticipant
 from szgenapp.models.studies import Study
-from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset, DatasetRowForm
+from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset, DatasetRowForm, DatasetFileForm
 from szgenapp.tables.dataset import DatasetTable, DatasetFileTable, DatasetParticipantTable
 from szgenapp.filters.dataset import DatasetFilter, DatasetFileFilter, DatasetParticipantFilter
 
@@ -56,7 +56,7 @@ class DatasetCreate(CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('datasets')
+        return reverse('dataset_detail', args=[self.object.dataset.id])
 
 
 class DatasetUpdate(UpdateView):
@@ -95,7 +95,7 @@ class DatasetUpdate(UpdateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('datasets')
+        return reverse('dataset_detail', args=[self.object.dataset.id])
 
 class DatasetDelete(DeleteView):
     """
@@ -110,39 +110,17 @@ class DatasetParticipantUpdate(UpdateView):
     """
     Enter Participant data for a Dataset
     """
-    model = Dataset
+    model = DatasetRow
     template_name = 'dataset/dataset-create.html'
-    form_class = DatasetForm
+    form_class = DatasetRowForm
 
     def get_context_data(self, **kwargs):
         data = super(DatasetParticipantUpdate, self).get_context_data(**kwargs)
         data['action'] = 'Edit'
-        data['datasetname'] = 'Participants'
-        if self.request.POST:
-            data['datasetfiles'] = DatasetParticipantFormset(self.request.POST, instance=self.get_object())
-        else:
-            data['datasetfiles'] = DatasetParticipantFormset(instance=self.get_object())
-            data['datasetfiles'].extra = 1
         return data
 
-    def form_valid(self, form):
-        try:
-            context = self.get_context_data()
-            datasetfiles = context['datasetfiles']
-            with transaction.atomic():
-                self.object = form.save()
-                if datasetfiles.is_valid():
-                    datasetfiles.save()
-
-            return super(DatasetParticipantUpdate, self).form_valid(form)
-
-        except IntegrityError as e:
-            msg = 'Database Error: Unable to update Dataset - see Administrator: %s' % e
-            form.add_error('group', msg)
-            return self.form_invalid(form)
-
     def get_success_url(self):
-        return reverse('datasets')
+        return reverse('dataset_detail', args=[self.object.dataset.id])
 
 
 class DatasetList(SingleTableMixin, ExportMixin, FilterView):
@@ -215,23 +193,52 @@ class DatasetRowCreate(CreateView):
     form_class = DatasetRowForm
 
     def get_initial(self, *args, **kwargs):
-        pid = self.kwargs.get('participantid')
         initial = super(DatasetRowCreate, self).get_initial(**kwargs)
         initial['action'] = 'Create'
-        initial['participant'] = Participant.objects.get(pk=pid)
+        if self.kwargs.get('datasetid'):
+            did = self.kwargs.get('datasetid')
+            initial['dataset'] = Dataset.objects.get(pk=did)
+        if self.kwargs.get('participantid'):
+            pid = self.kwargs.get('participantid')
+            initial['participant'] = Participant.objects.get(pk=pid)
         return initial
 
-    def form_valid(self, form):
-        try:
-            with transaction.atomic():
-                self.object = form.save(commit=False)
-            self.object.participant = form.initial['participant']
-            self.object.save()
-            return super(DatasetRowCreate, self).form_valid(form)
-        except IntegrityError as e:
-            msg = 'Database Error: Unable to create Dataset - see Administrator: %s' % e
-            form.add_error('error', msg)
-            return self.form_invalid(form)
+    def get_success_url(self):
+        return reverse('dataset_detail', args=[self.object.dataset.id])
+
+
+class DatasetFileCreate(CreateView):
+    """
+    Create a dataset file for a dataset
+    """
+    model = DatasetFile
+    template_name = 'dataset/dataset-create.html'
+    form_class = DatasetFileForm
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(DatasetFileCreate, self).get_initial(**kwargs)
+        initial['action'] = 'Create'
+        if self.kwargs.get('datasetid'):
+            did = self.kwargs.get('datasetid')
+            initial['dataset'] = Dataset.objects.get(pk=did)
+        return initial
 
     def get_success_url(self):
-        return reverse('datasets')
+        return reverse('dataset_detail', args=[self.object.dataset.id])
+
+
+class DatasetFileUpdate(UpdateView):
+    """
+    Update a dataset file for a dataset
+    """
+    model = DatasetFile
+    template_name = 'dataset/dataset-create.html'
+    form_class = DatasetFileForm
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(self.__class__, self).get_initial(**kwargs)
+        initial['action'] = 'Edit'
+        return initial
+
+    def get_success_url(self):
+        return reverse('dataset_detail', args=[self.object.dataset.id])

@@ -3,7 +3,7 @@
 {% load material_form %}
 {% block breadcrumbs_items %}
     <ul>
-        <li><a href="/datasets">Datasets</a></li>
+        <li><a href="{% url 'datasets' %}">Datasets</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
         <li>Dataset</li>
     </ul>
@@ -19,8 +19,9 @@
 
                 {% form form=form %}{% endform %}
                 <hr/>
-                <h5>Add {{ datasetname }}
-                    <a class="btn-floating grey add-formset" title="Add another Dataset File">
+                {% if datasetfiles %}
+                <h5>Add a Dataset File
+                    <a class="btn-floating grey add-formset" title="Add a Dataset File">
                         <i class="material-icons">add</i>
                     </a>
                 </h5>
@@ -33,7 +34,7 @@
 
                     {% endfor %}
                 </ul>
-
+                {% endif %}
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
             </form>
         </div>
