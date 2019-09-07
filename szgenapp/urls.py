@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
 from szgenapp.views import *
 
 
@@ -110,6 +112,12 @@ urlpatterns = [
          name='clinical_symptoms_mania_create'),
     path('clinical/symptoms_mania/update/<int:pk>/', ClinicalSymptomsManiaUpdate.as_view(),
          name='clinical_symptoms_mania_update'),
+    path('documents/create/', DocumentCreate.as_view(), name="documents_create"),
+    path('documents/<int:pk>/', DocumentDetail.as_view(), name="documents_detail"),
+    path('documents/<int:pk>/update/',DocumentUpdate.as_view(), name="documents_update"),
+    path('documents/<int:pk>/delete/',DocumentDelete.as_view(), name="documents_delete"),
+    path('documents/list/', DocumentList.as_view(), name='documents_list'),
+    path('documents/import/<int:pk>', DocumentImport.as_view(), name='documents_data_import')
 
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

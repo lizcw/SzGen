@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Document - details{% endblock %}
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="{% url 'documents_list' %}">Documents</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li>Document</li>
+    </ul>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h2>Document Details</h2>
+            <div class="fixed-action-btn">
+
+                <a class="btn btn-floating btn-large green" href="{% url 'documents_update' document.id %}"
+                   title="Edit document"><i class="large material-icons">edit</i></a>
+
+                <a class="btn btn-floating btn-large  red" href="{% url 'documents_delete' document.id %}"
+                   title="Delete document"><i class="large material-icons">delete</i></a>
+
+                {% if document.getextension == '.pdf' %}
+                    <a class="btn btn-floating orange btn-large"
+                       href="/static/pdfjs/web/viewer.html?file={{ document.docfile.url }}"
+                       title="View and download PDF"><i class="large material-icons">visibility</i></a>
+                {% else %}
+
+                    <a class="btn btn-floating orange btn-large"
+                       href="{{ document.docfile.url }}" title="Download document">
+                        <i class="large material-icons">archive</i></a>
+
+                {% endif %}
+                {% if document.getextension == '.csv' %}
+                    <a class="btn btn-floating blue btn-large"
+                       href="{% url 'documents_data_import' document.id %}"
+                       title="Import data from document">
+                        <i class="large material-icons">unarchive</i></a>
+                {% endif %}
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="well">
+                <table id="view-table" class="ui-responsive table table-hover">
+                    <tbody>
+                    <tr>
+                        <th>Document</th>
+                        <td>{{ document.docfile.name|force_escape }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ document.description|force_escape }}</td>
+                    </tr>
+                    <tr>
+                        <th>Group</th>
+                        <td>{{ document.study|force_escape }}</td>
+                    </tr>
+                    <tr>
+                        <th>Size (bytes)</th>
+                        <td>{{ document.docfile.size }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

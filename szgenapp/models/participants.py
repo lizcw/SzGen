@@ -88,3 +88,4 @@ class StudyParticipant(models.Model):
             else:
                 parts = [self.study.precursor + self.family, self.individual]
         return "-".join(parts)
+

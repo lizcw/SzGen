@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Document - import{% endblock %}
+{% load material_form %}
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="{% url 'documents_list' %}">Documents</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li>Document</li>
+    </ul>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h2>Import data from a document</h2>
+        </div>
+        <div class="row col-md-6">
+            {% if success %}
+                <div class="alert alert-success">{{ success|force_escape }}</div>
+            {% endif %}
+            {% if error %}
+                <div class="alert alert-error">{{ error|force_escape }}</div>
+            {% endif %}
+            <div class="alert alert-info">
+                <h4>Guidelines</h4>
+                <ol>
+                    <li>CSV files only (currently)</li>
+                    <li>Headers in first line with no gaps, no spaces in headings, no commas</li>
+                    <li>Data cells not empty with no commas, numbers only in number columns</li>
+                    <li>One table per import, ie Studies, Clinical Participants, Datasets, Samples.
+                        Note files should be imported in this order</li>
+                    <li>Existing data will not be overwritten</li>
+                    <li>The fields will be matched to the headings (export a table for an example)</li>
+                    <li>If data is all for only one study, provide the Study otherwise leave blank</li>
+                    <li>For data for all studies, it is recommended to provide a column 'Study' with
+                        the prefix or 'StudyID' with the id (from this database).
+                        This is to ensure participants are added appropriately.</li>
+                </ol>
+            </div>
+            {% if not success %}
+                <div class="well">
+                    <form role="form" method="POST" enctype="multipart/form-data" data-ajax="false">
+                        {% csrf_token %}
+                        {% form form=form %}{% endform %}
+                        <button class="btn waves-effect waves-light" type="submit" name="_submit">Import</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load render_table export_url from django_tables2 %}
+{% load bootstrap3 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+{% block title %}Documents{% endblock %}
+{% block content %}{% load render_table from django_tables2 %}
+
+    <section>
+        <div>
+            <h2>Documents
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large blue-grey" title="Add Document"
+                   href="{% url 'documents_create' %}">
+                    <i class="large material-icons">add</i>
+                </a>
+            </div></h2>
+        </div>
+        <div class="right-panel">
+            {% if table and filter %}
+                <div class="card form-card">
+                    <form action="" method="get" class="form">
+                        {% bootstrap_form filter.form %}
+                        {% bootstrap_button 'filter' %}
+                        <a class="btn grey" href="{% url reset_url %}">Reset</a>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <div class="left-panel">
+
+            <div id="summary" class="card fade in active">
+                {% if table %}
+                    <div class="btn-group">
+                        <a class="btn btn-small" href="{% export_url 'csv' %}">
+                            download <code>.csv</code>
+                        </a>
+                        <a class="btn btn-small" href="{% export_url 'xls' %}">
+                            <code>.xls</code>
+                        </a>
+                    </div>
+
+                    {% render_table table %}
+                {% else %}
+                    <div class="alert alert-warning"><p>No documents in database</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
