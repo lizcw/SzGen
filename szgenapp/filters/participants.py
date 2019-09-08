@@ -8,10 +8,11 @@ class StudyParticipantFilter(django_filters.FilterSet):
     status = django_filters.MultipleChoiceFilter(choices=PARTICIPANT_STATUS_CHOICES, field_name='participant__status')
     alphacode = django_filters.CharFilter(field_name='participant__alphacode')
     secondaryid = django_filters.CharFilter(field_name='participant__secondaryid')
+    accessid = django_filters.CharFilter(field_name='participant__accessid')
     npid = django_filters.CharFilter(field_name='participant__npid')
     fullnumber = django_filters.CharFilter('fullnumber', lookup_expr='icontains')
 
     class Meta:
         model = StudyParticipant
-        fields = ['fullnumber', 'country', 'study', 'status', 'alphacode', 'secondaryid', 'npid', 'family',
+        fields = ['fullnumber', 'country', 'study', 'status', 'accessid','alphacode', 'secondaryid', 'npid', 'family',
                   'individual', 'district']

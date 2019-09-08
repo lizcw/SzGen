@@ -26,12 +26,12 @@ class Participant(models.Model):
     # Alternative IDs should all be stored here
     alphacode = models.CharField(max_length=30, blank=True, verbose_name="Alpha Code",
                                  help_text="Alpha code if available")
+    accessid = models.CharField(max_length=30, blank=True, verbose_name="AccessDB ID",
+                                   help_text="Alternative ID eg, ID from Samples Access DB")
     secondaryid = models.CharField(max_length=30, blank=True, verbose_name="Secondary ID",
                                    help_text="Alternative or additional ID if available")
     npid = models.CharField(max_length=30, blank=True, verbose_name="NeuroPsychiatric ID",
                             help_text="NP ID if available")
-    # Link other participants - family, duplicates
-    pedigree = models.ManyToManyField("self", blank=True, help_text="Link familial participants here")
 
     class Meta:
         verbose_name = 'Participant'

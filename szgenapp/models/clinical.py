@@ -114,15 +114,6 @@ GAF_CHOICES = (
     ('Unknown', 'Unknown')
 )
 
-class ClinicalTest(models.Model):
-    """
-    For test only
-    """
-    id = models.AutoField(primary_key=True)
-    participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE, related_name='clinical_test')
-    diagnosis = models.ForeignKey('Diagnosis', null=True, blank=True, on_delete=models.CASCADE, related_name='clinical_test_diagnosis')
-
-
 class Clinical(models.Model):
     """
     Clinical data per participant - subsectioned

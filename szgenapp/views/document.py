@@ -16,6 +16,7 @@ from szgenapp.models.document import Document
 from szgenapp.tables.document import DocumentTable
 from szgenapp.models.participants import Participant, StudyParticipant, PARTICIPANT_STATUS_CHOICES, COUNTRY_CHOICES
 from szgenapp.models.studies import Study, STATUS_CHOICES
+from szgenapp.models.datasets import *
 
 
 # DOCUMENTS
@@ -124,12 +125,13 @@ class DocumentImport(FormView):
             doc = form.cleaned_data['document']
             datatable = form.cleaned_data['datatable']
             self.data_import(doc, datatable)
-            return render(request, self.template_name, {'form': form, 'success': 'Import Success'})
+            msg = 'Data imported Successfully from %s to %s' % (doc.docfile.name, datatable)
+            print(msg)
+            return render(request, self.template_name, {'form': form, 'success': msg})
         return render(request, self.template_name, {'form': form, 'error': 'Failed to import'})
 
     def data_import(self, doc, datatable):
         print('data import:', doc.docfile.name, datatable)
-
         if doc and datatable:
             try:
                 fname = doc.docfile.name
@@ -141,9 +143,16 @@ class DocumentImport(FormView):
                     # Match Table to data
                     if datatable == 'Study' and 'Precursor' in header:
                         self.importStudyData(df)
-
-                    if datatable == 'Participant' and 'Participant' in header:
+                    elif datatable == 'Dataset' and 'Filetype' in header:
+                        self.importDatasetData(df)
+                    elif datatable == 'Clinical' and 'Filetype' in header:
+                        self.importClinicalData(df)
+                    elif datatable == 'Participant' and 'alpha' in header:
+                        # Load participants only (subset)
                         self.importParticipantData(df)
+                    elif datatable == 'Sample' and 'alpha' in header:
+                        # Load samples only (subset)
+                        self.importSampleData(df)
                     else:
                         print('Error: unable to match')
 
@@ -173,7 +182,7 @@ class DocumentImport(FormView):
                 # Create Study
                 try:
                     Study.objects.create(title=title, precursor=precursor,
-                                     description=description, status=status, notes=notes)
+                                         description=description, status=status, notes=notes)
                 except IntegrityError as e:
                     msg = 'Unable to create Study: %s' % e
                     print(msg)
@@ -186,29 +195,77 @@ class DocumentImport(FormView):
         :return:
         """
         print('Upload for Dataset table')
-        participants = [p.getFullNumber() for p in StudyParticipant.objects.all()]
         for index, row in df.iterrows():
-            if row['Participant'] in participants:
-                print('Participant already exists - delete first')
-            else:
-                print('Create Participant')
-                pid = row['Participant']
-                s = Study.objects.filter(code__startsWith=pid[:3])
-                p = Participant.objects.create()
+            if DatasetFile.objects.filter(dataset__group=row['Group']).filter(location=row['Location']).filter(
+                    type=row['Type']).count() > 0:
+                print('DatasetFile already exists: ', row)
+                continue
+            try:
+                group = row['Group']
+                ds = Dataset.objects.filter(group__iexact=group)
+                if ds.count() == 0:
+                    print('Create Dataset Group first')
+                    ds = Dataset.objects.create(group=group)
+                else:
+                    ds = ds.first()
+                print('Create Dataset File')
+                DatasetFile.objects.create(dataset=ds, type=row['Type'], location=row['Location'],
+                                           filetype=row['Filetype'])
+            except IntegrityError as e:
+                msg = 'Unable to create Dataset: %s' % e
+                print(msg)
+                raise ChildProcessError(msg)
 
-    def importClinicalData(self, df):
+    def importParticipantData(self, df):
         """
-        Manage import of Clinical Participant
-        :param df:
+        Manage import of Participant data from Sample Access DB
+        Only participant columns used: id, Study, alpha, full number
+        Mandatory fields:
+            country - default as India - change with clinical data
+            status - set as active
+        :param df: Loaded dataframe
         :return:
         """
         print('Upload for Participant table')
-        participants = [p.getFullNumber() for p in StudyParticipant.objects.all()]
+        # Load participant once only
+        df.drop_duplicates('full number', keep='first', inplace=True)
+        # participants = [p.getFullNumber() for p in StudyParticipant.objects.all()]
         for index, row in df.iterrows():
-            if row['Participant'] in participants:
-                print('Participant already exists - delete first')
+            fullnumber = row['full number']
+            participants = StudyParticipant.objects.filter(fullnumber__exact=fullnumber)
+            if len(fullnumber) <= 0 or participants.count() > 0:
+                print('Participant already exists or is blank - skipping: ', row['id'], ' fullnumber:', fullnumber)
             else:
-                print('Create Participant')
-                pid = row['Participant']
-                s = Study.objects.filter(code__startsWith=pid[:3])
-                p = Participant.objects.create()
+                print('Create Participant: ', row['id'], ' fullnumber:', fullnumber)
+                study = row['Study']
+                alpha = row['alpha']
+                sid = row['id']
+                studies = Study.objects.filter(title__iexact=study)
+                if studies.count() == 0:
+                    print('Study not found: ', study, ' rowid:', row['id'])
+                    continue
+
+                study = studies[0]
+
+                # Parse for district number
+                if fullnumber.startswith('CBZ'):
+                    district = fullnumber[3:4]
+                else:
+                    district = ''
+                # Parse for family-individual - strip off precursor
+                fnum = fullnumber[len(study.precursor)+len(district):]
+                idparts = fnum.split('-')
+                if len(idparts) >= 2:
+                    individual = idparts[-1]
+                    family = idparts[-2]
+                else:
+                    individual = ''
+                    family = ''
+                try:
+                    p = Participant.objects.create(status='ACTIVE', country='INDIA', alphacode=alpha, accessid=sid)
+                    sp = StudyParticipant.objects.create(participant=p, study=study, fullnumber=fullnumber,
+                                                         district=district, family=family, individual=individual)
+                except IntegrityError as e:
+                    msg = 'Error creating Participant and StudyParticipant: rowid: %s - %s' % (sid, e)
+                    print(msg)
+                    raise ChildProcessError(msg)

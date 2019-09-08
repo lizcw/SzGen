@@ -2,6 +2,7 @@ from django.db import models
 from datetime import date
 
 FILE_CODES = (
+    ('CASEID', 'Case ID'),
     ('DIGS', 'DIGS'),
     ('FIGS', 'FIGS'),
     ('NARRATIVE', 'Narrative'),

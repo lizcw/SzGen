@@ -15,10 +15,12 @@ DOC_TYPES = (
 
 
 class Document(models.Model):
-    docfile = models.FileField(verbose_name="Document")
+    id = models.AutoField(primary_key=True)
+    docfile = models.FileField(verbose_name="Document", help_text="Upload a document for storage and/or importing data")
     description = models.CharField(_("Description"), max_length=200, null=True, blank=True)
     doctype = models.CharField(_("Doctype"), max_length=10)
-    study = models.ForeignKey("Study", on_delete=models.SET_NULL, blank=True, null=True)
+    study = models.ForeignKey("Study", on_delete=models.SET_NULL, blank=True, null=True,
+                              help_text='Select only if document is related to one particular study')
 
     def __str__(self):
         return self.docfile.name

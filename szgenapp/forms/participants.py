@@ -6,7 +6,7 @@ from szgenapp.models.participants import Participant, StudyParticipant
 class ParticipantForm(ModelForm):
   class Meta:
       model = Participant
-      fields = ['status', 'country', 'alphacode', 'secondaryid', 'npid']
+      fields = ['status', 'country', 'accessid', 'alphacode', 'secondaryid', 'npid']
 
 
 class StudyParticipantForm(ModelForm):
