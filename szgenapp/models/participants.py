@@ -2,9 +2,9 @@ from django.db import models
 from datetime import date
 
 COUNTRY_CHOICES = (
-    ('INDIA', 'India'),
-    ('AUSTRALIA', 'Australia'),
-    ('SARAWAK', 'Sarawak')
+    ('IND', 'India'),
+    ('AUS', 'Australia'),
+    ('SWK', 'Sarawak')
 )
 PARTICIPANT_STATUS_CHOICES = (
     ('ACTIVE', 'Active'),

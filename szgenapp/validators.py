@@ -39,3 +39,17 @@ def validate_depression_count(value):
     if int(value) < 0 or int(value) > 9:
         raise ValidationError(message='Value is not a valid count for DSMIV depressive symptoms (0-9)',
                               code='depression_count_invalid')
+
+# For bulk loading validation - clinical
+def validate_int(value):
+    """
+    Return an integer from value or NONE
+    :param value:
+    :return:
+    """
+    if isinstance(value, int):
+        return value
+    elif isinstance(value, str) and value.isnumeric():
+        return int(value)
+    else:
+        return None

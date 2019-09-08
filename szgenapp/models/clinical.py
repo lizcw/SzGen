@@ -114,6 +114,12 @@ GAF_CHOICES = (
     ('Unknown', 'Unknown')
 )
 
+CLINICAL_SUBSETS = ['demographic', 'diagnosis', 'medical', 'symptoms_general', 'symptoms_delusion',
+                    'symptoms_hallucination', 'symptoms_behaviour', 'symptoms_depression', 'symptoms_mania']
+CLINICAL_SUBTABLES = ['demographic', 'diagnosis', 'medicalhistory', 'symptomsgeneral', 'symptomsdelusion',
+                      'symptomshallucination', 'symptomsbehaviour', 'symptomsdepression', 'symptomsmania']
+
+
 class Clinical(models.Model):
     """
     Clinical data per participant - subsectioned
@@ -204,18 +210,21 @@ class Demographic(models.Model):
     Clinically recorded demographic data
     """
     clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
-    gender = models.CharField(max_length=30, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
     age_assessment = models.IntegerField(verbose_name='Age', validators=[validate_age],
-                                         help_text='Age at the time of assessment')
+                                         help_text='Age at the time of assessment', null=True, blank=True)
     marital_status = models.CharField(choices=MARITAL_STATUS_CHOICES, max_length=30,
-                                      help_text='Marital status at the time of assessment')
+                                      help_text='Marital status at the time of assessment', null=True, blank=True)
     living_arr = models.CharField(choices=LIVING_CHOICES, max_length=30, verbose_name='Living arrangement',
-                                  help_text='Who the individual currently resides with (at time of assessment)')
-    years_school = models.IntegerField(validators=[validate_school_years], help_text='Years of formal schooling')
+                                  help_text='Who the individual currently resides with (at time of assessment)',
+                                  null=True, blank=True)
+    years_school = models.IntegerField(validators=[validate_school_years], help_text='Years of formal schooling',
+                                       null=True, blank=True)
     current_emp_status = models.CharField(choices=EMPLOYMENT_CHOICES, max_length=30, verbose_name='Current Employment',
-                                          help_text='Employment status (at time of assessment)')
+                                          help_text='Employment status (at time of assessment)', null=True, blank=True)
     employment_history = models.SmallIntegerField(choices=EMPLOYMENT_HISTORY_CHOICES, verbose_name='Past Employment',
-                                                  help_text='Level of occupational disability over the past 5 years')
+                                                  help_text='Level of occupational disability over the past 5 years',
+                                                  null=True, blank=True)
 
 
 class Diagnosis(models.Model):
@@ -224,23 +233,24 @@ class Diagnosis(models.Model):
     """
     clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     summary = models.CharField(choices=DSMIV_CHOICES, max_length=30, null=True, blank=True, help_text='DSMIV Diagnosis')
-    age_onset = models.IntegerField(help_text='Age at onset of psychosis', validators=[validate_onset_age])
+    age_onset = models.IntegerField(help_text='Age at onset of psychosis', validators=[validate_onset_age], null=True,
+                                    blank=True)
     illness_duration = models.IntegerField(help_text='Illness duration (onset to current) in years',
-                                           validators=[validate_ill_duration])
+                                           validators=[validate_ill_duration], null=True, blank=True)
     illness_duration_approx = models.BooleanField(default=False,
                                                   verbose_name='Illness duration is approximate',
                                                   help_text='Period for illness duration is approximate (eg 20+)')
     age_first_treatment = models.IntegerField(help_text='Age at which psychiatric treatment first accessed',
-                                              validators=[validate_onset_age])
+                                              validators=[validate_onset_age], null=True, blank=True)
     dup = models.IntegerField(verbose_name='Duration of Untreated Psychosis (DUP)',
-                              help_text='Period between onset and first treatment (in years)'
-                              )
+                              help_text='Period between onset and first treatment (in years)',
+                              null=True, blank=True)
     dup_approx = models.BooleanField(default=False,
                                      verbose_name="DUP is approximate",
                                      help_text='Period for DUP is approximate (eg 20+)')
     hospitalisation = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                        help_text='Whether the individual has ever been hospitalised for psychiatric reasons')
-    hospitalisation_number = models.IntegerField(verbose_name='Number of hospitalisations',
+    hospitalisation_number = models.IntegerField(verbose_name='Number of hospitalisations', null=True, blank=True,
                                                  help_text='Number of psychiatric hospitalisations (lifetime)',
                                                  validators=[validate_number_hosp])
     hospitalisation_number_approx = models.BooleanField(default=False,

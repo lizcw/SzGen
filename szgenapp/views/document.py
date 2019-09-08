@@ -5,7 +5,7 @@ from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 from django.shortcuts import render
-from django.db import IntegrityError
+from django.db import IntegrityError, Error
 
 import os
 import pandas as pd
@@ -17,6 +17,8 @@ from szgenapp.tables.document import DocumentTable
 from szgenapp.models.participants import Participant, StudyParticipant, PARTICIPANT_STATUS_CHOICES, COUNTRY_CHOICES
 from szgenapp.models.studies import Study, STATUS_CHOICES
 from szgenapp.models.datasets import *
+from szgenapp.models.clinical import *
+from szgenapp.validators import validate_int
 
 
 # DOCUMENTS
@@ -108,8 +110,8 @@ class DocumentImport(FormView):
     template_name = 'document/document-import.html'
     form_class = ImportForm
 
-    def get_context_data(self, **kwargs):
-        initial = super(self.__class__, self).get_context_data(**kwargs)
+    def get_initial(self):
+        initial = super(self.__class__, self).get_initial()
         initial['title'] = 'Import data from document'
         if self.kwargs.get('pk'):
             document = Document.objects.get(pk=self.kwargs.get('pk'))
@@ -117,6 +119,16 @@ class DocumentImport(FormView):
         initial['success'] = None
         initial['error'] = None
         return initial
+
+    # def get_context_data(self, **kwargs):
+    #     initial = super(self.__class__, self).get_context_data(**kwargs)
+    #     initial['title'] = 'Import data from document'
+    #     if self.kwargs.get('pk'):
+    #         document = Document.objects.get(pk=self.kwargs.get('pk'))
+    #         initial['document'] = document
+    #     initial['success'] = None
+    #     initial['error'] = None
+    #     return initial
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -145,7 +157,10 @@ class DocumentImport(FormView):
                         self.importStudyData(df)
                     elif datatable == 'Dataset' and 'Filetype' in header:
                         self.importDatasetData(df)
-                    elif datatable == 'Clinical' and 'Filetype' in header:
+                    elif datatable == 'Clinical' and 'PrimID' in header:
+                        # second row for mapped headings
+                        df = pd.read_csv(doc.docfile.path, header=1)
+                        df = df.fillna('')
                         self.importClinicalData(df)
                     elif datatable == 'Participant' and 'alpha' in header:
                         # Load participants only (subset)
@@ -229,7 +244,7 @@ class DocumentImport(FormView):
         print('Upload for Participant table')
         # Load participant once only
         df.drop_duplicates('full number', keep='first', inplace=True)
-        # participants = [p.getFullNumber() for p in StudyParticipant.objects.all()]
+
         for index, row in df.iterrows():
             fullnumber = row['full number']
             participants = StudyParticipant.objects.filter(fullnumber__exact=fullnumber)
@@ -253,7 +268,7 @@ class DocumentImport(FormView):
                 else:
                     district = ''
                 # Parse for family-individual - strip off precursor
-                fnum = fullnumber[len(study.precursor)+len(district):]
+                fnum = fullnumber[len(study.precursor) + len(district):]
                 idparts = fnum.split('-')
                 if len(idparts) >= 2:
                     individual = idparts[-1]
@@ -269,3 +284,156 @@ class DocumentImport(FormView):
                     msg = 'Error creating Participant and StudyParticipant: rowid: %s - %s' % (sid, e)
                     print(msg)
                     raise ChildProcessError(msg)
+
+    def importClinicalData(self, df):
+        """
+        Manage import of Clinical Data from FinalMaster.xls
+        Replaced headers with matching fields - manual and export as csv
+        Updates Participant Country, secondary id
+        Loads all Clinical data
+        :param df:
+        :return:
+        """
+        print('Upload for Clinical table')
+        for index, row in df.iterrows():
+            participantid = row['participant']
+            studyparticipants = StudyParticipant.objects.filter(fullnumber__iexact=participantid)
+            if len(participantid) <= 0 or studyparticipants.count() <= 0:
+                print('Participant not found or ID is blank - skipping: ', index, ' fullnumber:', participantid)
+            else:
+                studyparticipant = studyparticipants.first()
+                # if hasattr(studyparticipant, 'clinical'):
+                #     print('Participant already has clinical record - skipping: ', index, ' fullnumber:', participantid)
+                #     continue
+                print('Create Participant: ', index, ' fullnumber:', participantid)
+                participant = studyparticipant.participant
+                # Update participant fields
+                participant.secondaryid = row['secondaryid']
+                participant.country = row['country']
+                participant.save()
+                print('Participant updated: id=', participant.id, ' fullnumber:', participantid)
+                # Create clinical record
+                clinical = Clinical.objects.create(participant=studyparticipant)
+                print('Clinical record created: ', clinical.id)
+                # Create subsets
+
+                for subclinical in CLINICAL_SUBTABLES:
+                    print('create ', subclinical, ' for ', participantid)
+                    sub = None
+                    try:
+                        if subclinical == 'demographic':
+                            sub = Demographic.objects.create(clinical=clinical,
+                                                             gender=row[subclinical + '-gender'],
+                                                             age_assessment=validate_int(row[subclinical + '-age_assessment']),
+                                                             marital_status=row[subclinical + '-marital_status'],
+                                                             living_arr=row[subclinical + '-living_arr'],
+                                                             years_school=validate_int(row[subclinical + '-years_school']),
+                                                             current_emp_status=row[
+                                                                 subclinical + '-current_emp_status'],
+                                                             employment_history=validate_int(
+                                                                 row[subclinical + '-employment_history']))
+
+                        elif subclinical == 'diagnosis':
+                            # Illness duration field
+                            ill = row[subclinical + '-illness_duration']
+                            ill_approx = ill.endswith('+')
+                            if ill_approx:
+                                ill = ill[:-1]
+
+                            # dup field
+                            dup = row[subclinical + '-dup']
+                            dup_approx = dup.endswith('+')
+                            if dup_approx:
+                                dup = dup[:-1]
+
+                            # hospitalisation field
+                            hos = row[subclinical + '-hospitalisation_number']
+                            hos_approx = hos.startswith('>')
+                            if hos_approx:
+                                hos = hos[1:]
+
+                            sub = Diagnosis.objects.create(clinical=clinical,
+                                                           summary=row[subclinical + '-summary'],
+                                                           age_onset=validate_int(row[subclinical + '-age_onset']),
+                                                           illness_duration=validate_int(ill),
+                                                           illness_duration_approx=ill_approx,
+                                                           age_first_treatment=validate_int(
+                                                               row[subclinical + '-age_first_treatment']),
+                                                           dup=validate_int(dup), dup_approx=dup_approx,
+                                                           hospitalisation=row[subclinical + '-hospitalisation'],
+                                                           hospitalisation_number=validate_int(hos),
+                                                           hospitalisation_number_approx=hos_approx)
+                        elif subclinical == 'medicalhistory':
+                            # all string/text fields
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in MedicalHistory._meta.fields if field.name != 'clinical'}
+                            print(fieldlist)
+                            sub = MedicalHistory(clinical=clinical, **fieldlist)
+                            sub.save()
+
+                        elif subclinical == 'symptomsgeneral':
+                            sub = SymptomsGeneral.objects.create(clinical=clinical,
+                                                                 onset=row[subclinical + '-onset'],
+                                                                 severity_pattern=validate_int(
+                                                                     row[subclinical + '-severity_pattern']),
+                                                                 symptom_pattern=validate_int(
+                                                                     row[subclinical + '-symptom_pattern']),
+                                                                 illness_course=validate_int(
+                                                                     row[subclinical + '-illness_course']),
+                                                                 curr_gaf=row[subclinical + '-curr_gaf'],
+                                                                 wl_gaf=row[subclinical + '-wl_gaf'],
+                                                                 current_ap_medication=row[
+                                                                     subclinical + '-current_ap_medication'],
+                                                                 clozapine_status=row[
+                                                                     subclinical + '-clozapine_status'],
+                                                                 treatment_resistant=row[
+                                                                     subclinical + '-treatment_resistant'])
+                        elif subclinical == 'symptomsdelusion':
+                            # all string/text fields
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                                         SymptomsDelusion._meta.fields if field.name != 'clinical'}
+                            print(fieldlist)
+                            sub = SymptomsDelusion(clinical=clinical, **fieldlist)
+                            sub.save()
+
+                        elif subclinical == 'symptomshallucination':
+                            # all string/text fields
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                                         SymptomsHallucination._meta.fields if field.name != 'clinical'}
+                            print(fieldlist)
+                            sub = SymptomsHallucination(clinical=clinical, **fieldlist)
+                            sub.save()
+
+                        elif subclinical == 'symptomsbehaviour':
+                            # all string/text fields
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                                         SymptomsBehaviour._meta.fields if field.name != 'clinical'}
+                            print(fieldlist)
+                            sub = SymptomsBehaviour(clinical=clinical, **fieldlist)
+                            sub.save()
+
+                        elif subclinical == 'symptomsdepression':
+                            # all string/text fields except one
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                                         SymptomsDepression._meta.fields if
+                                         field.name not in ['clinical', 'depressive_symptoms_count']}
+                            print(fieldlist)
+                            sub = SymptomsDepression(clinical=clinical, **fieldlist)
+                            sub.depressive_symptoms_count = validate_int(row[subclinical + '-depressive_symptoms_count'])
+                            sub.save()
+
+                        elif subclinical == 'symptomsmania':
+                            # all string/text fields except one
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                                         SymptomsMania._meta.fields if
+                                         field.name not in ['clinical', 'manic_count']}
+                            print(fieldlist)
+                            sub = SymptomsMania(clinical=clinical, **fieldlist)
+                            sub.manic_count = validate_int(row[subclinical + '-manic_count'])
+                            sub.save()
+
+                        if sub:
+                            msg = 'Saved %s with ID=%d for %s' % (subclinical.upper(), sub.pk, participantid)
+                            print(msg)
+                    except KeyError as e:
+                        msg = 'Error in parsing data for %s row: %d - %s'% (subclinical, index, e)
+                        raise ChildProcessError()

@@ -225,8 +225,7 @@ class ClinicalCreate(CreateView):
                     self.object = form.save()
             else:
                 raise ValidationError('Clinical form is not valid')
-            for subset in ['demographic', 'diagnosis', 'medical', 'symptoms_general', 'symptoms_delusion',
-                            'symptoms_hallucination', 'symptoms_behaviour', 'symptoms_depression', 'symptoms_mania']:
+            for subset in CLINICAL_SUBSETS:
                 subform = context[subset]
                 if subform.is_valid():
                     subform.instance = self.object
@@ -331,28 +330,6 @@ class ClinicalDelete(DeleteView):
     model = Clinical
     success_url = reverse_lazy('clinical_list')
     template_name = 'clinical/clinical-confirm-delete.html'
-
-
-    # def delete(self, *args, **kwargs):
-    #     id = kwargs.get('pk')
-    #     if id is not None:
-    #         clinical = Clinical.objects.get(pk=id)
-    #         try:
-    #             # Cascade delete not applicable - manual required
-    #             clinical.diagnosis.delete()
-    #             clinical.demographic.delete()
-    #             clinical.medical.delete()
-    #             clinical.symptoms_general.delete()
-    #             clinical.symptoms_delusion.delete()
-    #             clinical.symptoms_hallucination.delete()
-    #             clinical.symptoms_behaviour.delete()
-    #             clinical.symptoms_depression.delete()
-    #             clinical.symptoms_mania.delete()
-    #             clinical.delete()
-    #         except IntegrityError as e:
-    #             print(e)
-    #             raise e
-    #     return HttpResponseRedirect(self.success_url)
 
 
 class ClinicalDemographicCreate(CreateView):

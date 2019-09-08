@@ -7,12 +7,12 @@ from szgenapp.models.studies import Study
 class DocumentForm(ModelForm):
     docfile = FileField()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in iter(self.fields):
-            self.fields[field].widget.attrs.update({
-                'class': 'form-control'
-            })
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field in iter(self.fields):
+    #         self.fields[field].widget.attrs.update({
+    #             'class': 'form-control'
+    #         })
 
     class Meta:
         model = Document
