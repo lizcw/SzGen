@@ -19,11 +19,11 @@ class ClinicalFilter(django_filters.FilterSet):
 
 
 class DemographicFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_demographic__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number'
                                             )
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_demographic__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
 
     age = django_filters.NumberFilter(field_name='age_assessment')
@@ -37,10 +37,10 @@ class DemographicFilter(django_filters.FilterSet):
 
 
 class DiagnosisFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_diagnosis__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_diagnosis__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
     age = django_filters.NumberFilter(field_name='age_onset')
     age__gt = django_filters.NumberFilter(field_name='age_onset', lookup_expr='gt')
@@ -64,10 +64,10 @@ class DiagnosisFilter(django_filters.FilterSet):
 
 
 class MedicalHistoryFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_medical__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_medical__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
     other_drug_type = django_filters.CharFilter(field_name='other_drug_type',
                                                 lookup_expr='icontains', label='Illicit drug use disorder')
@@ -80,10 +80,10 @@ class MedicalHistoryFilter(django_filters.FilterSet):
 
 
 class SymptomsGeneralFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_general__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_general__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
 
     class Meta:
@@ -93,10 +93,10 @@ class SymptomsGeneralFilter(django_filters.FilterSet):
 
 
 class SymptomsDelusionFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_delusion__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_delusion__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
 
     class Meta:
@@ -108,10 +108,10 @@ class SymptomsDelusionFilter(django_filters.FilterSet):
 
 
 class SymptomsHallucinationFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_hallucination__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_hallucination__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
 
     class Meta:
@@ -122,10 +122,10 @@ class SymptomsHallucinationFilter(django_filters.FilterSet):
 
 
 class SymptomsBehaviourFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_behaviour__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_behaviour__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
 
     class Meta:
@@ -136,10 +136,10 @@ class SymptomsBehaviourFilter(django_filters.FilterSet):
 
 
 class SymptomsDepressionFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_depression__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_depression__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
     depressive_symptoms_count = django_filters.NumberFilter(field_name='depressive_symptoms_count')
     depressive_symptoms_count__gt = django_filters.NumberFilter(field_name='depressive_symptoms_count',
@@ -155,10 +155,10 @@ class SymptomsDepressionFilter(django_filters.FilterSet):
 
 
 class SymptomsManiaFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='clinical_mania__participant__fullnumber',
+    participant = django_filters.CharFilter(field_name='clinical__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number')
     study = django_filters.ModelChoiceFilter(
-        field_name='clinical_mania__participant__study', label='Study',
+        field_name='clinical__participant__study', label='Study',
         queryset=Study.objects.all())
     manic_count = django_filters.NumberFilter(field_name='manic_count')
     manic_count__gt = django_filters.NumberFilter(field_name='manic_count', lookup_expr='gt')

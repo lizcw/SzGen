@@ -21,7 +21,7 @@ urlpatterns = [
     path('studyparticipant/create/<int:participantid>/', StudyParticipantCreate.as_view(),
          name="study_participant_create"),
     path('studyparticipant/update/<int:pk>/', StudyParticipantUpdate.as_view(),
-         name="studyparticipant_update"),
+         name="study_participant_update"),
     path('datasets/', datasets.DatasetList.as_view(), name="datasets"),
     path('dataset/participants/', datasets.DatasetParticipantList.as_view(), name='dataset_participants'),
     path('dataset/files/', datasets.DatasetFileList.as_view(), name='dataset_files'),
