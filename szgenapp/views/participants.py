@@ -176,7 +176,7 @@ class StudyParticipantUpdate(UpdateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('studyparticipant_detail', args=[self.object.id])
+        return reverse('participant_detail', args=[self.object.participant.id])
 
     def get_initial(self, *args, **kwargs):
         initial = super(StudyParticipantUpdate, self).get_initial(**kwargs)

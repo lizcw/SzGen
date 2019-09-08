@@ -121,20 +121,8 @@ class Clinical(models.Model):
     id = models.AutoField(primary_key=True)
     participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE, related_name='clinical')
 
-    demographic = models.ForeignKey('Demographic', on_delete=models.CASCADE, related_name='clinical_demographic')
-    diagnosis = models.ForeignKey('Diagnosis', on_delete=models.CASCADE, related_name='clinical_diagnosis')
-    medical = models.ForeignKey('MedicalHistory', on_delete=models.CASCADE, related_name='clinical_medical')
-    symptoms_general = models.ForeignKey('SymptomsGeneral', on_delete=models.CASCADE, related_name='clinical_general')
-    symptoms_delusion = models.ForeignKey('SymptomsDelusion', on_delete=models.CASCADE,
-                                          related_name='clinical_delusion')
-    symptoms_hallucination = models.ForeignKey('SymptomsHallucination', on_delete=models.CASCADE,
-                                               related_name='clinical_hallucination')
-    symptoms_behaviour = models.ForeignKey('SymptomsBehaviour', on_delete=models.CASCADE,
-                                           related_name='clinical_behaviour')
-    symptoms_depression = models.ForeignKey('SymptomsDepression', on_delete=models.CASCADE,
-                                            related_name='clinical_depression')
-    symptoms_mania = models.ForeignKey('SymptomsMania', on_delete=models.CASCADE,
-                                       related_name='clinical_mania')
+    def __str__(self):
+        return 'Clinical record for %s' % self.participant.getFullNumber()
 
     def get_sub_fields(self, category):
         """
@@ -148,19 +136,19 @@ class Clinical(models.Model):
         elif category == 'diagnosis':
             parent = self.diagnosis
         elif category == 'medical':
-            parent = self.medical
+            parent = self.medicalhistory
         elif category == 'symptoms_general':
-            parent = self.symptoms_general
+            parent = self.symptomsgeneral
         elif category == 'symptoms_delusion':
-            parent = self.symptoms_delusion
+            parent = self.symptomsdelusion
         elif category == 'symptoms_hallucination':
-            parent = self.symptoms_hallucination
+            parent = self.symptomshallucination
         elif category == 'symptoms_behaviour':
-            parent = self.symptoms_behaviour
+            parent = self.symptomsbehaviour
         elif category == 'symptoms_depression':
-            parent = self.symptoms_depression
+            parent = self.symptomsdepression
         elif category == 'symptoms_mania':
-            parent = self.symptoms_mania
+            parent = self.symptomsmania
 
         values = parent._meta.fields
         if len(values) > 0:
@@ -215,7 +203,7 @@ class Demographic(models.Model):
     """
     Clinically recorded demographic data
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     gender = models.CharField(max_length=30, choices=GENDER_CHOICES)
     age_assessment = models.IntegerField(verbose_name='Age', validators=[validate_age],
                                          help_text='Age at the time of assessment')
@@ -234,7 +222,7 @@ class Diagnosis(models.Model):
     """
     Clinically recorded diagnosis
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     summary = models.CharField(choices=DSMIV_CHOICES, max_length=30, null=True, blank=True, help_text='DSMIV Diagnosis')
     age_onset = models.IntegerField(help_text='Age at onset of psychosis', validators=[validate_onset_age])
     illness_duration = models.IntegerField(help_text='Illness duration (onset to current) in years',
@@ -267,7 +255,7 @@ class MedicalHistory(models.Model):
     """
     Clinically recorded Medical History
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     thyroid = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True, verbose_name='Thyroid',
                                help_text='Definite evidence of clinically significant thyroid problems')
     epilepsy = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True, verbose_name='Epilepsy',
@@ -321,7 +309,7 @@ class SymptomsGeneral(models.Model):
     """
     1. General
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     onset = models.CharField(max_length=20, choices=ONSET_CHOICES, null=True, blank=True,
                              verbose_name='Onset of Psychosis',
                              help_text='Rapidity of prodromal period (between noticeable social/occupational decline '
@@ -361,7 +349,7 @@ class SymptomsDelusion(models.Model):
     """
     2. Delusions
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     final_delusions = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                        verbose_name='Final Delusions',
                                        help_text='Definite (lifetime) presence of delusions')
@@ -413,7 +401,7 @@ class SymptomsHallucination(models.Model):
     """
     3. Hallucination
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     final_hallucinations = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                             verbose_name='Final Hallucinations',
                                             help_text='Definite (lifetime) presence of hallucinations')
@@ -447,7 +435,7 @@ class SymptomsBehaviour(models.Model):
     """
     4. Behaviour
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     disorg_speech = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                      verbose_name='Disorganised Speech',
                                      help_text='Definite (lifetime) presence of disorganised speech/positive '
@@ -486,7 +474,7 @@ class SymptomsDepression(models.Model):
     """
     5. Depression
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     final_depression = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                         verbose_name='Final Depression',
                                         help_text='Definite (lifetime) presence of at least one DSMIV major '
@@ -544,7 +532,7 @@ class SymptomsMania(models.Model):
     """
     6. Mania
     """
-    id = models.AutoField(primary_key=True)
+    clinical = models.OneToOneField(Clinical, on_delete=models.CASCADE, primary_key=True)
     final_mania = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                    verbose_name='Final mania',
                                    help_text='Definite (lifetime) presence of at least one DSMIV manic episode')

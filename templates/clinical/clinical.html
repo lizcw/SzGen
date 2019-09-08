@@ -27,21 +27,21 @@
               href="{% url 'participant_detail' clinical.participant.participant.id %}">View Participant</a></p>
 
         <div id="panel-group" class="accordion">
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">Demographic</a>
                         <div class="fixed-action-btn">
                             {% if clinical.demographic %}
-                            <a class="btn-floating red" title="Edit Demographic"
-                               href="{% url 'clinical_demographic_update' clinical.demographic.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                                {%  else %}
+                                <a class="btn-floating red" title="Edit Demographic"
+                                   href="{% url 'clinical_demographic_update' clinical.demographic.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add Demographic"
-                               href="{% url 'clinical_demographic_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_demographic_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -50,32 +50,32 @@
                 <div id="collapse1" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_demographic_fields %}
+                            {% for f in clinical.get_demographic_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
             </div>
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Diagnosis</a>
                         <div class="fixed-action-btn">
                             {% if clinical.diagnosis %}
-                            <a class="btn-floating red" title="Edit Diagnosis"
-                               href="{% url 'clinical_diagnosis_update' clinical.diagnosis.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                                <a class="btn-floating red" title="Edit Diagnosis"
+                                   href="{% url 'clinical_diagnosis_update' clinical.diagnosis.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add Diagnosis"
-                               href="{% url 'clinical_diagnosis_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_diagnosis_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -84,32 +84,32 @@
                 <div id="collapse2" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_diagnosis_fields %}
+                            {% for f in clinical.get_diagnosis_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
             </div>
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse3">Medical</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.medical %}
-                            <a class="btn-floating red" title="Edit Medical"
-                               href="{% url 'clinical_medical_update' clinical.medical.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                            {% if clinical.medicalhistory %}
+                                <a class="btn-floating red" title="Edit Medical"
+                                   href="{% url 'clinical_medical_update' clinical.medicalhistory.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add Medical"
-                               href="{% url 'clinical_medical_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_medical_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -118,32 +118,32 @@
                 <div id="collapse3" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_medical_fields %}
+                            {% for f in clinical.get_medical_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
             </div>
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse4">Symptoms: General</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_general %}
-                            <a class="btn-floating red" title="Edit General Symptoms"
-                               href="{% url 'clinical_symptoms_general_update' clinical.symptoms_general.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                            {% if clinical.symptomsgeneral %}
+                                <a class="btn-floating red" title="Edit General Symptoms"
+                                   href="{% url 'clinical_symptoms_general_update' clinical.symptomsgeneral.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add General Symptoms"
-                               href="{% url 'clinical_symptoms_general_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_symptoms_general_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -152,12 +152,12 @@
                 <div id="collapse4" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_symptoms_general_fields %}
+                            {% for f in clinical.get_symptoms_general_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
@@ -168,16 +168,16 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse5">Symptoms: Delusion</a>
                         <div class="fixed-action-btn">
-                           {% if clinical.symptoms_delusion %}
-                            <a class="btn-floating red" title="Edit Delusion Symptoms"
-                               href="{% url 'clinical_symptoms_delusion_update' clinical.symptoms_delusion.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                            {% if clinical.symptomsdelusion %}
+                                <a class="btn-floating red" title="Edit Delusion Symptoms"
+                                   href="{% url 'clinical_symptoms_delusion_update' clinical.symptomsdelusion.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add Delusion Symptoms"
-                               href="{% url 'clinical_symptoms_delusion_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_symptoms_delusion_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -186,32 +186,32 @@
                 <div id="collapse5" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_symptoms_delusion_fields %}
+                            {% for f in clinical.get_symptoms_delusion_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
             </div>
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse6">Symptoms: Hallucination</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_hallucination %}
-                            <a class="btn-floating red" title="Edit General Symptoms"
-                               href="{% url 'clinical_symptoms_hallucination_update' clinical.symptoms_hallucination.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                            {% if clinical.symptomshallucination %}
+                                <a class="btn-floating red" title="Edit General Symptoms"
+                                   href="{% url 'clinical_symptoms_hallucination_update' clinical.symptomshallucination.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add General Symptoms"
-                               href="{% url 'clinical_symptoms_hallucination_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_symptoms_hallucination_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -220,32 +220,32 @@
                 <div id="collapse6" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_symptoms_hallucination_fields %}
+                            {% for f in clinical.get_symptoms_hallucination_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
             </div>
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse7">Symptoms: Behaviour</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_behaviour %}
-                            <a class="btn-floating red" title="Edit Behaviour Symptoms"
-                               href="{% url 'clinical_symptoms_behaviour_update' clinical.symptoms_behaviour.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                            {% if clinical.symptomsbehaviour %}
+                                <a class="btn-floating red" title="Edit Behaviour Symptoms"
+                                   href="{% url 'clinical_symptoms_behaviour_update' clinical.symptomsbehaviour.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add Behaviour Symptoms"
-                               href="{% url 'clinical_symptoms_behaviour_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_symptoms_behaviour_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -254,32 +254,32 @@
                 <div id="collapse7" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_symptoms_behaviour_fields %}
+                            {% for f in clinical.get_symptoms_behaviour_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
                 </div>
             </div>
-        <div class="panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse8">Symptoms: Depression</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptoms_depression %}
-                            <a class="btn-floating red" title="Edit Depression Symptoms"
-                               href="{% url 'clinical_symptoms_depression_update' clinical.symptoms_depression.id %}">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            {%  else %}
+                            {% if clinical.symptomsdepression %}
+                                <a class="btn-floating red" title="Edit Depression Symptoms"
+                                   href="{% url 'clinical_symptoms_depression_update' clinical.symptomsdepression.pk %}">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            {% else %}
                                 <a class="btn-floating blue-grey" title="Add Depression Symptoms"
-                               href="{% url 'clinical_symptoms_depression_create' clinical.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                                   href="{% url 'clinical_symptoms_depression_create' clinical.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
                             {% endif %}
                         </div>
                     </h3>
@@ -288,12 +288,12 @@
                 <div id="collapse8" class="collapse" data-parent="#panel-group">
                     <div class="panel-body">
                         <table>
-                            {%  for f in clinical.get_symptoms_depression_fields %}
+                            {% for f in clinical.get_symptoms_depression_fields %}
                                 <tr>
                                     <th>{{ f.label|capfirst }}</th>
                                     <td>{{ f.value }}</td>
                                 </tr>
-                         {% endfor %}
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="panel-footer"></div>
@@ -301,41 +301,41 @@
             </div>
 
         </div>
-    <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse9">Symptoms: Mania</a>
-                        <div class="fixed-action-btn">
-                            {% if clinical.symptoms_mania %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse9">Symptoms: Mania</a>
+                    <div class="fixed-action-btn">
+                        {% if clinical.symptomsmania %}
                             <a class="btn-floating red" title="Edit Mania Symptoms"
-                               href="{% url 'clinical_symptoms_mania_update' clinical.symptoms_mania.id %}">
+                               href="{% url 'clinical_symptoms_mania_update' clinical.symptomsmania.pk %}">
                                 <i class="material-icons">edit</i>
                             </a>
-                            {%  else %}
-                                <a class="btn-floating blue-grey" title="Add Mania Symptoms"
+                        {% else %}
+                            <a class="btn-floating blue-grey" title="Add Mania Symptoms"
                                href="{% url 'clinical_symptoms_mania_create' clinical.id %}">
                                 <i class="material-icons">add</i>
                             </a>
-                            {% endif %}
-                        </div>
-                    </h3>
-
-                </div>
-                <div id="collapse9" class="collapse" data-parent="#panel-group">
-                    <div class="panel-body">
-                        <table>
-                            {%  for f in clinical.get_symptoms_mania_fields %}
-                                <tr>
-                                    <th>{{ f.label|capfirst }}</th>
-                                    <td>{{ f.value }}</td>
-                                </tr>
-                         {% endfor %}
-                        </table>
+                        {% endif %}
                     </div>
-                    <div class="panel-footer"></div>
-                </div>
-            </div>
+                </h3>
 
+            </div>
+            <div id="collapse9" class="collapse" data-parent="#panel-group">
+                <div class="panel-body">
+                    <table>
+                        {% for f in clinical.get_symptoms_mania_fields %}
+                            <tr>
+                                <th>{{ f.label|capfirst }}</th>
+                                <td>{{ f.value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
         </div>
+
     </div>
+
 {% endblock %}
