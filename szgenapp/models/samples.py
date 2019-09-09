@@ -30,13 +30,13 @@ class Sample(models.Model):
     """
     id = models.AutoField(primary_key=True)
     participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE)
-    sample_type = models.CharField(max_length=60, blank=False,
+    sample_type = models.CharField(max_length=60, blank=False, null=False,
                                    choices=SAMPLE_TYPES, help_text='Type of blood sample')
     # stage_type = models.CharField(max_length=30, choices=STAGE_TYPES, help_text='Processing Stage of sample')
     rebleed = models.BooleanField(blank=False, default=False)
     arrival_date = models.DateField(verbose_name='Arrival Date', default=date.today, null=True, blank=True,
                                     help_text='Date of sample arrival')
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return 'Sample %d for Participant %s' % (self.id, self.participant.getFullNumber())
@@ -68,7 +68,7 @@ class SubSample(models.Model):
     used_date = models.DateField(verbose_name='Used Date', blank=True, null=True, help_text="Date sample used")
     extraction_date = models.DateField(verbose_name='Extraction Date', blank=True, null=True,
                                        help_text='Date of DNA Extraction')
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, null=True)
     location = models.ForeignKey('Location', blank=True, null=True, on_delete=models.CASCADE)
 
     def get_qc_result(self):
@@ -83,9 +83,9 @@ class Location(models.Model):
     Laboratory location based on Tank / shelf / cell
     """
     id = models.AutoField(primary_key=True)
-    tank = models.CharField(max_length=10, blank=True, help_text='Tank number where sample stored')
-    shelf = models.CharField(max_length=10, blank=True, help_text='Shelf number in tank where sample stored')
-    cell = models.CharField(max_length=10, blank=True, help_text='Cell number on shelf in tank where sample stored')
+    tank = models.CharField(max_length=10, blank=True, null=True, help_text='Tank number where sample stored')
+    shelf = models.CharField(max_length=10, blank=True, null=True, help_text='Shelf number in tank where sample stored')
+    cell = models.CharField(max_length=10, blank=True, null=True, help_text='Cell number on shelf in tank where sample stored')
 
     def __str__(self):
         if self.tank:
@@ -114,9 +114,9 @@ class Shipment(models.Model):
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     shipment_date = models.DateField(verbose_name='Shipment Date', null=False, blank=False,
                                      help_text='Date on which sample shipped')
-    reference = models.CharField(max_length=60, blank=False)
-    rutgers_number = models.CharField(max_length=60, blank=True, help_text='Rutgers Shipment for LCLs')
-    notes = models.TextField(blank=True)
+    reference = models.CharField(max_length=60, null=False, blank=False)
+    rutgers_number = models.CharField(max_length=60, blank=True, null=True, help_text='Rutgers Shipment for LCLs')
+    notes = models.TextField(null=True, blank=True)
 
 class TransformSample(models.Model):
     """
@@ -124,9 +124,9 @@ class TransformSample(models.Model):
     """
     id = models.AutoField(primary_key=True)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    transform_date = models.DateField(verbose_name='Transform Date', blank=True)
+    transform_date = models.DateField(verbose_name='Transform Date', null=True, blank=True)
     failed = models.BooleanField(default=False)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(null=True, blank=True)
 
 
 class HarvestSample(models.Model):
@@ -135,7 +135,7 @@ class HarvestSample(models.Model):
     """
     id = models.AutoField(primary_key=True)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    regrow_date = models.DateField(verbose_name='Regrow Date', blank=True)
-    harvest_date = models.DateField(verbose_name='Harvest Date', blank=True)
+    regrow_date = models.DateField(verbose_name='Regrow Date', null=True, blank=True)
+    harvest_date = models.DateField(verbose_name='Harvest Date', null=True, blank=True)
     complete = models.BooleanField(default=False)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(null=True, blank=True)

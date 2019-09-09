@@ -18,7 +18,8 @@ from szgenapp.models.participants import Participant, StudyParticipant, PARTICIP
 from szgenapp.models.studies import Study, STATUS_CHOICES
 from szgenapp.models.datasets import *
 from szgenapp.models.clinical import *
-from szgenapp.validators import validate_int
+from szgenapp.models.samples import *
+from szgenapp.validators import validate_int, validate_bool, validate_date
 
 
 # DOCUMENTS
@@ -490,3 +491,43 @@ class DocumentImport(FormView):
                     except KeyError as e:
                         msg = 'Error in parsing data for %s row: %d - %s' % (subclinical, index, e)
                         raise ChildProcessError()
+
+    def importSampleData(self, df):
+        """
+        Import Samples from main table.csv (Access DB) for existing Participants only
+        :param df:
+        :return:
+        """
+        print('Upload for Sample table')
+        for index, row in df.iterrows():
+            fullnumber = row['full number']
+            participants = StudyParticipant.objects.filter(fullnumber__exact=fullnumber)
+            if len(fullnumber) <= 0 or participants.count() <= 0:
+                print('Participant not found or is blank - skipping: ', row['id'], ' fullnumber:', fullnumber)
+            else:
+                participant = participants.first() #TODO Check what to do with multiple
+                msg = 'Participant %s loaded' % fullnumber
+                print(msg)
+                # SAMPLE_TYPE
+                sample_type = row['plasma']
+                if len(sample_type) <= 0:
+                    print(msg, ' - No sample type - skipping')
+                    continue
+                if sample_type == 'No' and hasattr(row, 'Notes') and row['Notes'].startswith('WB'):
+                    sample_type = 'WB'
+                elif sample_type == 'Serum':
+                    sample_type = 'SERUM'
+                elif sample_type == 'Yes':
+                    sample_type = 'PLASMA'
+
+                # REBLEED
+                rebleed = validate_bool(row['rebleed'])
+                # ARRIVAL DATE
+                arrival = validate_date(row['Arrival date'])
+                # CREATE SAMPLE
+                sample = Sample.objects.create(participant=participant,
+                                               sample_type=sample_type,
+                                               rebleed=rebleed,
+                                               arrival_date=arrival,
+                                               notes=row['Notes'])
+                print(msg, '- Sample created: ', sample.id)
