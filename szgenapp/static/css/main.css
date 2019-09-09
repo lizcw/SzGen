@@ -43,19 +43,41 @@ footer {
     flex-wrap: wrap;
 }
 
+#homepage .wrapper {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+    background-color: #fff;
+    color: #444;
+    padding: 2rem;
+    align-items: center;
+    /*align-content: stretch;*/
+    flex-wrap: wrap;
+}
+
 .card {
     padding: 0.5rem;
-    min-width: 320px;
+}
+#homepage .card {
+    max-width: 320px;
+}
+
+.card-content {
+    height: 120px;
 }
 
 .card-action {
     height: 50px;
 }
 
-.title-card {
-    grid-column: span 2;
-    grid-row: span 2;
-    width: auto;
+#homepage .title-card {
+    width: 60vw;
+    height: auto;
+}
+#homepage .title-card .card {
+   max-width: 900px;
+}
+#homepage .title-card .card-content {
     height: auto;
 }
 
@@ -66,6 +88,9 @@ footer {
 
 #search {
     color: #fffad7;
+}
+#search a {
+    vertical-align: middle;
 }
 
 .right-panel {

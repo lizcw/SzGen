@@ -157,6 +157,8 @@ class DocumentImport(FormView):
                         self.importStudyData(df)
                     elif datatable == 'Dataset' and 'Filetype' in header:
                         self.importDatasetData(df)
+                    elif datatable == 'Participant' and 'DIGS' in header:
+                        self.importDatasetParticipantData(df)
                     elif datatable == 'Clinical' and 'PrimID' in header:
                         # second row for mapped headings
                         df = pd.read_csv(doc.docfile.path, header=1)
@@ -198,7 +200,7 @@ class DocumentImport(FormView):
                 try:
                     Study.objects.create(title=title, precursor=precursor,
                                          description=description, status=status, notes=notes)
-                except IntegrityError as e:
+                except Error as e:
                     msg = 'Unable to create Study: %s' % e
                     print(msg)
                     raise ChildProcessError(msg)
@@ -226,8 +228,55 @@ class DocumentImport(FormView):
                 print('Create Dataset File')
                 DatasetFile.objects.create(dataset=ds, type=row['Type'], location=row['Location'],
                                            filetype=row['Filetype'])
-            except IntegrityError as e:
+            except Error as e:
                 msg = 'Unable to create Dataset: %s' % e
+                print(msg)
+                raise ChildProcessError(msg)
+
+    def importDatasetParticipantData(self, df):
+        """
+        Manage import of Dataset Participant data
+        :param df: Dataframe with field headers and NaN's stripped
+        :return:
+        """
+        print('Upload for Dataset Participant table')
+        for index, row in df.iterrows():
+            group = row['Group']
+            pid = row['ID#']
+            ds = Dataset.objects.filter(group__iexact=group)
+            if ds.count() <= 0 or len(group) <= 0 or len(pid) <= 0:
+                print('Group not found: ', row['Group'])
+            try:
+                ds = ds.first()
+                p = StudyParticipant.objects.filter(fullnumber__exact=pid)
+                msg = 'Dataset Participant %s for %s' % (pid, group)
+                if p.count() <= 0:
+                    print(msg, ' - Not found')
+                    continue
+                elif p.count() > 1:
+                    print(msg, ' - Multiple found')
+                    continue
+                else:
+                    p = p.first()
+                print(msg)
+                if hasattr(row, 'Screen ID (NPID)'):
+                    npid = row['Screen ID (NPID)']
+                    print('setting NPID: ', npid)
+                    p.participant.npid = npid
+                    p.participant.save()
+                dp = DatasetRow.objects.create(dataset=ds,
+                                               participant=p,
+                                               digs=validate_int(row['DIGS']),
+                                               figs=validate_int(row['FIGS']),
+                                               narrative=validate_int(row['Narrative']),
+                                               records=validate_int(row['Medical Records']),
+                                               consensus=validate_int(row['Consensus']),
+                                               ldps=validate_int(row['LDPS']),
+                                               notes=validate_int(row['Notes'])
+                                               )
+                print(msg, ' - Created DatasetParticipant: ', dp.id)
+            except Error as e:
+                msg = msg + 'Unable to create Dataset Participant: %s' % e
                 print(msg)
                 raise ChildProcessError(msg)
 
@@ -324,10 +373,12 @@ class DocumentImport(FormView):
                         if subclinical == 'demographic':
                             sub = Demographic.objects.create(clinical=clinical,
                                                              gender=row[subclinical + '-gender'],
-                                                             age_assessment=validate_int(row[subclinical + '-age_assessment']),
+                                                             age_assessment=validate_int(
+                                                                 row[subclinical + '-age_assessment']),
                                                              marital_status=row[subclinical + '-marital_status'],
                                                              living_arr=row[subclinical + '-living_arr'],
-                                                             years_school=validate_int(row[subclinical + '-years_school']),
+                                                             years_school=validate_int(
+                                                                 row[subclinical + '-years_school']),
                                                              current_emp_status=row[
                                                                  subclinical + '-current_emp_status'],
                                                              employment_history=validate_int(
@@ -365,7 +416,8 @@ class DocumentImport(FormView):
                                                            hospitalisation_number_approx=hos_approx)
                         elif subclinical == 'medicalhistory':
                             # all string/text fields
-                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in MedicalHistory._meta.fields if field.name != 'clinical'}
+                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                                         MedicalHistory._meta.fields if field.name != 'clinical'}
                             print(fieldlist)
                             sub = MedicalHistory(clinical=clinical, **fieldlist)
                             sub.save()
@@ -418,7 +470,8 @@ class DocumentImport(FormView):
                                          field.name not in ['clinical', 'depressive_symptoms_count']}
                             print(fieldlist)
                             sub = SymptomsDepression(clinical=clinical, **fieldlist)
-                            sub.depressive_symptoms_count = validate_int(row[subclinical + '-depressive_symptoms_count'])
+                            sub.depressive_symptoms_count = validate_int(
+                                row[subclinical + '-depressive_symptoms_count'])
                             sub.save()
 
                         elif subclinical == 'symptomsmania':
@@ -435,5 +488,5 @@ class DocumentImport(FormView):
                             msg = 'Saved %s with ID=%d for %s' % (subclinical.upper(), sub.pk, participantid)
                             print(msg)
                     except KeyError as e:
-                        msg = 'Error in parsing data for %s row: %d - %s'% (subclinical, index, e)
+                        msg = 'Error in parsing data for %s row: %d - %s' % (subclinical, index, e)
                         raise ChildProcessError()

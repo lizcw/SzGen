@@ -1,24 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-    <section class="wrapper">
+<div id="homepage">
         <div class="row title-card">
             <div class="card blue-grey darken-1">
                 <div class="card-content white-text">
                     <span class="card-title">Welcome to the SZGEN Database</span>
-                    <p>Studies of Schizophrenic patients from the research of Professor Bryan Mowry. Contains genetic
-                        samples and associated diagnostics.</p>
+                    <p>Studies of Schizophrenic patients from the research of Professor Bryan Mowry. Contains
+                        samples for genetic analysis and associated diagnostics.</p>
                     <p>
                     <form>
                         <div class="form-group">
+                            <label for="search">
                             <input id="search" name="search" type="search" placeholder="Search"
-                                   onchange="form.submit();">
+                                   onchange="form.submit();"></label>
                             <a href="#" onclick="form.submit()"><i class="material-icons prefix">search</i></a>
                         </div>
                     </form>
                     </p>
                 </div>
                 <div class="card-action">
-                    {% if studies %}
+
                         <a href="/">View all Studies</a>
                         <div class="filter-group">
                             <a href="#" id="filter-by">Filter by Status</a>
@@ -32,12 +33,13 @@
                                 </select>
                             </form>
                         </div>
-                    {% endif %}
+
                     <a href="{% url 'study_create' %}">Add a Study</a>
                 </div>
             </div>
 
         </div>
+    <section class="wrapper">
         {% if studies %}
 
             {% for study in studies %}
@@ -45,12 +47,12 @@
                     <div class="card-title">
                                 <span class="left"><a href="{% url 'study_detail' study.id %}"
                                                       title="View Study Details">{{ study.title }}</a></span>
-                        <span class="right">{{ study.get_status_display }}</span></div>
+                        <span class="right">{{ study.get_status_display }}</span>
+                    </div><br/>
                     <div class="card-content">
-                        <dl>
-                            <dt><strong>Code:</strong> {{ study.precursor }}</dt>
-                            <dd>{{ study.description }}</dd>
-                        </dl>
+                        <p><b>Code:</b> {{ study.precursor }}</p>
+                        <p>{{ study.description }}</p>
+
                     </div>
                     <div class="card-action">
                         <a href="{% url 'study_detail' study.id %}">View Details</a>
@@ -61,7 +63,6 @@
                                 <a href="/studyparticipants/?study={{ study.id }}">View Participants</a>
                                 <a href="/samples/?study={{ study.id }}">View Samples</a>
                                 <a href="/clinical/?study={{ study.id }}">View Clinical</a>
-                                {#                                        <a href="/datasets/?study={{ study.id }}">View Datasets</a>#}
                             </div>
                         </div>
                     </div>
@@ -108,4 +109,5 @@
 
         </div>
     </section>
+    </div>
 {% endblock %}

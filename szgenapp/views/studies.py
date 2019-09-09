@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from szgenapp.models import Study, STATUS_CHOICES
 from szgenapp.forms import StudyForm
 
-
+#TODO Fix filtered list -> ListView
 def index(request):
     """
     Home page - list of studies with filtering
@@ -17,16 +17,16 @@ def index(request):
     """
     template = 'app/index.html'
     # filter on status
-    status_options = STATUS_CHOICES
+    status_options = list(STATUS_CHOICES)
+    options = [('','--')]
+    options += status_options
+
     if request.GET.get('filter-by-status'):
         status_filter = request.GET.get('filter-by-status')
-        # Currently only allows single selection
-        if isinstance(status_filter, list):
-            studies = Study.objects.filter(status__in=status_filter)
-        else:
-            studies = Study.objects.filter(status=status_filter)
+        filter = [s[1] for s in STATUS_CHOICES if s[0] == status_filter]
+        studies = Study.objects.filter(status=filter[0])
     else:
-        studies = Study.objects.all()
+        studies = Study.objects.all().order_by('title')
     # Search query
     if request.GET.get('search'):
         searchtext = request.GET.get('search')
@@ -36,7 +36,7 @@ def index(request):
     paginator = Paginator(studies, 4)
     page = request.GET.get('page')
     studies_page = paginator.get_page(page)
-    context = {'studies': studies_page, 'statusOptions': status_options}
+    context = {'studies': studies_page, 'statusOptions': options}
     return render(request, template, context)
 
 

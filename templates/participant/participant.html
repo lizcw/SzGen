@@ -349,10 +349,6 @@
                                     <td>{{ dataset.get_ldps_display }}</td>
                                     <td>{{ dataset.notes }}</td>
                                     <td>
-                                        <a class="btn-floating blue-grey small" title="Add Dataset for Participant"
-                                           href="{% url 'dataset_participant_create' dataset.dataset.id participant.id %}">
-                                            <i class="material-icons">add</i>
-                                        </a>
                                         <a class="btn-floating green small" title="Edit Dataset"
                                            href="{% url 'dataset_participant_update' dataset.id %}">
                                             <i class="material-icons">edit</i>
