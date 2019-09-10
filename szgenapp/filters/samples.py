@@ -1,8 +1,9 @@
 import django_filters
-from django_filters.widgets import RangeWidget, SuffixedMultiWidget
-from django import forms
+from django_filters.widgets import RangeWidget
+
 from szgenapp.models.samples import Sample, SubSample
 from szgenapp.models.studies import Study
+
 
 class DurationRangeWidget(RangeWidget):
 
@@ -10,6 +11,7 @@ class DurationRangeWidget(RangeWidget):
         super().__init__(attrs)
         self.widgets[0].attrs.update({'class': 'datepicker', 'placeholder': 'from'})
         self.widgets[1].attrs.update({'class': 'datepicker', 'placeholder': 'to'})
+
 
 class StudyFilter(django_filters.FilterSet):
     status = django_filters.ModelMultipleChoiceFilter()
@@ -64,8 +66,13 @@ class SubSampleListFilter(django_filters.FilterSet):
         field_name='sample__participant__study', label='Study',
         queryset=Study.objects.all())
 
-    notes = django_filters.CharFilter(field_name='notes', lookup_expr='icontains', label='Notes')
+    notes__contains = django_filters.CharFilter(field_name='notes', lookup_expr='icontains')
+    tank = django_filters.CharFilter(field_name='location__tank')
+    shelf = django_filters.CharFilter(field_name='location__shelf')
+    cell = django_filters.CharFilter(field_name='location__cell')
+    cell__contains = django_filters.CharFilter(field_name='location__cell', lookup_expr='icontains')
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'study', 'sample_type', 'sample_num', 'storage_date', 'used', 'used_date', 'location', 'notes']
+        fields = ['participant', 'study', 'sample_type', 'sample_num', 'storage_date', 'used', 'used_date', 'tank',
+                  'shelf', 'cell', 'cell__contains', 'notes__contains']

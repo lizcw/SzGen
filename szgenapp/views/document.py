@@ -5,7 +5,7 @@ from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 from django.shortcuts import render
-from django.db import IntegrityError, Error
+from django.db import IntegrityError, Error, transaction
 
 import os
 import pandas as pd
@@ -277,7 +277,7 @@ class DocumentImport(FormView):
                                                )
                 print(msg, ' - Created DatasetParticipant: ', dp.id)
             except Error as e:
-                msg = msg + 'Unable to create Dataset Participant: %s' % e
+                msg = 'Unable to create Dataset Participant: %s' % e
                 print(msg)
                 raise ChildProcessError(msg)
 
@@ -293,7 +293,7 @@ class DocumentImport(FormView):
         """
         print('Upload for Participant table')
         # Load participant once only
-        df.drop_duplicates('full number', keep='first', inplace=True)
+        df = df.drop_duplicates('full number', keep='first')
 
         for index, row in df.iterrows():
             fullnumber = row['full number']
@@ -507,7 +507,7 @@ class DocumentImport(FormView):
             else:
                 participant = participants.first() #TODO Check what to do with multiple
                 msg = 'Participant %s loaded' % fullnumber
-                print(msg)
+                # print(msg)
                 # SAMPLE_TYPE
                 sample_type = row['plasma']
                 if len(sample_type) <= 0:
@@ -524,10 +524,140 @@ class DocumentImport(FormView):
                 rebleed = validate_bool(row['rebleed'])
                 # ARRIVAL DATE
                 arrival = validate_date(row['Arrival date'])
+                # CHECK IF SAMPLE ALREADY EXISTS
+                existing = Sample.objects.filter(participant=participant).filter(sample_type__exact=sample_type).filter(arrival_date=arrival)
+                if existing.count() > 0:
+                    print(msg, ' - existing sample found: ', existing)
+                    continue
                 # CREATE SAMPLE
-                sample = Sample.objects.create(participant=participant,
-                                               sample_type=sample_type,
-                                               rebleed=rebleed,
-                                               arrival_date=arrival,
-                                               notes=row['Notes'])
-                print(msg, '- Sample created: ', sample.id)
+                try:
+                    with transaction.atomic():
+                        sample = Sample.objects.create(participant=participant,
+                                                       sample_type=sample_type,
+                                                       rebleed=rebleed,
+                                                       arrival_date=arrival,
+                                                       notes=row['Notes'])
+                        print(msg, '- SAMPLE created: ', sample.id)
+                except Error as e:
+                    raise e
+                # CREATE HARVEST SAMPLE
+                complete = validate_date(row['harvest date']) is not None
+                try:
+                    with transaction.atomic():
+                        harvest = HarvestSample.objects.create(sample=sample,
+                                                               regrow_date=validate_date(row['re-grow date']),
+                                                               harvest_date=validate_date(row['harvest date']),
+                                                               complete=complete,
+                                                               notes=row['harvest notes'])
+                        print(msg, '- HARVEST created: ', harvest.id)
+                except Error as e:
+                    raise e
+
+                # TRANSFORM SAMPLE
+                transform_date = validate_date(row['T-date'])
+                if transform_date is not None:
+                    try:
+                        with transaction.atomic():
+                            transform = TransformSample.objects.create(sample=sample,
+                                                                       transform_date=transform_date,
+                                                                       failed=validate_bool(row['T-failed']),
+                                                                       notes=row['Transform Notes']
+                                                                       )
+                            print(msg, '- TRANSFORM created: ', transform.id)
+                    except Error as e:
+                        raise e
+
+                # SHIPMENT
+                shipment_date = validate_date(row['Shipment Date'])
+                if shipment_date is not None:
+                    try:
+                        with transaction.atomic():
+                            shipment = Shipment.objects.create(sample=sample,
+                                                               shipment_date=shipment_date,
+                                                               reference=row['Reference No'],
+                                                               rutgers_number=row['Rutgers No'],
+                                                               notes=row['Shipment Notes']
+                                                               )
+                            print(msg, '- SHIPMENT created: ', shipment.id)
+                    except Error as e:
+                        raise e
+
+                # SUBSAMPLE - LCYTES
+                try:
+                    with transaction.atomic():
+                        # Create 3 locations = 3 subsamples
+                        for loc in range(1,4):
+                            location = row['lcyte loc ' + str(loc)]
+                            notes = ''
+                            if location is None or location == '':
+                                continue
+                            if location == 'O' or location == 0:
+                                used = True
+                                location_obj=None
+                            else:
+                                used = False
+                                parts = location.split('/')
+                                if len(parts) == 3:
+                                    location_obj = Location.objects.create(tank=parts[0], shelf=parts[1], cell=parts[2])
+                                else:
+                                    notes = 'Location: ' + location
+                                    location_obj = None
+                            lcl = SubSample.objects.create(sample=sample,
+                                                           sample_num=loc,
+                                                           sample_type='LCYTE',
+                                                           storage_date=validate_date(row['Storage date']),
+                                                           used=used,
+                                                           location=location_obj,
+                                                           notes=notes)
+                            print(msg, '- SUBSAMPLE LCYTE created: ', lcl.id)
+                except Error as e:
+                    raise e
+
+                # SUBSAMPLE - LCL
+                try:
+                    with transaction.atomic():
+                        # Create 5 locations = 5 subsamples
+                        for loc in range(1, 6):
+                            location = row['LCL Location ' + str(loc)]
+                            notes = ''
+                            if location is None or location == '':
+                                continue
+                            if location == 'O' or location == 0:
+                                used = True
+                                location_obj = None
+                            else:
+                                used = False
+                                parts = location.split('/')
+                                print('location: ', location)
+                                if len(parts) == 3:
+                                    location_obj = Location.objects.create(tank=parts[0], shelf=parts[1], cell=parts[2])
+                                else:
+                                    notes = 'Location: ' + location
+                                    location_obj = None
+                            lcl = SubSample.objects.create(sample=sample,
+                                                           sample_num=loc,
+                                                           sample_type='LCL',
+                                                           storage_date=validate_date(row['LCL storage date']),
+                                                           used=used,
+                                                           location=location_obj,
+                                                           notes=notes)
+                            print(msg, '- SUBSAMPLE LCL created: ', lcl.id)
+                except Error as e:
+                    raise e
+
+                # SUBSAMPLE - DNA
+                try:
+                    with transaction.atomic():
+                        # No location
+                        notes = row['DNA Notes']
+                        extraction_date = validate_date(row['DNA Extraction Date'])
+                        if notes.find('DNA') > 0 and extraction_date is not None:
+                            dna = SubSample.objects.create(sample=sample,
+                                                           sample_num=1,
+                                                           sample_type='DNA',
+                                                           storage_date=validate_date(row['Storage date']),
+                                                           extraction_date=extraction_date,
+                                                           notes=notes)
+                            print(msg, '- SUBSAMPLE DNA created: ', dna.id)
+                except Error as e:
+                    raise e

@@ -104,7 +104,7 @@ def validate_date(value):
         dt = datetime.strptime(value, '%d/%m/%Y')
     else:
         dt = None
-        print('date is None')
-    if dt is not None:
-        print('datetime: ', value, ' to ', dt)
+        # print('date is None')
+    # if dt is not None:
+        # print('datetime: ', value, ' to ', dt)
     return dt

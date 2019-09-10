@@ -9,6 +9,7 @@
     </ul>
 {% endblock %}
 {% block content %}
+    {% autoescape on %}
     <div class="container">
         <div class="well col-md-12">
             <h3>Sample {{ sample.participant|force_escape }}</h3>
@@ -54,7 +55,7 @@
                             </tr>
                             <tr>
                                 <th>Notes:</th>
-                                <td>{{ sample.notes }}</td>
+                                <td>{{ sample.notes|force_escape }}</td>
                             </tr>
                         </table>
                     </div>
@@ -87,9 +88,10 @@
                             </tr>
                             </thead>
                             <tbody>
+                            {% if sample.shipment_set.count > 0 %}
                             {% for ship in sample.shipment_set.all %}
                                 <tr>
-                                    <td>{{ ship.shipment_date }}</td>
+                                    <td>{{ ship.shipment_date|date:"c" }}</td>
                                     <td>{{ ship.reference }}</td>
                                     <td>{{ ship.rutgers_number }}</td>
                                     <td>{{ ship.notes }}</td>
@@ -99,6 +101,9 @@
                                     </a></td>
                                 </tr>
                             {% endfor %}
+                            {% else %}
+                            <tr><td colspan="5">No Shipments</td></tr>
+                            {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -131,8 +136,8 @@
                             <tbody>
                             {% for transform in sample.transformsample_set.all %}
                                 <tr>
-                                    <td>{{ transform.transform_date }}</td>
-                                    <td>{{ transform.failed|failpass }}</td>
+                                    <td>{{ transform.transform_date|date:"c" }}</td>
+                                    <td>{{ transform.failed|yesno }}</td>
                                     <td>{{ transform.notes }}</td>
                                     <td><a class="btn-floating small red" title="Edit Transform"
                                            href="{% url 'sample_transform_update' transform.id %}">
@@ -172,8 +177,8 @@
                             <tbody>
                             {% for harvest in sample.harvestsample_set.all %}
                                 <tr>
-                                    <td>{{ harvest.regrow_date }}</td>
-                                    <td>{{ harvest.harvest_date }}</td>
+                                    <td>{{ harvest.regrow_date|date:"c" }}</td>
+                                    <td>{{ harvest.harvest_date|date:"c" }}</td>
                                     <td>{{ harvest.complete|yesno }}</td>
                                     <td>{{ harvest.notes }}</td>
                                     <td><a class="btn-floating small red" title="Edit Harvest"
@@ -207,12 +212,15 @@
                                 <tr>
                                     <th>Number</th>
                                     <th>Storage date</th>
+                                    {% if type != 'DNA' %}
                                     <th>Used</th>
                                     <th>Used date</th>
-                                    {% if type == 'DNA' %}
-                                        <th>Extraction date</th>
+                                    {% else %}
+                                    <th>Extraction date</th>
                                     {% endif %}
+                                    {% if type != 'DNA' %}
                                     <th>Location</th>
+                                    {% endif %}
                                     <th>QC</th>
                                     <th>Notes</th>
                                     <th>Actions</th>
@@ -222,15 +230,18 @@
                                 {% for sub in sample.subsample_set.all|filtersamples:type %}
                                     <tr>
                                         <td>{{ sub.sample_num }}</td>
-                                        <td>{{ sub.storage_date }}</td>
+                                        <td>{{ sub.storage_date|date:"c" }}</td>
+                                        {% if type != 'DNA' %}
                                         <td>{{ sub.used|yesno }}</td>
-                                        <td>{{ sub.used_date }}</td>
-                                        {% if type == 'DNA' %}
-                                            <td>{{ sub.extraction_date }}</td>
+                                        <td>{{ sub.used_date|date:"c" }}</td>
+                                        {% else %}
+                                            <td>{{ sub.extraction_date|date:"c" }}</td>
                                         {% endif %}
+                                        {% if type != 'DNA' %}
                                         <td>{{ sub.location }}</td>
+                                        {% endif %}
                                         <td>{% if sub.get_qc_result %}
-                                            {{ sub.get_qc_result.qc_date }} - {{ sub.get_qc_result.passed|passfail }}
+                                            {{ sub.get_qc_result.qc_date|date:"c" }} - {{ sub.get_qc_result.passed|passfail }}
                                         {% endif %}</td>
                                         <td>{{ sub.notes }}</td>
                                         <td><a class="btn-floating small red" title="Edit SubSample"
@@ -251,5 +262,5 @@
         </div>
 
     </div>
-
+{% endautoescape %}
 {% endblock %}

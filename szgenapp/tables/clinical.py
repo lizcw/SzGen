@@ -9,8 +9,8 @@ class ClinicalTable(tables.Table):
     gender = tables.Column(verbose_name='Gender', accessor=A('demographic.gender'))
     diagnosis = tables.Column(verbose_name='Diagnosis', accessor=A('diagnosis.summary'))
     age = tables.Column(verbose_name='Age', accessor=A('demographic.age_assessment'))
-    onset = tables.Column(verbose_name='Symptoms onset', accessor=A('symptoms_general.onset'))
-    severity_pattern = tables.Column(verbose_name='Symptoms severity', accessor=A('symptoms_general.severity_pattern'))
+    onset = tables.Column(verbose_name='Symptoms onset', accessor=A('symptomsgeneral.onset'))
+    severity_pattern = tables.Column(verbose_name='Symptoms severity', accessor=A('symptomsgeneral.severity_pattern'))
 
     class Meta:
         model = Clinical

@@ -26,4 +26,10 @@ class SubSampleTable(tables.Table):
         fields = ['id', 'sample', 'sample_type', 'sample_num', 'storage_date', 'used', 'used_date', 'location', 'notes']
 
     def render_sample(self, record):
-        return record.sample.participant.participant
+        return record.sample.participant
+
+    def render_storage_date(self, value):
+        if value is None:
+            return ''
+        else:
+            return value

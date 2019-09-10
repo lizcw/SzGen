@@ -26,9 +26,9 @@ class StudyParticipantTable(tables.Table):
     country = tables.Column(verbose_name='Country', accessor=A('participant.country'))
     status = tables.Column(verbose_name='Status', accessor=A('participant.status'))
     alphacode = tables.Column(verbose_name='Alpha Code', accessor=A('participant.alphacode'))
-    secondaryid = tables.Column(verbose_name='Alternative ID', accessor=A('participant.secondaryid'))
+    secondaryid = tables.Column(verbose_name='Secondary ID', accessor=A('participant.secondaryid'))
     npid = tables.Column(verbose_name='NeuroPsychiatric ID', accessor=A('participant.npid'))
-    accessid = tables.Column(verbose_name='AccessDB ID', accessor=A('participant.secondaryid'))
+    accessid = tables.Column(verbose_name='AccessDB', accessor=A('participant.accessid'))
 
     class Meta:
         model = StudyParticipant
