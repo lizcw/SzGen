@@ -9,13 +9,17 @@ class ClinicalFilter(django_filters.FilterSet):
     study = django_filters.ModelChoiceFilter(
         field_name='participant__study', label='Study',
         queryset=Study.objects.all())
-    age = django_filters.NumberFilter(field_name='demographic__age_assessment')
-    age__gt = django_filters.NumberFilter(field_name='demographic__age_assessment', lookup_expr='gt')
-    age__lt = django_filters.NumberFilter(field_name='demographic__age_assessment', lookup_expr='lt')
+    diagnosis = django_filters.ChoiceFilter(field_name='diagnosis__summary',
+                                            choices=DSMIV_CHOICES, label='Diagnosis')
+    gender = django_filters.ChoiceFilter(field_name='demographic__gender',
+                                         choices=GENDER_CHOICES, label='Gender')
+    age = django_filters.NumberFilter(field_name='demographic__age_assessment', label='Age is exactly')
+    age__gt = django_filters.NumberFilter(field_name='demographic__age_assessment', label='Age is greater than', lookup_expr='gt')
+    age__lt = django_filters.NumberFilter(field_name='demographic__age_assessment', label='Age is less than', lookup_expr='lt')
 
     class Meta:
         model = Clinical
-        fields = ['participant', 'study', 'diagnosis__summary', 'demographic__gender']
+        fields = ['participant', 'study']
 
 
 class DemographicFilter(django_filters.FilterSet):
