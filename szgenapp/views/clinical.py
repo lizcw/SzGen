@@ -318,7 +318,6 @@ class ClinicalUpdate(UpdateView):
                            key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
         return data
 
-
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.id])
 

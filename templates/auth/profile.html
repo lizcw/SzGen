@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load material_form %}
+{% block content %}
+
+    <div class="container">
+        <div class="row title-card">
+            <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                    <span class="card-title">Welcome,
+                        {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}</span>
+                    <p>Here you can edit your details or change your password or create a new study.</p>
+                </div>
+                <div class="card-action">
+                    <a href="#" data-target="#details" data-toggle="collapse">Edit my details</a>
+                    <a href="{% url 'password_change' %}">Change Password</a>
+                    <a href="{% url 'study_create' %}">Add a Study</a>
+                </div>
+            </div>
+            <div id="details">
+                <div class="card card-profile">
+                    <div class="card-content">
+                        <p class="card-title">Update your details</p>
+                        <br/>
+                        <form method="post">
+                            {% csrf_token %}
+
+                            {% form form=form %}{% endform %}
+
+                            <div class="card-action">
+                                <input type="submit" value="{% trans 'Update' %}"
+                                       class="form-control btn btn-large"/>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

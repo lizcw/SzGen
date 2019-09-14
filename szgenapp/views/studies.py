@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator
+from django.conf import settings
 
 from szgenapp.models import Study, STATUS_CHOICES
 from szgenapp.forms import StudyForm
@@ -36,7 +37,8 @@ def index(request):
     paginator = Paginator(studies, 4)
     page = request.GET.get('page')
     studies_page = paginator.get_page(page)
-    context = {'studies': studies_page, 'statusOptions': options}
+    print(settings.CONTACT_EMAIL)
+    context = {'studies': studies_page, 'statusOptions': options, 'contact_email': settings.CONTACT_EMAIL}
     return render(request, template, context)
 
 

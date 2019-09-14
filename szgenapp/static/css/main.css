@@ -31,16 +31,20 @@ footer {
 }
 
 
-.wrapper {
-    display: grid;
-    grid-gap: 1rem;
-    /*grid-template-columns: repeat(auto-fit, minmax(250px,1fr));*/
-    background-color: #fff;
-    color: #444;
-    padding: 2rem;
-    /*align-items: center;*/
-    /*align-content: stretch;*/
-    flex-wrap: wrap;
+/*.wrapper {*/
+/*    display: grid;*/
+/*    grid-gap: 1rem;*/
+/*    !*grid-template-columns: repeat(auto-fit, minmax(250px,1fr));*!*/
+/*    background-color: #fff;*/
+/*    color: #444;*/
+/*    padding: 2rem;*/
+/*    !*align-items: center;*!*/
+/*    !*align-content: stretch;*!*/
+/*    flex-wrap: wrap;*/
+/*}*/
+
+#homepage {
+    width: 100%;
 }
 
 #homepage .wrapper {
@@ -58,7 +62,7 @@ footer {
 .card {
     padding: 0.5rem;
 }
-#homepage .card {
+.wrapper .card {
     max-width: 320px;
 }
 
@@ -68,6 +72,10 @@ footer {
 
 .card-action {
     height: 50px;
+}
+
+.card-profile {
+    height: 70vh;
 }
 
 #homepage .title-card {
@@ -120,6 +128,10 @@ li.active {
     color: #37474f;
     font-weight: bold;
     transition: border-bottom-color 0.2s linear;
+}
+
+.errorlist li {
+    color: red;
 }
 /********************************
 Dropdown menus
@@ -230,6 +242,13 @@ Media sizes
         margin-left: 300px;
         -webkit-transition: margin-left 2s;
         transition: margin-left 2s;
+        min-height: 90vh;
+    }
+
+     .content-frontpage {
+        margin-left: 10vw;
+        display: flex;
+        height: 90vh;
     }
 
     .nav-wrapper {
