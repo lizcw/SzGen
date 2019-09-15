@@ -4,7 +4,9 @@ from datetime import date
 COUNTRY_CHOICES = (
     ('IND', 'India'),
     ('AUS', 'Australia'),
-    ('SWK', 'Sarawak')
+    ('SWK', 'Sarawak'),
+    ('FIJ', 'Fiji'),
+    ('UNK', 'Unknown')
 )
 PARTICIPANT_STATUS_CHOICES = (
     ('ACTIVE', 'Active'),
@@ -24,13 +26,13 @@ class Participant(models.Model):
     country = models.CharField(max_length=30, blank=False, choices=COUNTRY_CHOICES)
     status = models.CharField(max_length=20, blank=False, choices=PARTICIPANT_STATUS_CHOICES, default="ACTIVE")
     # Alternative IDs should all be stored here
-    alphacode = models.CharField(max_length=30, blank=True, verbose_name="Alpha Code",
+    alphacode = models.CharField(max_length=30, blank=True, verbose_name="Alpha Code", unique=True,
                                  help_text="Alpha code if available")
-    accessid = models.CharField(max_length=30, blank=True, verbose_name="AccessDB ID",
-                                   help_text="Alternative ID eg, ID from Samples Access DB")
-    secondaryid = models.CharField(max_length=30, blank=True, verbose_name="Secondary ID",
+    accessid = models.CharField(max_length=30, blank=True, verbose_name="AccessDB ID", unique=True,
+                                help_text="Alternative ID eg, ID from Samples Access DB")
+    secondaryid = models.CharField(max_length=30, blank=True, verbose_name="Secondary ID", unique=True,
                                    help_text="Alternative or additional ID if available")
-    npid = models.CharField(max_length=30, blank=True, verbose_name="NeuroPsychiatric ID",
+    npid = models.CharField(max_length=30, blank=True, verbose_name="NeuroPsychiatric ID", unique=True,
                             help_text="NP ID if available")
 
     class Meta:
@@ -55,9 +57,10 @@ class StudyParticipant(models.Model):
     id = models.AutoField(primary_key=True)
     participant = models.ForeignKey('Participant', on_delete=models.CASCADE, related_name='studyparticipants')
     study = models.ForeignKey('Study', on_delete=models.CASCADE)
-    fullnumber = models.CharField(max_length=30, blank=True, verbose_name="Full Number",
+    fullnumber = models.CharField(max_length=30, blank=True, verbose_name="Full Number", unique=True,
                                   help_text="Provide full number if it cannot be generated from parts")
-    district = models.CharField(max_length=5, blank=True, verbose_name="CBZ Study District", help_text="For CBZ study enter district(1-5)")
+    district = models.CharField(max_length=5, blank=True, verbose_name="CBZ Study District",
+                                help_text="For CBZ study enter district(1-5)")
     family = models.CharField(max_length=20, blank=True, help_text="Family number if available")
     individual = models.CharField(max_length=20, blank=True, help_text="Individual number if available")
 
@@ -88,4 +91,3 @@ class StudyParticipant(models.Model):
             else:
                 parts = [self.study.precursor + self.family, self.individual]
         return "-".join(parts)
-
