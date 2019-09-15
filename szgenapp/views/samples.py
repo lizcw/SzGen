@@ -1,19 +1,20 @@
+import logging
+
 from django.db import IntegrityError, transaction
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 
+from szgenapp.filters.samples import *
 from szgenapp.forms.samples import SampleForm, SubSampleForm, \
     LocationFormset, TransformSampleForm, HarvestSampleForm, \
     ShipmentFormset, TransformFormset, HarvestFormset, ShipmentForm, QCFormset
-from szgenapp.models.participants import Participant
-from szgenapp.models.samples import Sample, SubSample, \
-    HarvestSample, TransformSample, SAMPLE_TYPES, SUBSAMPLE_TYPES, Shipment, QC
-from szgenapp.filters.samples import *
+from szgenapp.models.samples import HarvestSample, TransformSample, SAMPLE_TYPES, SUBSAMPLE_TYPES, Shipment
 from szgenapp.tables import *
 
+logger = logging.getLogger(__name__)
 
 class SampleDetail(DetailView):
     """
@@ -42,18 +43,9 @@ class SampleCreate(CreateView):
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
 
-    # def form_valid(self, form):
-    #     try:
-    #         with transaction.atomic():
-    #             self.object = form.save()
-    #         return super(SampleCreate, self).form_valid(form)
-    #     except IntegrityError as e:
-    #         msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
-    #         # form.add_error('sample-create', msg)
-    #         return self.form_invalid(form)
-
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.id])
+
 
 class SampleDelete(DeleteView):
     """
@@ -62,6 +54,7 @@ class SampleDelete(DeleteView):
     model = Sample
     success_url = reverse_lazy("samples")
     template_name = 'sample/sample-confirm-delete.html'
+
 
 class SampleParticipantCreate(CreateView):
     """
@@ -76,7 +69,7 @@ class SampleParticipantCreate(CreateView):
         if (self.kwargs):
             pid = self.kwargs.get('participantid')
             participant = Participant.objects.get(pk=pid)
-            studyparticipant = participant.studyparticipants.first()  # TODO First of set by default
+            studyparticipant = participant.studyparticipants.first()
         initial = super(SampleParticipantCreate, self).get_initial(**kwargs)
         initial['action'] = 'Create'
         initial['participant'] = studyparticipant
@@ -123,7 +116,8 @@ class SampleParticipantCreate(CreateView):
             return super(SampleParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
-            # form.add_error('sample-create', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -143,7 +137,8 @@ class SampleUpdate(UpdateView):
             return super(SampleUpdate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to update Sample - see Administrator: %s' % e
-            form.add_error('Sample-update', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -163,11 +158,8 @@ class SampleList(SingleTableMixin, ExportMixin, FilterView):
     template_name = 'sample/sample-list.html'
     queryset = Sample.objects.all()
     context_object_name = 'samples'
-    # paginate_by = 10
     filterset_class = SampleFilter
     table_class = SampleTable
-    # collections = SAMPLE_TYPES
-    # ordering = ['']
 
     def get_context_data(self, *args, **kwargs):
         initial = super(SampleList, self).get_context_data(*args, **kwargs)
@@ -201,7 +193,6 @@ class SubSampleList(SingleTableMixin, ExportMixin, FilterView):
     """
     model = SubSample
     template_name = 'sample/sample-list.html'
-    # paginate_by = 10
     filterset_class = SubSampleListFilter
     table_class = SubSampleTable
 
@@ -221,7 +212,6 @@ class SubSampleList(SingleTableMixin, ExportMixin, FilterView):
         if sampletype is None:
             qs = SubSample.objects.all()
         else:
-            print(sampletype)
             qs = SubSample.objects.filter(sample_type=sampletype)
 
         return qs
@@ -345,6 +335,7 @@ class HarvestSampleUpdate(UpdateView):
 SUBSAMPLES
 """
 
+
 class SubSampleCreate(CreateView):
     """
     Add subsample of various types: Lymphocyte, LCL, DNA
@@ -398,7 +389,8 @@ class SubSampleCreate(CreateView):
             return super(SubSampleCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
-            form.add_error('id', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -443,7 +435,8 @@ class SubSampleUpdate(UpdateView):
             return super(SubSampleUpdate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to update SubSample - see Administrator: %s' % e
-            form.add_error('Sample-update', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
