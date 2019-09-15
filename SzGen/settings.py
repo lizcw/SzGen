@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else 'ot$e_7x86%r)(ycu5-^sdg&0emq4i_9seax)=txjdr2n$8^l4-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'axes.middleware.AxesMiddleware',
+    # 'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'SzGen.urls'
@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'SzGen.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, os.getenv('DB_NAME')),
+        'NAME': os.getenv('DB_NAME'),
     }
 }
 
@@ -155,11 +155,15 @@ LOGIN_URL = '/'
 # Lockout params
 AXES_LOGIN_FAILURE_LIMIT = 3
 AXES_COOLOFF_TIME = 1  # hours
-AXES_LOCKOUT_URL = '/locked'
-AXES_LOCKOUT_TEMPLATE = 'auth/locked.html'
-AXES_COOLOFF_MESSAGE = 'You are now locked out for an hour'
-AXES_PERMALOCK_MESSAGE = 'You are permanently locked out'
+AXES_LOCKOUT_URL = '/locked/'
+AXES_LOCKOUT_TEMPLATE = os.path.join(BASE_DIR, 'templates/auth/locked.html')
+# AXES_COOLOFF_MESSAGE = 'You are now locked out for an hour'
+# AXES_PERMALOCK_MESSAGE = 'You are permanently locked out'
 # AXES_CACHE = 'axes_cache'
 # AXES_HANDLER = 'axes.handlers.cache.AxesCacheHandler'
 
 CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
+# LOGGER configured in views/__init__.py
+LOG_FILE = os.getenv("LOG_FILE")
+LOG_LEVEL = os.getenv("LOG_LEVEL")
+LOG_DB_LEVEL = os.getenv("LOG_DB_LEVEL")

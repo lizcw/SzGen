@@ -1,16 +1,20 @@
-from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
+import logging
+
 from django.db import IntegrityError, transaction
 from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 
-from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
-from szgenapp.models.participants import Participant, StudyParticipant
-from szgenapp.models.studies import Study
-from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetParticipantFormset, DatasetRowForm, DatasetFileForm
-from szgenapp.tables.dataset import DatasetTable, DatasetFileTable, DatasetParticipantTable
 from szgenapp.filters.dataset import DatasetFilter, DatasetFileFilter, DatasetParticipantFilter
+from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetRowForm, DatasetFileForm
+from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
+from szgenapp.models.participants import Participant
+from szgenapp.models.studies import Study
+from szgenapp.tables.dataset import DatasetTable, DatasetFileTable, DatasetParticipantTable
+
+logger = logging.getLogger(__name__)
 
 
 class DatasetDetail(DetailView):
@@ -52,7 +56,8 @@ class DatasetCreate(CreateView):
             return super(DatasetCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Dataset - see Administrator: %s' % e
-            form.add_error('dataset-create', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -91,11 +96,13 @@ class DatasetUpdate(UpdateView):
 
         except IntegrityError as e:
             msg = 'Database Error: Unable to update Dataset - see Administrator: %s' % e
-            form.add_error('group', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('dataset_detail', args=[self.object.dataset.id])
+
 
 class DatasetDelete(DeleteView):
     """

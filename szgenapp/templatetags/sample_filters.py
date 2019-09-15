@@ -44,5 +44,4 @@ def fieldvalue(value, fieldlist):
     :param fieldlist: dict() for lookup
     :return:
     """
-    print(value)
     return fieldlist[value]

@@ -1,16 +1,18 @@
+import logging
+
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
-from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect
+
 from szgenapp.filters import *
 from szgenapp.forms.clinical import *
-from szgenapp.models.participants import StudyParticipant
 from szgenapp.tables import *
 
+logger = logging.getLogger(__name__)
 
 class ClinicalDetail(DetailView):
     model = Clinical
@@ -181,7 +183,7 @@ class ClinicalCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         studyparticipant = None
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('participantid')
             studyparticipant = StudyParticipant.objects.get(pk=pid)
         initial = super(ClinicalCreate, self).get_initial(**kwargs)
@@ -237,17 +239,14 @@ class ClinicalCreate(CreateView):
             return super(ClinicalCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Clinical Record: %s' % e
-            form.add_error('participant', msg)
-            print('ERROR: ', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
         except ValidationError as v:
             msg = 'Validation Error: Unable to create Clinical Record: %s' % v
-            form.add_error('participant', msg)
-            print('ERROR: ', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
-
-    def save(self, *args, **kwargs):
-        print("save:", self.object)
 
     def get_success_url(self):
         return reverse('clinical_detail', args=[self.object.id])
@@ -338,7 +337,7 @@ class ClinicalDemographicCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDemographicCreate, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Demographic Record'
@@ -369,7 +368,7 @@ class ClinicalDiagnosisCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Diagnosis Record'
@@ -400,7 +399,7 @@ class ClinicalMedicalCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Medical Record'
@@ -431,7 +430,7 @@ class ClinicalSymptomsGeneralCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical General Symptoms Record'
@@ -462,7 +461,7 @@ class ClinicalSymptomsDelusionCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Delusion Symptoms Record'
@@ -493,7 +492,7 @@ class ClinicalSymptomsHallucinationCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Hallucination Symptoms Record'
@@ -524,7 +523,7 @@ class ClinicalSymptomsBehaviourCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Behaviour Symptoms Record'
@@ -542,7 +541,6 @@ class ClinicalSymptomsBehaviourUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsBehaviourUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Behaviour Symptoms Record'
-        # initial['participant'] = studyparticipant
         return initial
 
     def get_success_url(self):
@@ -556,7 +554,7 @@ class ClinicalSymptomsDepressionCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Depression Symptoms Record'
@@ -587,7 +585,7 @@ class ClinicalSymptomsManiaCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
-        if (self.kwargs):
+        if self.kwargs:
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Mania Symptoms Record'

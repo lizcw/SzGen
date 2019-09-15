@@ -2,6 +2,7 @@ from axes.utils import reset
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, resolve_url, render
 from django.template import RequestContext
@@ -26,7 +27,7 @@ from szgenapp.forms.auth import AxesCaptchaForm
 
 ## Login
 
-class LoginView(FormView):
+class LoginAppView(LoginView):
     """
     Provides the ability to login as a user with a username and password
     """
@@ -50,7 +51,7 @@ class LoginView(FormView):
         Same as django.views.generic.edit.ProcessFormView.get(), but adds test cookie stuff
         """
         self.set_test_cookie()
-        return super(LoginView, self).get(request, *args, **kwargs)
+        return super(self.__class__, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
         user = form.get_user()
@@ -81,7 +82,7 @@ class LoginView(FormView):
         # If the test cookie worked, go ahead and
         # delete it since its no longer needed
         self.check_and_delete_test_cookie()
-        return super(LoginView, self).form_valid(form)
+        return super(self.__class__, self).form_valid(form)
 
     def form_invalid(self, form):
         """
@@ -89,7 +90,7 @@ class LoginView(FormView):
         set the test cookie again and re-render the form with errors.
         """
         self.set_test_cookie()
-        return super(LoginView, self).form_invalid(form)
+        return super(self.__class__, self).form_invalid(form)
 
     def set_test_cookie(self):
         self.request.session.set_test_cookie()

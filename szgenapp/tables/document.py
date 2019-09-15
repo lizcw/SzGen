@@ -9,11 +9,7 @@ class DocumentTable(tables.Table):
                                     orderable=True)
     size = tables.Column(verbose_name="Size (kB)", accessor=A('docfile'), orderable=True)
 
-    # def render_docfile(self,value):
-    #    return value.name[2:]
-
     def render_created(self, value):
-        # print("DEBUG: File=", value.storage.created_time(value.name))
         return value.storage.get_created_time(value.name)
 
     def render_size(self, value):

@@ -5,7 +5,8 @@ SAMPLE_TYPES = (
     ('PLASMA', 'Plasma'),
     ('SERUM', 'Serum'),
     ('PAXGENE', 'PAXGene'),
-    ('WB', 'Whole blood')
+    ('WB', 'Whole blood'),
+    ('SALIVA', 'Saliva')
 )
 
 SUBSAMPLE_TYPES = (

@@ -1,15 +1,19 @@
-from django.shortcuts import render
-from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+import logging
+
+from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Q
+from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.core.paginator import Paginator
-from django.conf import settings
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+
+logger = logging.getLogger(__name__)
 
 from szgenapp.models import Study, STATUS_CHOICES
 from szgenapp.forms import StudyForm
 
-#TODO Fix filtered list -> ListView
+##### HOME PAGE - Studies list
 def index(request):
     """
     Home page - list of studies with filtering
@@ -37,7 +41,7 @@ def index(request):
     paginator = Paginator(studies, 4)
     page = request.GET.get('page')
     studies_page = paginator.get_page(page)
-    print(settings.CONTACT_EMAIL)
+    logger.info("Email set to: " + settings.CONTACT_EMAIL)
     context = {'studies': studies_page, 'statusOptions': options, 'contact_email': settings.CONTACT_EMAIL}
     return render(request, template, context)
 
@@ -65,7 +69,8 @@ class StudyCreate(CreateView):
             return super(StudyCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Study - see Administrator: %s' % e
-            form.add_error('title', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -91,7 +96,8 @@ class StudyUpdate(UpdateView):
             return super(StudyUpdate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to update Study - see Administrator: %s' % e
-            form.add_error('title', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):

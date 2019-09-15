@@ -1,3 +1,5 @@
+import logging
+
 from django.db import IntegrityError, transaction
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
@@ -10,6 +12,7 @@ from szgenapp.forms.participants import ParticipantForm, StudyParticipantForm, S
 from szgenapp.models.samples import SUBSAMPLE_TYPES
 from szgenapp.tables.participants import *
 
+logger = logging.getLogger(__name__)
 
 class ParticipantDetail(DetailView):
     """
@@ -52,11 +55,11 @@ class ParticipantCreate(CreateView):
             if studyparticipant.is_valid():
                 studyparticipant.instance = self.object
                 studyparticipant.save()
-                print('saved studyparticipant')
             return super(ParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create Participant - see Administrator: %s' % e
-            form.add_error('study', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -76,7 +79,8 @@ class ParticipantUpdate(UpdateView):
             return super(ParticipantUpdate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to update Participant - see Administrator: %s' % e
-            form.add_error('study', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -87,7 +91,7 @@ class ParticipantUpdate(UpdateView):
         initial['action'] = 'Edit'
         return initial
 
-
+# TODO - USED?
 class ParticipantList(ListView):
     """
     List of Participants - filterable by study
@@ -97,8 +101,6 @@ class ParticipantList(ListView):
     queryset = Participant.objects.all()
     context_object_name = 'participants'
     paginate_by = 10
-
-    # ordering = ['']
 
     def get_queryset(self):
         if self.request.GET.get('filter-by-study'):
@@ -145,7 +147,8 @@ class StudyParticipantCreate(CreateView):
             return super(StudyParticipantCreate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to create StudyParticipant - see Administrator: %s' % e
-            form.add_error('participant', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -172,7 +175,8 @@ class StudyParticipantUpdate(UpdateView):
             return super(StudyParticipantUpdate, self).form_valid(form)
         except IntegrityError as e:
             msg = 'Database Error: Unable to update Study - see Administrator: %s' % e
-            form.add_error('participant', msg)
+            form.add_error(None, msg)
+            logger.error(msg)
             return self.form_invalid(form)
 
     def get_success_url(self):

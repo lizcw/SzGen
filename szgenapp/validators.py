@@ -96,15 +96,11 @@ def validate_date(value):
     :param value:
     :return: datetime object or none
     """
-    # if type(value) == datetime.date:
-    #     return value
     if '-' in value:
         dt = datetime.strptime(value, '%d-%b-%y')
     elif '/' in value:
         dt = datetime.strptime(value, '%d/%m/%Y')
     else:
         dt = None
-        # print('date is None')
-    # if dt is not None:
-        # print('datetime: ', value, ' to ', dt)
+
     return dt
