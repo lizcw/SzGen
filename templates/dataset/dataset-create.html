@@ -5,14 +5,20 @@
     <ul>
         <li><a href="{% url 'datasets' %}">Datasets</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
-        <li>Dataset</li>
+        {% if dataset %}
+            <li><a href="{% url 'dataset_detail' dataset.id %}">Dataset</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
+            <li>{{ subtitle }}</li>
+        {% else %}
+            <li>Dataset</li>
+        {% endif %}
     </ul>
 {% endblock %}
 
 {% block content %}
     <div class="container row">
         <div class="col s10">
-            <h3>{{ action }} Dataset</h3>
+            <h3>{{ action }} Dataset {{ subtitle }}</h3>
 
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -20,25 +26,26 @@
                 {% form form=form %}{% endform %}
                 <hr/>
                 {% if datasetfiles %}
-                <h5>Add a Dataset File
-                    <a class="btn-floating grey add-formset" title="Add a Dataset File">
-                        <i class="material-icons">add</i>
-                    </a>
-                </h5>
-                {{ datasetfiles.management_form }}
-                <ul class="well dsfileform">
-                    {% for child_form in datasetfiles.forms %}
-                        <li class="dsfileform-row">
-                            {% form form=child_form %}{% endform %}
-                        </li>
+                    <h5>Add a Dataset File
+                        <a class="btn-floating grey add-formset" title="Add a Dataset File">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </h5>
+                    {{ datasetfiles.management_form }}
+                    <ul class="well dsfileform">
+                        {% for child_form in datasetfiles.forms %}
+                            <li class="dsfileform-row">
+                                {% form form=child_form %}{% endform %}
+                            </li>
 
-                    {% endfor %}
-                </ul>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
             </form>
         </div>
     </div>
+    <div id="modal"></div>
 
     <script type="text/javascript">
 
@@ -51,6 +58,16 @@
             $('ul.dsfileform').children().append(newform);
             $('#id_dataset_files-TOTAL_FORMS').val(parseInt(numforms) + 1);
             return false;
+        });
+
+        $(document).ready(function () {
+            console.log("document loaded");
+            $("body").addClass("loading");
+        });
+
+        $(window).on("load", function () {
+            console.log("window loaded");
+            $("body").removeClass("loading");
         });
 
     </script>

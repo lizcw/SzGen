@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else 'ot$e_7x86%r)(ycu5-^sdg&0emq4i_9seax)=txjdr2n$8^l4-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = True # os.getenv("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'SzGen.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.getenv('DB_NAME'),
+        'NAME': 'db.sqlite3', # os.getenv('DB_NAME'),
     }
 }
 

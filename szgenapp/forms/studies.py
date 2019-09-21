@@ -1,5 +1,5 @@
-from django import forms
-from django.forms import ModelForm, Form, ChoiceField
+from django.forms import ModelForm
+
 from szgenapp.models import Study
 
 

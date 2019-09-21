@@ -41,7 +41,7 @@ def index(request):
     paginator = Paginator(studies, 4)
     page = request.GET.get('page')
     studies_page = paginator.get_page(page)
-    logger.info("Email set to: " + settings.CONTACT_EMAIL)
+    # logger.info("Email set to: " + settings.CONTACT_EMAIL)
     context = {'studies': studies_page, 'statusOptions': options, 'contact_email': settings.CONTACT_EMAIL}
     return render(request, template, context)
 

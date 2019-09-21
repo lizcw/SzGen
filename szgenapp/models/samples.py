@@ -1,12 +1,14 @@
 from django.db import models
 from datetime import date
+from multiselectfield import MultiSelectField
 
 SAMPLE_TYPES = (
     ('PLASMA', 'Plasma'),
     ('SERUM', 'Serum'),
-    ('PAXGENE', 'PAXGene'),
+    ('PAXGENE', 'PAXGENE'),
     ('WB', 'Whole blood'),
-    ('SALIVA', 'Saliva')
+    ('SALIVA', 'Saliva'),
+    ('UNKNOWN', 'Unknown')
 )
 
 SUBSAMPLE_TYPES = (
@@ -15,14 +17,14 @@ SUBSAMPLE_TYPES = (
     ('DNA', 'DNA')
 )
 
-STAGE_TYPES = (
-    ('HARVEST', 'Harvest'),
-    ('GROW', 'Grow'),
-    ('REGROW', 'Regrow'),
-    ('TRANSFORM', 'Transform'),
-    ('COMPLETE', 'Complete'),
-    ('UNKNOWN', 'Unknown')
-)
+class SampleType(models.Model):
+    """
+    Type of Sample
+    """
+    name = models.CharField(max_length=30, choices=SAMPLE_TYPES)
+
+    def __str__(self):
+        return self.name
 
 
 class Sample(models.Model):
@@ -30,10 +32,11 @@ class Sample(models.Model):
     A blood sample of a participant
     """
     id = models.AutoField(primary_key=True)
-    participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE)
-    sample_type = models.CharField(max_length=60, blank=False, null=False,
-                                   choices=SAMPLE_TYPES, help_text='Type of blood sample')
-    # stage_type = models.CharField(max_length=30, choices=STAGE_TYPES, help_text='Processing Stage of sample')
+    participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE, related_name="samples")
+    # sample_type = models.CharField(max_length=60, blank=False, null=False,
+    #                                choices=SAMPLE_TYPES, help_text='Type of blood sample')
+    sample_types = models.ManyToManyField(SampleType, help_text='Type of sample')
+
     rebleed = models.BooleanField(blank=False, default=False)
     arrival_date = models.DateField(verbose_name='Arrival Date', default=date.today, null=True, blank=True,
                                     help_text='Date of sample arrival')
@@ -66,7 +69,6 @@ class SubSample(models.Model):
     sample_type = models.CharField(max_length=30, choices=SUBSAMPLE_TYPES, help_text='Type of the sub sample')
     storage_date = models.DateField(verbose_name='Storage Date', blank=True, null=True, help_text="Date stored")
     used = models.BooleanField(default=False, help_text='If used, location should be blank')
-    used_date = models.DateField(verbose_name='Used Date', blank=True, null=True, help_text="Date sample used")
     extraction_date = models.DateField(verbose_name='Extraction Date', blank=True, null=True,
                                        help_text='Date of DNA Extraction')
     notes = models.TextField(blank=True, null=True)
@@ -77,6 +79,7 @@ class SubSample(models.Model):
             return self.sample_qc.order_by('-qc_date').first()
         else:
             return None
+
 
 
 class Location(models.Model):
@@ -118,6 +121,7 @@ class Shipment(models.Model):
     reference = models.CharField(max_length=60, null=False, blank=False)
     rutgers_number = models.CharField(max_length=60, blank=True, null=True, help_text='Rutgers Shipment for LCLs')
     notes = models.TextField(null=True, blank=True)
+
 
 class TransformSample(models.Model):
     """

@@ -1,20 +1,19 @@
 from django.db import models
 from django.urls import reverse
 
-STATUS_CHOICES = (('STUDY_COMPLETED', 'Completed'),
-                      ('STUDY_ONGOING', 'Ongoing'),
-                      ('STUDY_NOTFUNDED', 'Not funded'),
-                      ('STUDY_OMIT', 'Omit'))
+STATUS_CHOICES = (('Completed', 'Completed'),
+                  ('Ongoing', 'Ongoing'),
+                  ('Not funded', 'Not funded'),
+                  ('Omit', 'Omit'))
 
 
 class Study(models.Model):
-
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=60, blank=False)
-    precursor = models.CharField(max_length=10, blank=False)
-    description = models.TextField(blank=True)
+    precursor = models.CharField(max_length=10, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ('precursor',)
@@ -26,5 +25,3 @@ class Study(models.Model):
 
     def get_absolute_url(self):
         return reverse('study_detail', args=[str(self.id)])
-
-

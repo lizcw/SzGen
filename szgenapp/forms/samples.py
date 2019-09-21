@@ -1,10 +1,18 @@
-from django.forms import ModelForm, formset_factory, modelformset_factory, modelform_factory
-from django.forms.models import BaseInlineFormSet, inlineformset_factory
+from django.forms import ModelForm, modelform_factory
+from django.forms.models import inlineformset_factory
 
 from szgenapp.models.samples import Sample, SubSample, Shipment, HarvestSample, TransformSample, Location, QC
+from szgenapp.models.participants import StudyParticipant
 
 
 class SampleForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(SampleForm, self).__init__(*args, **kwargs)
+        if hasattr(kwargs.get('initial'), 'participant'):
+            pid = kwargs.get('initial')['participant'].id
+            self.fields['participant'].queryset = StudyParticipant.objects.filter(pk=pid)
+
     class Meta:
         model = Sample
         exclude = ['storage_location']
@@ -14,6 +22,8 @@ class SubSampleForm(ModelForm):
     class Meta:
         model = SubSample
         exclude = ['location']
+        fields = ['sample', 'sample_num', 'sample_type', 'storage_date',
+                  'extraction_date', 'notes', 'used']
 
     def __init__(self, *args, **kwargs):
         self.sample = kwargs.get('sampleid')

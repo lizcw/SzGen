@@ -16,7 +16,7 @@ from szgenapp.forms.document import DocumentForm, ImportForm
 from szgenapp.models.clinical import *
 from szgenapp.models.datasets import *
 from szgenapp.models.document import Document
-from szgenapp.models.participants import Participant, StudyParticipant
+from szgenapp.models.participants import StudyParticipant
 from szgenapp.models.samples import *
 from szgenapp.models.studies import Study
 from szgenapp.tables.document import DocumentTable
@@ -133,6 +133,7 @@ class DocumentImport(FormView):
 
     def data_import(self, doc, datatable):
         fmsg = 'Data import: %s to %s ' % (doc.docfile.name, datatable)
+        errmsg = ''
         if doc and datatable:
             try:
                 ext = doc.getextension()
@@ -159,9 +160,9 @@ class DocumentImport(FormView):
                         # Load samples only (subset)
                         self.importSampleData(df)
                     else:
-                        msg = "%s - %s" % (fmsg, 'Error: unable to match data headers to table headers')
-                        logger.error(msg)
-
+                        errmsg = '- Error: unable to match data headers to table headers'
+                        logger.error(errmsg)
+                msg = "%s %s" % (fmsg, errmsg)
                 return HttpResponse(msg)
             except FileNotFoundError as e:
                 msg = "%s - %s" % (fmsg, e)
@@ -306,7 +307,7 @@ class DocumentImport(FormView):
         df = df.drop_duplicates('full number', keep='first')
 
         for index, row in df.iterrows():
-            fullnumber = row['full number']
+            fullnumber = row['full number'].strip()
             studyparticipants = StudyParticipant.objects.filter(fullnumber__exact=fullnumber)
             if len(fullnumber) <= 0 or studyparticipants.count() > 0:
                 msg = "%s - %s: [Row %d] %s" % (fmsg, 'StudyParticipant EXISTS or Full number is blank - Skipping',
@@ -314,8 +315,8 @@ class DocumentImport(FormView):
                 logger.debug(msg)
                 continue
             else:
-                study = row['Study']
-                alpha = row['alpha']
+                study = row['Study'].strip()
+                alpha = row['alpha'].strip()
                 sid = row['id']
                 studies = Study.objects.filter(title__iexact=study)
                 if studies.count() == 0:
@@ -340,23 +341,8 @@ class DocumentImport(FormView):
                     individual = ''
                     family = ''
                 try:
-                    # Match participant via alphacode
-                    participants = Participant.objects.filter(alphacode__exact=alpha)
-                    if participants.count() == 1:
-                        p = participants.first()
-                        msg = "%s - %s: [Row %d] pid:%d alpha:%s fullnumber: %s" % (
-                            fmsg, 'Participant found', index, p.id, alpha, fullnumber)
-                        logger.debug(msg)
-                    elif participants.count() > 1:
-                        p = participants.first()
-                        msg = "%s - %s: [Row %d] pid:%d alpha:%s fullnumber: %s" % (
-                        fmsg, 'Multiple Participants found - using first', index, p.id, alpha, fullnumber)
-                        logger.debug(msg)
-                    else:
-                        p = Participant.objects.create(status='ACTIVE', country='Unknown', alphacode=alpha, accessid=sid)
-                        msg = "%s - %s: [Row %d] %d fullnumber:%s" % (fmsg, 'Participant CREATED', index, p.id, fullnumber)
-                        logger.debug(msg)
-                    sp = StudyParticipant.objects.create(participant=p, study=study, fullnumber=fullnumber,
+                    sp = StudyParticipant.objects.create(status='ACTIVE', country='UNK', alphacode=alpha, accessid=sid,
+                                                         study=study, fullnumber=fullnumber,
                                                          district=district, family=family, individual=individual)
                     msg = "%s - %s: [Row %d] %d fullnumber:%s" % (fmsg, 'StudyParticipant CREATED', index, sp.id, fullnumber)
                     logger.debug(msg)
@@ -386,7 +372,7 @@ class DocumentImport(FormView):
                 continue
             else:
                 studyparticipant = studyparticipants.first()
-                if hasattr(studyparticipant, 'clinical'):
+                if hasattr(studyparticipant, 'clinical') and hasattr(studyparticipant.clinical, 'id'):
                     msg = "%s - %s: [Row %d] %s" % (
                     fmsg, 'StudyParticipant already has clinical record. Delete this first then rerun import - Skipping',
                     index, participantid)
@@ -394,9 +380,10 @@ class DocumentImport(FormView):
                     continue
                 # Update participant fields
                 try:
-                    participant = studyparticipant.participant
-                    participant.secondaryid = row['secondaryid']
-                    participant.country = row['country']
+                    participant = studyparticipant
+                    if len(row['secondaryid']) > 0:
+                        participant.secondaryid = row['secondaryid'].strip()
+                    participant.country = row['country'].strip()
                     participant.save()
                     msg = "%s - %s: [Row %d] %d fullnumber:%s" % (fmsg, 'Participant UPDATED', index,
                                                                   participant.id, participantid)
@@ -499,7 +486,7 @@ class DocumentImport(FormView):
                                                                      row[subclinical + '-symptom_pattern']),
                                                                  illness_course=validate_int(
                                                                      row[subclinical + '-illness_course']),
-                                                                 curr_gaf=row[subclinical + '-curr_gaf'],
+                                                                 curr_gaf=convert_Nil(row[subclinical + '-curr_gaf']),
                                                                  wl_gaf=row[subclinical + '-wl_gaf'],
                                                                  current_ap_medication=row[
                                                                      subclinical + '-current_ap_medication'],
@@ -516,7 +503,7 @@ class DocumentImport(FormView):
                     elif subclinical == 'symptomsdelusion':
                         try:
                             # all string/text fields
-                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                            fieldlist = {field.name: convert_Nil(row[subclinical + '-' + field.name]) for field in
                                          SymptomsDelusion._meta.fields if field.name != 'clinical'}
                             sub = SymptomsDelusion(clinical=clinical, **fieldlist)
                             sub.save()
@@ -530,7 +517,7 @@ class DocumentImport(FormView):
                     elif subclinical == 'symptomshallucination':
                         try:
                             # all string/text fields
-                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                            fieldlist = {field.name: convert_Nil(row[subclinical + '-' + field.name]) for field in
                                          SymptomsHallucination._meta.fields if field.name != 'clinical'}
                             sub = SymptomsHallucination(clinical=clinical, **fieldlist)
                             sub.save()
@@ -544,7 +531,7 @@ class DocumentImport(FormView):
                     elif subclinical == 'symptomsbehaviour':
                         try:
                             # all string/text fields
-                            fieldlist = {field.name: row[subclinical + '-' + field.name] for field in
+                            fieldlist = {field.name: convert_Nil(row[subclinical + '-' + field.name]) for field in
                                          SymptomsBehaviour._meta.fields if field.name != 'clinical'}
                             sub = SymptomsBehaviour(clinical=clinical, **fieldlist)
                             sub.save()
@@ -605,7 +592,7 @@ class DocumentImport(FormView):
         """
         fmsg = 'IMPORT Sample table data'
         for index, row in df.iterrows():
-            fullnumber = row['full number']
+            fullnumber = row['full number'].strip()
             participants = StudyParticipant.objects.filter(fullnumber__exact=fullnumber)
             if len(fullnumber) <= 0 or participants.count() <= 0:
                 msg = "%s - %s: [Row %d] %s" % (fmsg, 'StudyParticipant NOT FOUND or Full number is blank - Skipping',
@@ -615,50 +602,52 @@ class DocumentImport(FormView):
             else:
                 participant = participants.first()
                 # SAMPLE_TYPE
-                sample_type = row['plasma']
-                if sample_type is None or len(sample_type) <= 0:
-                    msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE NOT FOUND - Skipping', index, fullnumber)
+                sample_types = []
+                plasma = row['plasma'].strip()
+                notes = row['Notes'].strip()
+                wb = row['WB'].strip()  # Highly inconsistent data field
+                if wb not in ['No', 'No?', 'no', 0, ''] or notes == 'WB DNA ONLY':
+                    sample_types.append('WB')
+                if len(sample_types) <= 0 and (plasma is None or len(plasma) <= 0):
+                    msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE NOT FOUND - Unknown', index, fullnumber)
                     logger.error(msg)
-                    continue
-                if sample_type == 'No' and hasattr(row, 'Notes'):
-                    if row['Notes'] == 'WB DNA ONLY':
-                        sample_type = 'WB'
-                    elif 'SALIVA' in row['Notes'].upper():
-                        sample_type = 'SALIVA'
-                    elif 'PAXGENE' in row['Notes'].upper() and 'NO PAXGENE' not in row['Notes'].upper():
+                    sample_types.append('UNKNOWN')
+                else:
+                    if plasma == 'Yes':
+                        sample_types.append('PLASMA')
+                    elif plasma == 'Serum':
+                        sample_types.append('SERUM')
+                    if 'SALIVA' in notes.upper():
+                        sample_types.append('SALIVA')
+                    if 'PAXGENE' in notes.upper() and 'NO PAXGENE' not in notes.upper():
                         # Note there is No Paxgene in notes but not with 'plasma'=No
-                        sample_type = 'PAXGENE'
-                    else:
-                        msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE is NO but cannot be understood - Skipping',
-                                                        index, fullnumber)
-                        logger.error(msg)
-                        continue
-                elif sample_type == 'Serum':
-                    sample_type = 'SERUM'
-                elif sample_type == 'Yes':
-                    sample_type = 'PLASMA'
+                        sample_types.append('PAXGENE')
+                stypes = SampleType.objects.filter(name__in=sample_types)
 
                 # REBLEED
                 rebleed = validate_bool(row['rebleed'])
                 # ARRIVAL DATE
                 arrival = validate_date(row['Arrival date'])
                 # CHECK IF SAMPLE ALREADY EXISTS
-                existing = Sample.objects.filter(participant=participant).filter(sample_type__exact=sample_type).filter(arrival_date=arrival)
+                existing = Sample.objects.filter(participant=participant).filter(arrival_date=arrival).filter(rebleed=rebleed)
                 if existing.count() > 0:
-                    msg = "%s - %s: [Row %d] %s sampleid=%d" % (fmsg, 'Sample exists - Skipping',
-                                                    index, fullnumber, existing.pk)
+                    msg = "%s - %s: [Row %d] %s sampleid=%d" % (fmsg, 'Sample DUPLICATE - Skipping',
+                                                    index, fullnumber, existing[0].pk)
                     logger.error(msg)
                     continue
                 # CREATE SAMPLE
                 try:
                     with transaction.atomic():
                         sample = Sample.objects.create(participant=participant,
-                                                       sample_type=sample_type,
                                                        rebleed=rebleed,
                                                        arrival_date=arrival,
                                                        notes=row['Notes'])
                         msg = "%s - %s: [Row %d] %s sampleid=%d" % (fmsg, 'Sample CREATED',
-                                                        index, fullnumber, sample.pk)
+                                                                    index, fullnumber, sample.pk)
+                        for stype in stypes:
+                            sample.sample_types.add(stype)
+                            msg += ' sample_type=%s' % stype.name
+                        sample.save()
                         logger.debug(msg)
                 except Error as e:
                     msg = "%s - %s: [Row %d] %s : %s" % (fmsg, 'Error: Sample could not be created',
@@ -727,7 +716,7 @@ class DocumentImport(FormView):
                             notes = ''
                             if location is None or location == '':
                                 continue
-                            if location == 'O' or location == 0:
+                            if location == 'o' or location == 'O' or location == 0:
                                 used = True
                                 location_obj = None
                             else:

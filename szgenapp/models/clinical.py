@@ -58,7 +58,7 @@ DSMIV_CHOICES = (
 )
 
 SEVERITY_CHOICES = (
-    ('None', 'None'),
+    ('Nil', 'None'),  # 'Nil' REQUIRED TO PREVENT PYTHON 'None' TYPE MATCH
     ('Question', 'Question'),
     ('Mild', 'Mild'),
     ('Moderate', 'Moderate'),
@@ -107,7 +107,14 @@ ILLNESS_CHOICES = (
 )
 
 GAF_CHOICES = (
-    ('None', '81-100 (None)'),
+    ('Nil', '81-100 (None)'),  # 'Nil' REQUIRED TO PREVENT PYTHON 'None' TYPE MATCH
+    ('Mild', '61-80 (Mild)'),
+    ('Moderate', '31-60 (Moderate)'),
+    ('Severe', '1-30 (Severe)'),
+    ('Unknown', 'Unknown')
+)
+
+WL_GAF_CHOICES = (
     ('Mild', '61-80 (Mild)'),
     ('Moderate', '31-60 (Moderate)'),
     ('Severe', '1-30 (Severe)'),
@@ -338,7 +345,7 @@ class SymptomsGeneral(models.Model):
     curr_gaf = models.CharField(max_length=20, choices=GAF_CHOICES, null=True, blank=True,
                                 verbose_name='Current Global Assessment of Function (GAF)',
                                 help_text='Current (past 30 days) rating on the Global Assessment of Function Scale')
-    wl_gaf = models.CharField(max_length=20, choices=GAF_CHOICES, null=True, blank=True,
+    wl_gaf = models.CharField(max_length=20, choices=WL_GAF_CHOICES, null=True, blank=True,
                               verbose_name='Worst Lifetime Global Assessment of Function (GAF)',
                               help_text='Lowest (lifetime) rating on the Global Assessment of Function Scale')
     current_ap_medication = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,

@@ -3,8 +3,12 @@
 {% block title %}Clinical Details{% endblock %}
 {% block breadcrumbs_items %}
     <ul>
-        <li><a href="/clinical">Clinical Results</a></li>
+        <li><a href="{% url 'clinical_list' %}">Clinical Results</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
+        {% if clinical.participant %}
+            <li><a href="{% url 'participant_detail' clinical.participant.id %}">Participant</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
+        {% endif %}
         <li>Clinical Details</li>
     </ul>
 {% endblock %}
@@ -13,6 +17,10 @@
         <div class="well col-md-12">
             <h3>Clinical Record for {{ clinical.participant|force_escape }}</h3>
             <div class="fixed-action-btn">
+                <a class="btn-floating btn-large orange" title="View Participant Record"
+                   href="{% url 'participant_detail' clinical.participant.id %}">
+                    <i class="large material-icons">perm_identity</i>
+                </a>
                 <a class="btn-floating btn-large green" title="Edit Clinical Record"
                    href="{% url 'clinical_update' clinical.id %}">
                     <i class="material-icons">edit</i>
@@ -21,10 +29,9 @@
                    href="{% url 'clinical_delete' clinical.id %}">
                     <i class="large material-icons">delete</i>
                 </a>
+
             </div>
         </div>
-        <p><a class="btn btn-primary"
-              href="{% url 'participant_detail' clinical.participant.participant.id %}">View Participant</a></p>
 
         <div id="panel-group" class="accordion">
             <div class="panel panel-default">

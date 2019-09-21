@@ -25,8 +25,6 @@ class DatasetFileTable(tables.Table):
     id = tables.LinkColumn('dataset_detail', text='View', args=[A('dataset.id')], verbose_name='')
     group = tables.Column(verbose_name='Group', accessor=A('dataset.group'))
 
-    # participant = tables.LinkColumn('participant_detail', args=[A('participant.participant.id')])
-
     class Meta:
         model = DatasetFile
         template_name = 'django_tables2/bootstrap.html'
@@ -36,7 +34,7 @@ class DatasetFileTable(tables.Table):
 
 class DatasetParticipantTable(tables.Table):
     id = tables.LinkColumn('dataset_detail', text='View', args=[A('dataset.id')], verbose_name='')
-    participant = tables.LinkColumn('participant_detail', args=[A('participant.participant.id')])
+    participant = tables.LinkColumn('participant_detail', args=[A('participant.id')])
     group = tables.Column(verbose_name='Group', accessor=A('dataset.group'))
 
     class Meta:

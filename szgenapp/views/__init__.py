@@ -28,10 +28,11 @@ logging.config.dictConfig({
             'formatter': 'console'
         },
         'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'level': settings.LOG_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'file',
-            'filename': settings.LOG_FILE
+            'filename': settings.LOG_FILE,
+            'maxBytes': 1024*1024*5, # 5 MB
         }
     },
     'loggers': {

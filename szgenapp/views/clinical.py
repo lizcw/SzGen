@@ -14,6 +14,7 @@ from szgenapp.tables import *
 
 logger = logging.getLogger(__name__)
 
+
 class ClinicalDetail(DetailView):
     model = Clinical
     template_name = 'clinical/clinical.html'
@@ -182,13 +183,13 @@ class ClinicalCreate(CreateView):
     form_class = ClinicalForm
 
     def get_initial(self, *args, **kwargs):
-        studyparticipant = None
-        if self.kwargs:
+        initial = super(ClinicalCreate, self).get_initial(**kwargs)
+        if hasattr(self.kwargs, 'participantid'):
             pid = self.kwargs.get('participantid')
             studyparticipant = StudyParticipant.objects.get(pk=pid)
-        initial = super(ClinicalCreate, self).get_initial(**kwargs)
+            initial['participant'] = studyparticipant
+            # self.object.form = ClinicalForm(studyparticipant)
         initial['action'] = 'Create'
-        initial['participant'] = studyparticipant
         return initial
 
     def get_context_data(self, **kwargs):
@@ -214,8 +215,8 @@ class ClinicalCreate(CreateView):
             data['symptoms_behaviour'] = SymptomsBehaviourFormset()
             data['symptoms_depression'] = SymptomsDepressionFormset()
             data['symptoms_mania'] = SymptomsManiaFormset()
-        data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if key != 'form' and
-                           key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
+        data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if
+                           key not in ['form', 'view', 'title', 'object', 'clinical', 'participant']]
         return data
 
     def form_valid(self, form):
@@ -256,6 +257,7 @@ class ClinicalUpdate(UpdateView):
     model = Clinical
     template_name = 'clinical/clinical-create.html'
     form_class = ClinicalForm
+    context_object_name = 'clinical'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalUpdate, self).get_initial()
@@ -298,7 +300,8 @@ class ClinicalUpdate(UpdateView):
             else:
                 data['symptoms_delusion'] = SymptomsDelusionFormset(initial=init)
             if hasattr(self.object, 'symptomsbehaviour'):
-                data['symptoms_hallucination'] = SymptomsHallucinationFormset(instance=self.get_object().symptomshallucination)
+                data['symptoms_hallucination'] = SymptomsHallucinationFormset(
+                    instance=self.get_object().symptomshallucination)
             else:
                 data['symptoms_hallucination'] = SymptomsHallucinationFormset(initial=init)
             if hasattr(self.object, 'symptomsbehaviour'):

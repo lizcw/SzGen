@@ -27,20 +27,6 @@ class StudyFilter(django_filters.FilterSet):
         return parent.filter(status=status)
 
 
-class SubSampleFilter(django_filters.FilterSet):
-    sampletype = django_filters.ModelChoiceFilter()
-
-    class Meta:
-        model = SubSample
-        fields = ['sample_type']
-
-    @property
-    def qs(self):
-        parent = super(SubSampleFilter, self).qs
-        sampletype = getattr(self.request, 'sample_type', None)
-        return parent.filter(sample_type=sampletype)
-
-
 class SampleFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number'
@@ -55,7 +41,7 @@ class SampleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Sample
-        fields = ['participant', 'study', 'arrival_date', 'sample_type', 'rebleed', 'notes']
+        fields = ['participant', 'study', 'arrival_date',  'rebleed', 'notes']
 
 
 class SubSampleListFilter(django_filters.FilterSet):
@@ -74,5 +60,5 @@ class SubSampleListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'study', 'sample_type', 'sample_num', 'storage_date', 'used', 'used_date', 'tank',
+        fields = ['participant', 'study', 'sample_num', 'storage_date', 'used', 'tank',
                   'shelf', 'cell', 'cell__contains', 'notes__contains']

@@ -10,8 +10,9 @@ from django_tables2.views import SingleTableMixin
 from szgenapp.filters.samples import *
 from szgenapp.forms.samples import SampleForm, SubSampleForm, \
     LocationFormset, TransformSampleForm, HarvestSampleForm, \
-    ShipmentFormset, TransformFormset, HarvestFormset, ShipmentForm, QCFormset
-from szgenapp.models.samples import HarvestSample, TransformSample, SAMPLE_TYPES, SUBSAMPLE_TYPES, Shipment
+    ShipmentForm, QCFormset
+from szgenapp.models.samples import HarvestSample, TransformSample, SAMPLE_TYPES, SUBSAMPLE_TYPES, Shipment, SampleType, \
+    Location
 from szgenapp.tables import *
 
 logger = logging.getLogger(__name__)
@@ -58,67 +59,24 @@ class SampleDelete(DeleteView):
 
 class SampleParticipantCreate(CreateView):
     """
-    Enter Sample data for new Sample
+    Enter Sample data for new Sample with Participant
+    ONLY sample fields here - subsamples created with their own forms
     """
     model = Sample
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
 
     def get_initial(self, *args, **kwargs):
-        studyparticipant = None
-        if (self.kwargs):
-            pid = self.kwargs.get('participantid')
-            participant = Participant.objects.get(pk=pid)
-            studyparticipant = participant.studyparticipants.first()
         initial = super(SampleParticipantCreate, self).get_initial(**kwargs)
-        initial['action'] = 'Create'
-        initial['participant'] = studyparticipant
+        if self.kwargs.get('participantid'):
+            pid = self.kwargs.get('participantid')
+            initial['participant'] = StudyParticipant.objects.get(pk=pid)
         return initial
 
     def get_context_data(self, **kwargs):
         data = super(SampleParticipantCreate, self).get_context_data(**kwargs)
-        data['title'] = 'Create Sample'
-        if self.request.POST:
-            data['location'] = LocationFormset(self.request.POST)
-            data['shipment'] = ShipmentFormset(self.request.POST)
-            data['transform'] = TransformFormset(self.request.POST)
-            data['harvest'] = HarvestFormset(self.request.POST)
-        else:
-            data['location'] = LocationFormset()
-            data['shipment'] = ShipmentFormset(instance=self.get_object())
-            data['transform'] = TransformFormset(instance=self.get_object())
-            data['harvest'] = HarvestFormset(instance=self.get_object())
+        data['subtitle'] = 'Create Sample'
         return data
-
-    def form_valid(self, form):
-        try:
-            context = self.get_context_data()
-            location = context['location']
-            shipment = context['shipment']
-            transform = context['transform']
-            harvest = context['harvest']
-            with transaction.atomic():
-                self.object = form.save(commit=False)
-            if form.initial['participant']:
-                self.object.participant = form.initial['participant']
-            # Add additional subforms
-            if shipment.is_valid():
-                shipment.save()
-            if transform.is_valid():
-                transform.save()
-            if harvest.is_valid():
-                harvest.save()
-            if location.is_valid():
-                storage_location = location.save()
-                self.object.storage_location = storage_location
-            # final commit
-            self.object.save()
-            return super(SampleParticipantCreate, self).form_valid(form)
-        except IntegrityError as e:
-            msg = 'Database Error: Unable to create Sample - see Administrator: %s' % e
-            form.add_error(None, msg)
-            logger.error(msg)
-            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.id])
@@ -127,27 +85,20 @@ class SampleParticipantCreate(CreateView):
 class SampleUpdate(UpdateView):
     """
     Update Sample data for new Sample
+    ONLY sample fields here - subsamples created with their own forms
     """
     model = Sample
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
+    context_object_name = 'sample'
 
-    def form_valid(self, form):
-        try:
-            return super(SampleUpdate, self).form_valid(form)
-        except IntegrityError as e:
-            msg = 'Database Error: Unable to update Sample - see Administrator: %s' % e
-            form.add_error(None, msg)
-            logger.error(msg)
-            return self.form_invalid(form)
+    def get_context_data(self, **kwargs):
+        data = super(SampleUpdate, self).get_context_data(**kwargs)
+        data['subtitle'] = 'Update Sample'
+        return data
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.id])
-
-    def get_initial(self, *args, **kwargs):
-        initial = super(SampleUpdate, self).get_initial()
-        initial['action'] = 'Edit'
-        return initial
 
 
 class SampleList(SingleTableMixin, ExportMixin, FilterView):
@@ -182,7 +133,7 @@ class SampleList(SingleTableMixin, ExportMixin, FilterView):
         if study is not None:
             qs = qs.filter(participant__study__id=study)
         if sampletype is not None:
-            qs = qs.filter(sample_type=sampletype)
+            qs = SampleType.objects.get(name__iexact=sampletype).sample_set.all()
 
         return qs
 
@@ -327,6 +278,12 @@ class HarvestSampleUpdate(UpdateView):
     template_name = 'sample/sample-create.html'
     form_class = HarvestSampleForm
 
+    def get_context_data(self, **kwargs):
+        data = super(HarvestSampleUpdate, self).get_context_data(**kwargs)
+        data['subtitle'] = 'Update Harvest record for Sample '
+        data['sample'] = self.get_object().sample
+        return data
+
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.sample.id])
 
@@ -383,8 +340,16 @@ class SubSampleCreate(CreateView):
                 qc.instance = self.object
                 qc.save()
             if location.is_valid():
-                subsample_location = location.save()
-                self.object.location = subsample_location
+                # clean up location if used (note this will destroy location without warning)
+                if self.object.used:
+                    subsample_location = self.object.location
+                    if subsample_location is not None:
+                        Location.objects.remove(subsample_location)
+                        self.object.location = None
+                else:
+                    subsample_location = location.save()
+                    self.object.location = subsample_location
+
             self.object.save()
             return super(SubSampleCreate, self).form_valid(form)
         except IntegrityError as e:

@@ -53,8 +53,54 @@
                     </table>
 
                 </div>
-            </div>
-        </div>
-    </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse6">Related Documents</a>
+                            <span class="badge blue-grey">{{ study.document_set.count }}</span>
+                            <div class="fixed-action-btn">
+                                <a class="btn-floating blue-grey small" title="Add Document"
+                                   href="{% url 'documents_create' %}">
+                                    <i class="material-icons">add</i>
+                                </a>
+                            </div>
+                        </h3>
+                    </div>
+                    <div id="collapse6" class="collapse" data-parent="#panel-group">
+                        <div class="panel-body">
+                            {% if study.document_set.count == 0 %}
+                                <p>No uploaded documents for {{ study }}</p>
+
+                            {% else %}
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Document</th>
+                                        <th>Description</th>
+                                        <th>Size</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for doc in study.document_set.all %}
+                                        <tr>
+                                            <td>{{ doc.docfile.name }}</td>
+                                            <td>{{ doc.description }}</td>
+                                            <td>{{ doc.docfile.name }}</td>
+                                            <td>
+                                                <a class="btn-floating grey small"
+                                                   href="{% url 'documents_detail' doc.id %}" title="View Document">
+                                                    <i class="material-icons">visibility</i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
 
 {% endblock %}

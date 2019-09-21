@@ -6,11 +6,12 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
+from django_tables2 import RequestConfig
 
 from szgenapp.filters.dataset import DatasetFilter, DatasetFileFilter, DatasetParticipantFilter
 from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetRowForm, DatasetFileForm
 from szgenapp.models.datasets import Dataset, DatasetRow, DatasetFile
-from szgenapp.models.participants import Participant
+from szgenapp.models.participants import StudyParticipant
 from szgenapp.models.studies import Study
 from szgenapp.tables.dataset import DatasetTable, DatasetFileTable, DatasetParticipantTable
 
@@ -24,6 +25,14 @@ class DatasetDetail(DetailView):
     model = Dataset
     template_name = 'dataset/dataset.html'
     context_object_name = 'dataset'
+
+    def get_context_data(self, **kwargs):
+        data = super(DatasetDetail, self).get_context_data(**kwargs)
+        qs = DatasetRow.objects.filter(dataset=self.object).order_by('participant__fullnumber')
+        table = DatasetParticipantTable(qs)
+        RequestConfig(self.request, paginate={"per_page": 10}).configure(table)
+        data['participant_table'] = table
+        return data
 
 
 class DatasetCreate(CreateView):
@@ -124,6 +133,7 @@ class DatasetParticipantUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         data = super(DatasetParticipantUpdate, self).get_context_data(**kwargs)
         data['action'] = 'Edit'
+        data['subtitle'] = 'Participant'
         return data
 
     def get_success_url(self):
@@ -207,8 +217,14 @@ class DatasetRowCreate(CreateView):
             initial['dataset'] = Dataset.objects.get(pk=did)
         if self.kwargs.get('participantid'):
             pid = self.kwargs.get('participantid')
-            initial['participant'] = Participant.objects.get(pk=pid)
+            initial['participant'] = StudyParticipant.objects.get(pk=pid)
         return initial
+
+    def get_context_data(self, **kwargs):
+        data = super(DatasetRowCreate, self).get_context_data(**kwargs)
+        data['action'] = 'Create'
+        data['subtitle'] = 'Participant'
+        return data
 
     def get_success_url(self):
         return reverse('dataset_detail', args=[self.object.dataset.id])

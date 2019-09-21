@@ -7,13 +7,6 @@ from szgenapp.models.studies import Study
 class DocumentForm(ModelForm):
     docfile = FileField()
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     for field in iter(self.fields):
-    #         self.fields[field].widget.attrs.update({
-    #             'class': 'form-control'
-    #         })
-
     class Meta:
         model = Document
         fields = ('docfile', 'description', 'study')
@@ -25,9 +18,9 @@ class DocumentForm(ModelForm):
 
 class ImportForm(Form):
     DATA_TABLES = (('Dataset', 'Dataset'), ('Study', 'Study'), ('Participant', 'Participant'), ('Clinical', 'Clinical'), ('Sample', 'Sample'))
-    document = ModelChoiceField(queryset=Document.objects.filter(doctype__in=['.csv']))
-    datatable = ChoiceField(choices=DATA_TABLES)
-    study = ModelChoiceField(queryset=Study.objects.all(), required=False)
+    document = ModelChoiceField(queryset=Document.objects.filter(doctype__in=['.csv']),
+                                help_text="Select the data file to import from")
+    datatable = ChoiceField(choices=DATA_TABLES, help_text="Select the table to load the data into")
 
     class Meta:
-        fields = ['document', 'datatable', 'study']
+        fields = ['document', 'datatable']

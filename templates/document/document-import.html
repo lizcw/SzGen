@@ -13,38 +13,132 @@
         <div class="page-header">
             <h2>Import data from a document</h2>
         </div>
-        <div class="row col-md-6">
-            {% if success %}
-                <div class="alert alert-success">{{ success|force_escape }}</div>
-            {% endif %}
-            {% if error %}
-                <div class="alert alert-error">{{ error|force_escape }}</div>
-            {% endif %}
-            <div class="alert alert-info">
-                <h4>Guidelines</h4>
-                <ol>
-                    <li>CSV files only (currently)</li>
-                    <li>Headers in first line with no gaps, no spaces in headings, no commas</li>
-                    <li>Data cells not empty with no commas, numbers only in number columns</li>
-                    <li>One table per import, ie Studies, Clinical Participants, Datasets, Samples.
-                        Note files should be imported in this order</li>
-                    <li>Existing data will not be overwritten</li>
-                    <li>The fields will be matched to the headings (export a table for an example)</li>
-                    <li>If data is all for only one study, provide the Study otherwise leave blank</li>
-                    <li>For data for all studies, it is recommended to provide a column 'Study' with
-                        the prefix or 'StudyID' with the id (from this database).
-                        This is to ensure participants are added appropriately.</li>
-                </ol>
+        <div class="row">
+            <div class="col-md-12">
+                {% if success %}
+                    <div class="alert alert-success">{{ success|force_escape }}</div>
+                {% endif %}
+                {% if error %}
+                    <div class="alert alert-error">{{ error|force_escape }}</div>
+                {% endif %}
+                <div class="alert alert-info">
+                    <h4>Guidelines for Data Import</h4>
+                    <ol>
+                        <li>Currently only CSV files shown in the table below are supported for import.</li>
+                        <li>There must be no commas in cells (CSV means commas are used to separate the data into
+                            fields).
+                        </li>
+                        <li>Required data cells (such as ID fields, types) should not empty, only numbers should be in
+                            number columns.
+                        </li>
+                        <li>One table is imported at a time, ie Study, Clinical, Participant, Datasets, Samples.
+                            Note files should be imported in the order shown below.
+                        </li>
+                        <li>Existing data will not be overwritten. To re-upload data, first delete the entry in the database.</li>
+                        <li><b>Note: Any partial participant fullnumbers will not be matched.  These must be corrected in the data files first.</b></li>
+                    </ol>
+                </div>
+
+                <h4>Data files currently supported</h4>
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Filename</th>
+                        <th>Fields extracted</th>
+                        <th>Datatable</th>
+                        <th>Comments</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>studies.csv</td>
+                        <td>All</td>
+                        <td>Study</td>
+                        <td><i>Created for import.</i>This will load all the studies.</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>main_table.csv</td>
+                        <td>Fullnumber, alpha, id, study (status=Active, country=Unknown)</td>
+                        <td>Participant</td>
+                        <td><i>Exported from Access DB then saved as 'CSV UTF-8'. Remove all commas.</i>
+                            This will load all the participant data, linked to studies.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>main_table.csv</td>
+                        <td>All sample fields</td>
+                        <td>Sample</td>
+                        <td><i>Exported from Access DB then saved as 'CSV UTF-8'. Remove all commas.</i>
+                            This will load all the sample data, linked to participants.
+                            Check logs for missing data.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>FinalMasterv1Clinical.csv</td>
+                        <td>All fields</td>
+                        <td>Clinical</td>
+                        <td><i>From XLS in Excel, saved as 'CSV UTF-8'.
+                            Search and replace commas with blanks.</i>
+                            This will update the country field for existing participants and load all clinical records for existing participants only.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>datasets.csv</td>
+                        <td>All fields</td>
+                        <td>Dataset</td>
+                        <td><i>Created for import from CompleteDataSet.</i>
+                            This will create datasets and corresponding dataset files.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>CompleteDataSet[GROUP].csv</td>
+                        <td>All fields</td>
+                        <td>Dataset</td>
+                        <td><i>From XLS in Excel, each spreadsheet was saved as 'CSV UTF-8' for that group and rows at the bottom containing notes on files deleted.
+                            Search and replace commas with blanks.</i>
+                            This will create dataset participants for existing participants only.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
             {% if not success %}
-                <div class="well">
+                <b>For the import, select the required table from the Datatable dropdown list.</b>
+                <p>A full data import will take several hours. Check the circle in the browser tab.</p>
+                <div class="well-lg">
                     <form role="form" method="POST" enctype="multipart/form-data" data-ajax="false">
                         {% csrf_token %}
                         {% form form=form %}{% endform %}
-                        <button class="btn waves-effect waves-light" type="submit" name="_submit">Import</button>
+                        <button onclick="javascript: showLoading()" class="btn waves-effect waves-light" type="submit" name="_submit">Import</button>
                     </form>
                 </div>
+                <div id="modal"></div>
             {% endif %}
         </div>
     </div>
+
+    <script type="text/javascript">
+        function showLoading(){
+            console.log("submit - loading");
+            $("body").addClass("loading");
+        }
+
+        {#$(document).ready(function () {#}
+        {#    console.log("document loaded");#}
+        {#    $("body").addClass("loading");#}
+        {#});#}
+        {##}
+        {#$(window).on("load", function () {#}
+        {#    console.log("window loaded");#}
+        {#    $("body").removeClass("loading");#}
+        {#});#}
+
+    </script>
 {% endblock %}

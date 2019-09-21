@@ -1,21 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Participant Delete{% endblock %}
+{% block title %}Participant Remove{% endblock %}
 {% block breadcrumbs_items %}
     <ul>
         <li><a href="{% url 'participants' %}">Participants</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
-        <li><a href="{% url 'participant_detail' participant.id %}">{{ participant }}</a></li>
+        <li><a href="{% url 'participant_detail' object.id %}">{{ object }}</a></li>
     </ul>
 {% endblock %}
 {% block content %}
 <div class="container">
-  <div class="page-header"><h2>Confirm delete </h2></div>
+  <div class="page-header"><h2>Confirm remove</h2></div>
   <div class="row col-md-6">
     <div class="well">
 
     <form method="post">{% csrf_token %}
-        <h5>Are you sure you want to delete Participant "{{ participant }}"?</h5>
-        <p>This will also delete all associated samples, clinical and dataset records.</p>
+        <h5>Are you sure you want to remove this related participant from "{{ object }}"?</h5>
+        <p>This will not delete the data, just unlink it from this participant.</p>
         <div >
                     <table id="view-table" class="ui-responsive table table-hover">
                         <tbody>
@@ -38,18 +38,6 @@
                         <tr>
                             <th>Country</th>
                             <td>{{ participant.get_country_display|force_escape }}</td>
-                        </tr>
-                        <tr>
-                            <th>Samples</th>
-                            <td>{{ participant.samples.count }}</td>
-                        </tr>
-                        <tr>
-                            <th>Clinical</th>
-                            <td>{{ participant.clinical.count }}</td>
-                        </tr>
-                        <tr>
-                            <th>Datasets</th>
-                            <td>{{ participant.datasetrow_set.count }}</td>
                         </tr>
 
                         </tbody>

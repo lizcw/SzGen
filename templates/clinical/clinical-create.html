@@ -3,16 +3,20 @@
 {% load material_form %}
 {% block breadcrumbs_items %}
     <ul>
-        <li><a href="{% url 'clinical_list' %}">Clinical</a></li>
-        <li> &gt;</li>
-        <li>Clinical Record</li>
+        <li><a href="{% url 'clinical_list' %}">Clinical Records</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        {% if participant %}
+        <li><a href="{% url 'participant_detail' participant.id %}">Participant</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        {% endif %}
+        <li>{{ title }}</li>
     </ul>
 {% endblock %}
 
 {% block content %}
     <div class="container row">
         <div class="col s12">
-            <h3>{{ title }}</h3>
+            <h3>{{ title }} </h3>
             {% if not form.fields.participant %}
                 <div class="alert alert-warning">
                     <p>
@@ -22,7 +26,7 @@
                         Participants must be created before creating a clinical record.</p>
                 </div>
             {% endif %}
-            <p class="alert alert-info">It is recommended to enter all data in every section before clicking 'Save'</p>
+            <p class="alert alert-info">Enter data in every section by clicking on the tabs then click 'Save'</p>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 

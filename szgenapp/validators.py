@@ -104,3 +104,13 @@ def validate_date(value):
         dt = None
 
     return dt
+
+def convert_Nil(value):
+    """
+    Converts 'None' values to 'Nil' to prevent issues with Python's None
+    :param value:
+    :return:
+    """
+    if isinstance(value, str) and value == 'None':
+        return 'Nil'
+    return value
