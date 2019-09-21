@@ -1,7 +1,8 @@
 .idea/
-db.sqlite3
-SzGen/__pycache__/settings.cpython-37.pyc
+db.sqlite3*
 *.pyc
 *.csv
 *.env
 *.log
+*.xlsx
+media/

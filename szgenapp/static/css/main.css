@@ -30,6 +30,9 @@ footer {
     padding: 15px 0 0 15px;
 }
 
+.panel-title .badge {
+    float: none;
+}
 
 /*.wrapper {*/
 /*    display: grid;*/
@@ -133,6 +136,29 @@ li.active {
 .errorlist li {
     color: red;
 }
+
+/********************************
+Loading spinner
+ */
+#modal {
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100vh;
+    width:      100vw;
+    background: rgba( 255, 255, 255, .8 )
+                url('http://i.stack.imgur.com/FhHRx.gif')
+                50% 50%
+                no-repeat;
+}
+
+body #modal {
+    display: none;
+}
+body.loading #modal {
+    display: block;
+}
 /********************************
 Dropdown menus
 *********************************/
@@ -206,11 +232,15 @@ Dropdown menus
     border-radius: 50%;
 }
 
+#id_sample_qc-0-DELETE_container label {
+    float:right;
+}
+
 /********************************
 Tables
 *********************************/
 #summary td {
-    max-width: 0vw;
+    max-width: 10vw;
 }
 /********************************
 Pagination
