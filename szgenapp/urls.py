@@ -133,7 +133,7 @@ urlpatterns = [
                   path('documents/<int:pk>/', DocumentDetail.as_view(), name="documents_detail"),
                   path('documents/<int:pk>/update/', DocumentUpdate.as_view(), name="documents_update"),
                   path('documents/<int:pk>/delete/', DocumentDelete.as_view(), name="documents_delete"),
-                  path('documents/list/', DocumentList.as_view(), name='documents_list'),
+                  path('documents/', DocumentList.as_view(), name='documents_list'),
                   path('documents/import/<int:pk>', DocumentImport.as_view(), name='documents_data_import')
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

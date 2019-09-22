@@ -20,7 +20,7 @@ from szgenapp.models.participants import StudyParticipant
 from szgenapp.models.samples import *
 from szgenapp.models.studies import Study
 from szgenapp.tables.document import DocumentTable
-from szgenapp.validators import validate_int, validate_bool, validate_date
+from szgenapp.validators import validate_int, validate_bool, validate_date, convert_Nil
 
 logger = logging.getLogger(__name__)
 
@@ -218,7 +218,7 @@ class DocumentImport(FormView):
             try:
                 group = row['Group']
                 ds = Dataset.objects.filter(group__iexact=group)
-                msg = "%s - %s: %s" % (fmsg, 'Created dataset group', ds.group)
+                msg = "%s - %s: %s" % (fmsg, 'Created dataset group', group)
                 logger.debug(msg)
                 if ds.count() == 0:
                     ds = Dataset.objects.create(group=group)
@@ -315,9 +315,12 @@ class DocumentImport(FormView):
                 logger.debug(msg)
                 continue
             else:
-                study = row['Study'].strip()
+                study = row['Study'].strip().replace('-', ' ')
                 alpha = row['alpha'].strip()
                 sid = row['id']
+                # Incorrect entry in Access DB
+                if study == 'Cadence CoME':
+                    study = 'Cadence CoMet'
                 studies = Study.objects.filter(title__iexact=study)
                 if studies.count() == 0:
                     msg = "%s - %s: [Row %d] %s" % (fmsg, 'Study not found - Skipping', index, study)
@@ -609,9 +612,9 @@ class DocumentImport(FormView):
                 if wb not in ['No', 'No?', 'no', 0, ''] or notes == 'WB DNA ONLY':
                     sample_types.append('WB')
                 if len(sample_types) <= 0 and (plasma is None or len(plasma) <= 0):
-                    msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE NOT FOUND - Unknown', index, fullnumber)
-                    logger.error(msg)
                     sample_types.append('UNKNOWN')
+                    msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE NOT FOUND - setting Unknown', index, fullnumber)
+                    logger.error(msg)
                 else:
                     if plasma == 'Yes':
                         sample_types.append('PLASMA')
@@ -622,18 +625,43 @@ class DocumentImport(FormView):
                     if 'PAXGENE' in notes.upper() and 'NO PAXGENE' not in notes.upper():
                         # Note there is No Paxgene in notes but not with 'plasma'=No
                         sample_types.append('PAXGENE')
+                if len(sample_types) <= 0:
+                    sample_types.append('UNKNOWN')
+                    msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE CAN NOT BE UNDERSTOOD - setting Unknown', index, fullnumber)
+                    logger.error(msg)
+
                 stypes = SampleType.objects.filter(name__in=sample_types)
+                # Check SampleType exists (should be set up by Admin) otherwise create based on SAMPLE_TYPES
+                if stypes.count() == 0:
+                    types = [x for x in SAMPLE_TYPES if x[0] in sample_types]
+                    for type in types:
+                        s, created = SampleType.objects.get_or_create(name=type[0])
+                        if created:
+                            msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE created', index, s)
+                            logger.info(msg)
+                    stypes = SampleType.objects.filter(name__in=sample_types)
+
 
                 # REBLEED
                 rebleed = validate_bool(row['rebleed'])
                 # ARRIVAL DATE
                 arrival = validate_date(row['Arrival date'])
-                # CHECK IF SAMPLE ALREADY EXISTS
+                # CHECK IF SAMPLE ALREADY EXISTS - DUPLICATED
                 existing = Sample.objects.filter(participant=participant).filter(arrival_date=arrival).filter(rebleed=rebleed)
                 if existing.count() > 0:
-                    msg = "%s - %s: [Row %d] %s sampleid=%d" % (fmsg, 'Sample DUPLICATE - Skipping',
-                                                    index, fullnumber, existing[0].pk)
-                    logger.error(msg)
+                    # Append access id if different otherwise assume re-run and just skip (DEBUG)
+                    if str(row['id']) in participant.accessid:
+                        msg = "%s - %s: [Row %d] %s SampleId=%d already loaded" % (
+                            fmsg, 'Sample LOADED - Skipping', index, fullnumber, existing[0].pk)
+                        logger.debug(msg)
+                    else:
+                        accessid = "%s, %s" % (participant.accessid, row['id'])
+                        participant.accessid = accessid
+                        participant.save()
+                        msg = "%s - %s: [Row %d] %s existingSampleId=%d AccessID=%s existingAccessID=%s" % (
+                            fmsg, 'Sample DUPLICATE - Access ID appended', index, fullnumber, existing[0].pk, participant.accessid,
+                            row['id'])
+                        logger.error(msg)
                     continue
                 # CREATE SAMPLE
                 try:

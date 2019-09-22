@@ -68,6 +68,9 @@ class StudyParticipantList(SingleTableMixin, ExportMixin, FilterView):
     filterset_class = StudyParticipantFilter
     table_class = StudyParticipantTable
 
+    def get_queryset(self):
+        return StudyParticipant.objects.all().order_by('fullnumber')
+
 class StudyParticipantDelete(DeleteView):
     """
     Delete a Participant and all studyparticipants, samples

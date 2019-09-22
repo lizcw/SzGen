@@ -49,8 +49,11 @@
                         {% if user.first_name %}
                             {{ user.first_name }} {{ user.last_name }}
                         {% else %}{{ user.username }}{% endif %}</span></a>
-                    <a href="{% url 'profile' %}" title="Edit User Email"><span class="white-text email">{{ user.email }}</span></a>
-                    <a href="{% url 'logout' %}" title="Logout" class="white-text">Logout <i class="material-icons">exit_to_app</i></a>
+                    <a href="{% url 'profile' %}" title="Edit User Email"><span
+                            class="white-text email">{{ user.email }}</span></a>
+                <div class="btn btn-primary">
+                    <a  href="{% url 'logout' %}" title="Logout" class="white-text">Logout <i
+                            class="material-icons">exit_to_app</i></a></div>
                 </div>
             </li>
             <li><a href="{% url 'index' %}" class="collapsible-header">Studies<i class="material-icons">home</i></a>
@@ -73,7 +76,9 @@
             <li><a href="{% url 'documents_list' %}" class="collapsible-header">Documents<i
                     class="material-icons">link</i></a>
             </li>
-            <li><a class="waves-effect" href="/admin">Settings<i class="material-icons">settings</i></a></li>
+            {% if user.is_superuser %}
+            <li><a href="/admin">Settings<i class="material-icons">settings</i></a></li>
+            {% endif %}
         </ul>
 
     </div>
@@ -89,7 +94,7 @@
 {% else %}
     <div class="content-frontpage">
         <section>
-        <h3>Login</h3>
+            <h3>Login</h3>
             {% if form.non_field_errors %}
                 <p class="alert alert-danger">
                     {% for error in form.non_field_errors %}
@@ -112,7 +117,7 @@
                 <div class="form-group">
                     <label for="password"><i class="glyphicon glyphicon-lock"></i></label>
                     <input id="password" type="password" class="form-control" name="password"
-                                               placeholder="Password"/>
+                           placeholder="Password"/>
                 </div>
                 <br/>
                 <div class="form-group-lg">
@@ -135,7 +140,7 @@
 
 <footer class="footer-copyright">
     <p><a href="mailto:{{ contact_email|urlencode }}">Contact admin</a> |
-    &copy; 2019 Queensland Brain Institute</p>
+        &copy; 2019 Queensland Brain Institute</p>
 </footer>
 
 <!-- Materialize JavaScript -->

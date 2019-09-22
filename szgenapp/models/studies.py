@@ -1,6 +1,9 @@
 from django.db import models
 from django.urls import reverse
 
+from szgenapp.models.samples import Sample
+from szgenapp.models.clinical import Clinical
+
 STATUS_CHOICES = (('Completed', 'Completed'),
                   ('Ongoing', 'Ongoing'),
                   ('Not funded', 'Not funded'),
@@ -25,3 +28,11 @@ class Study(models.Model):
 
     def get_absolute_url(self):
         return reverse('study_detail', args=[str(self.id)])
+
+    def get_sample_count(self):
+        samples = Sample.objects.filter(participant__study__id__exact=self.id)
+        return samples.count()
+
+    def get_clinical_count(self):
+        clinical = Clinical.objects.filter(participant__study__id__exact=self.id)
+        return clinical.count()
