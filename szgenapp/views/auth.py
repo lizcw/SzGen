@@ -9,6 +9,7 @@ from django.template import RequestContext
 from django.urls import reverse_lazy
 from django.views.generic import FormView, RedirectView
 from ipware.ip import get_ip
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from szgenapp.forms.auth import UserUpdateForm
 
@@ -155,7 +156,7 @@ def csrf_failure(request, reason=""):
     return render(request, template_name, ctx)
 
 
-class ProfileView(FormView):
+class ProfileView(LoginRequiredMixin, FormView):
     template_name = 'auth/profile.html'
     success_url = reverse_lazy('index')
     form_class = UserUpdateForm

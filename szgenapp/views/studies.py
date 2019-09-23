@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ def index(request):
 
 
 ######## STUDY ########
-class StudyDetail(DetailView):
+class StudyDetail(LoginRequiredMixin, DetailView):
     """
     View details of a study
     """
@@ -56,13 +58,14 @@ class StudyDetail(DetailView):
     context_object_name = 'study'
 
 
-class StudyCreate(CreateView):
+class StudyCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Enter study data for new study
     """
     model = Study
     template_name = 'study/study-create.html'
     form_class = StudyForm
+    permission_required = 'can_create'
 
     def form_valid(self, form):
         try:
@@ -83,13 +86,14 @@ class StudyCreate(CreateView):
 
 
 
-class StudyUpdate(UpdateView):
+class StudyUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Enter study data for new study
     """
     model = Study
     template_name = 'study/study-create.html'
     form_class = StudyForm
+    permission_required = 'can_update'
 
     def form_valid(self, form):
         try:
@@ -109,10 +113,11 @@ class StudyUpdate(UpdateView):
         return initial
 
 
-class StudyDelete(DeleteView):
+class StudyDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete a Study and all participants
     """
     model = Study
     success_url = reverse_lazy("index")
     template_name = 'study/study-confirm-delete.html'
+    permission_required = 'can_delete'

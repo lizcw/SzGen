@@ -7,6 +7,8 @@ from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 from django_tables2 import RequestConfig
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 from szgenapp.filters.dataset import DatasetFilter, DatasetFileFilter, DatasetParticipantFilter
 from szgenapp.forms.datasets import DatasetForm, DatasetFileFormset, DatasetRowForm, DatasetFileForm
@@ -18,7 +20,7 @@ from szgenapp.tables.dataset import DatasetTable, DatasetFileTable, DatasetParti
 logger = logging.getLogger(__name__)
 
 
-class DatasetDetail(DetailView):
+class DatasetDetail(LoginRequiredMixin, DetailView):
     """
     View details of a Dataset
     """
@@ -35,13 +37,14 @@ class DatasetDetail(DetailView):
         return data
 
 
-class DatasetCreate(CreateView):
+class DatasetCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Enter Dataset data for new Dataset
     """
     model = Dataset
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetForm
+    permission_required = 'can_create'
 
     def get_context_data(self, **kwargs):
         data = super(DatasetCreate, self).get_context_data(**kwargs)
@@ -73,13 +76,14 @@ class DatasetCreate(CreateView):
         return reverse('dataset_detail', args=[self.object.dataset.id])
 
 
-class DatasetUpdate(UpdateView):
+class DatasetUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Enter Dataset data for new Dataset
     """
     model = Dataset
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetForm
+    permission_required = 'can_update'
 
     def get_context_data(self, **kwargs):
         data = super(DatasetUpdate, self).get_context_data(**kwargs)
@@ -113,22 +117,24 @@ class DatasetUpdate(UpdateView):
         return reverse('dataset_detail', args=[self.object.dataset.id])
 
 
-class DatasetDelete(DeleteView):
+class DatasetDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete a Dataset and all dataset participants, files
     """
     model = Dataset
     success_url = reverse_lazy("datasets")
     template_name = 'dataset/dataset-confirm-delete.html'
+    permission_required = 'can_delete'
 
 
-class DatasetParticipantUpdate(UpdateView):
+class DatasetParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Enter Participant data for a Dataset
     """
     model = DatasetRow
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetRowForm
+    permission_required = 'can_update'
 
     def get_initial(self):
         data = super(DatasetParticipantUpdate, self).get_initial()
@@ -207,13 +213,14 @@ class DatasetParticipantList(SingleTableMixin, ExportMixin, FilterView):
         return context
 
 
-class DatasetRowCreate(CreateView):
+class DatasetRowCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Enter Dataset data for Participant
     """
     model = DatasetRow
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetRowForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(DatasetRowCreate, self).get_initial(**kwargs)
@@ -236,13 +243,14 @@ class DatasetRowCreate(CreateView):
         return reverse('dataset_detail', args=[self.object.dataset.id])
 
 
-class DatasetFileCreate(CreateView):
+class DatasetFileCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Create a dataset file for a dataset
     """
     model = DatasetFile
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetFileForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(DatasetFileCreate, self).get_initial(**kwargs)
@@ -256,13 +264,14 @@ class DatasetFileCreate(CreateView):
         return reverse('dataset_detail', args=[self.object.dataset.id])
 
 
-class DatasetFileUpdate(UpdateView):
+class DatasetFileUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update a dataset file for a dataset
     """
     model = DatasetFile
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetFileForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)

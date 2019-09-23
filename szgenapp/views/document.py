@@ -10,6 +10,7 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView,
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from szgenapp.filters.document import DocumentFilter
 from szgenapp.forms.document import DocumentForm, ImportForm
@@ -25,7 +26,7 @@ from szgenapp.validators import validate_int, validate_bool, validate_date, conv
 logger = logging.getLogger(__name__)
 
 # DOCUMENTS
-class DocumentList(SingleTableMixin, ExportMixin, FilterView):
+class DocumentList(LoginRequiredMixin, SingleTableMixin, ExportMixin, FilterView):
     """
     List of Documents
     """
@@ -41,7 +42,7 @@ class DocumentList(SingleTableMixin, ExportMixin, FilterView):
         return context
 
 
-class DocumentDetail(DetailView):
+class DocumentDetail(LoginRequiredMixin, DetailView):
     """
     Information about single document
     """
@@ -50,7 +51,7 @@ class DocumentDetail(DetailView):
     template_name = 'document/document-view.html'
 
 
-class DocumentCreate(CreateView):
+class DocumentCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Create a document from uploaded file
     """
@@ -58,6 +59,7 @@ class DocumentCreate(CreateView):
     template_name = 'document/document-create.html'
     form_class = DocumentForm
     success_url = reverse_lazy('documents_list')
+    permission_required = 'can_create'
 
     def form_valid(self, form):
         try:
@@ -79,7 +81,7 @@ class DocumentCreate(CreateView):
         return reverse('documents_detail', args=[self.object.pk])
 
 
-class DocumentUpdate(UpdateView):
+class DocumentUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update a document details
     """
@@ -87,18 +89,20 @@ class DocumentUpdate(UpdateView):
     form_class = DocumentForm
     template_name = 'document/document-create.html'
     success_url = reverse_lazy('documents_list')
+    permission_required = 'can_update'
 
 
-class DocumentDelete(DeleteView):
+class DocumentDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete document
     """
     model = Document
     success_url = reverse_lazy("documents_list")
     template_name = 'document/document-confirm-delete.html'
+    permission_required = 'can_delete'
 
 
-class DocumentImport(FormView):
+class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """
     Import data from document
     1. CSV files only
@@ -108,6 +112,7 @@ class DocumentImport(FormView):
     """
     template_name = 'document/document-import.html'
     form_class = ImportForm
+    permission_required = 'can_import_data'
 
     def get_initial(self):
         initial = super(self.__class__, self).get_initial()

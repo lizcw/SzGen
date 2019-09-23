@@ -85,6 +85,10 @@ h3 {
     height: 70vh;
 }
 
+.card-title {
+    font-size: 1.4rem;
+}
+
 #homepage .title-card {
     width: 60vw;
     height: auto;

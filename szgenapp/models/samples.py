@@ -21,7 +21,7 @@ class SampleType(models.Model):
     """
     Type of Sample
     """
-    name = models.CharField(max_length=30, choices=SAMPLE_TYPES)
+    name = models.CharField(max_length=30, choices=SAMPLE_TYPES, unique=True)
 
     def __str__(self):
         return self.name

@@ -30,7 +30,7 @@
                         <i class="large material-icons">archive</i></a>
 
                 {% endif %}
-                {% if document.getextension == '.csv' %}
+                {% if document.getextension == '.csv' and perms.szgenapp.can_import_data %}
                     <a class="btn btn-floating blue btn-large"
                        href="{% url 'documents_data_import' document.id %}"
                        title="Import data from document">

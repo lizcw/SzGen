@@ -6,6 +6,8 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 from szgenapp.filters.samples import *
 from szgenapp.forms.samples import SampleForm, SubSampleForm, \
@@ -18,7 +20,7 @@ from szgenapp.tables import *
 logger = logging.getLogger(__name__)
 
 
-class SampleDetail(DetailView):
+class SampleDetail(LoginRequiredMixin, DetailView):
     """
     View details of a blood sample
     """
@@ -37,18 +39,19 @@ class SampleDetail(DetailView):
         return data
 
 
-class SampleDelete(DeleteView):
+class SampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete a Sample and all subsamples
     """
     model = Sample
     template_name = 'sample/sample-confirm-delete.html'
+    permission_required = 'can_delete'
 
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.participant.id])
 
 
-class SampleParticipantCreate(CreateView):
+class SampleParticipantCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Enter Sample data for new Sample with Participant
     ONLY sample fields here - subsamples created with their own forms
@@ -56,6 +59,7 @@ class SampleParticipantCreate(CreateView):
     model = Sample
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(SampleParticipantCreate, self).get_initial(**kwargs)
@@ -76,7 +80,7 @@ class SampleParticipantCreate(CreateView):
         return reverse('sample_detail', args=[self.object.id])
 
 
-class SampleUpdate(UpdateView):
+class SampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update Sample data for new Sample
     ONLY sample fields here - subsamples created with their own forms
@@ -86,6 +90,7 @@ class SampleUpdate(UpdateView):
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
     context_object_name = 'sample'
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(SampleUpdate, self).get_initial(**kwargs)
@@ -190,7 +195,7 @@ SHIPMENT
 """
 
 
-class ShipmentCreate(CreateView):
+class ShipmentCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Add Shipment data to new Sample
     """
@@ -198,6 +203,7 @@ class ShipmentCreate(CreateView):
     template_name = 'sample/sample-create.html'
     form_class = ShipmentForm
     sample = Sample
+    permission_required = 'can_create'
 
     def get_initial(self):
         initial = super(ShipmentCreate, self).get_initial()
@@ -214,13 +220,14 @@ class ShipmentCreate(CreateView):
         return reverse('sample_detail', args=[self.sample.id])
 
 
-class ShipmentUpdate(UpdateView):
+class ShipmentUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update Shipment data only
     """
     model = Shipment
     template_name = 'sample/sample-create.html'
     form_class = ShipmentForm
+    permission_required = 'can_update'
 
     def get_initial(self):
         data = super(ShipmentUpdate, self).get_initial()
@@ -235,12 +242,13 @@ class ShipmentUpdate(UpdateView):
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.sample.id])
 
-class ShipmentDelete(DeleteView):
+class ShipmentDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete shipment
     """
     model = Shipment
     template_name = 'sample/subsample-confirm-delete.html'
+    permission_required = 'can_delete'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -255,7 +263,7 @@ QUALITY CONTROL
 """
 
 
-class QCCreate(CreateView):
+class QCCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Add Shipment data to new Sample
     """
@@ -263,6 +271,7 @@ class QCCreate(CreateView):
     template_name = 'sample/sample-create.html'
     form_class = QCForm
     sample = Sample
+    permission_required = 'can_create'
 
     def get_initial(self):
         initial = super(QCCreate, self).get_initial()
@@ -279,13 +288,14 @@ class QCCreate(CreateView):
         return reverse('sample_detail', args=[self.sample.id])
 
 
-class QCUpdate(UpdateView):
+class QCUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update QC data only
     """
     model = QC
     template_name = 'sample/sample-create.html'
     form_class = QCForm
+    permission_required = 'can_update'
 
     def get_initial(self):
         data = super(QCUpdate, self).get_initial()
@@ -301,12 +311,13 @@ class QCUpdate(UpdateView):
         return reverse('sample_detail', args=[self.object.sample.id])
 
 
-class QCDelete(DeleteView):
+class QCDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete QC
     """
     model = QC
     template_name = 'sample/subsample-confirm-delete.html'
+    permission_required = 'can_delete'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -321,7 +332,7 @@ TRANSFORMS
 """
 
 
-class TransformSampleCreate(CreateView):
+class TransformSampleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Add Sample Transform data to new Sample
     """
@@ -329,6 +340,7 @@ class TransformSampleCreate(CreateView):
     template_name = 'sample/sample-create.html'
     form_class = TransformSampleForm
     sample = Sample
+    permission_required = 'can_create'
 
     def get_initial(self):
         data = super(TransformSampleCreate, self).get_initial()
@@ -346,13 +358,14 @@ class TransformSampleCreate(CreateView):
         return reverse('sample_detail', args=[self.sample.id])
 
 
-class TransformSampleUpdate(UpdateView):
+class TransformSampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update TransformSample data only
     """
     model = TransformSample
     template_name = 'sample/sample-create.html'
     form_class = TransformSampleForm
+    permission_required = 'can_update'
 
     def get_initial(self):
         data = super(TransformSampleUpdate, self).get_initial()
@@ -368,12 +381,13 @@ class TransformSampleUpdate(UpdateView):
         return reverse('sample_detail', args=[self.object.sample.id])
 
 
-class TransformSampleDelete(DeleteView):
+class TransformSampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete transform
     """
     model = TransformSample
     template_name = 'sample/subsample-confirm-delete.html'
+    permission_required = 'can_delete'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -388,7 +402,7 @@ HARVESTS
 """
 
 
-class HarvestSampleCreate(CreateView):
+class HarvestSampleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Add Sample Harvest data to new Sample
     """
@@ -396,6 +410,7 @@ class HarvestSampleCreate(CreateView):
     template_name = 'sample/sample-create.html'
     form_class = HarvestSampleForm
     sample = Sample
+    permission_required = 'can_create'
 
     def get_initial(self):
         data = super(HarvestSampleCreate, self).get_initial()
@@ -413,13 +428,14 @@ class HarvestSampleCreate(CreateView):
         return reverse('sample_detail', args=[self.sample.id])
 
 
-class HarvestSampleUpdate(UpdateView):
+class HarvestSampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update HarvestSample data only
     """
     model = HarvestSample
     template_name = 'sample/sample-create.html'
     form_class = HarvestSampleForm
+    permission_required = 'can_update'
 
     def get_initial(self):
         data = super(HarvestSampleUpdate, self).get_initial()
@@ -434,12 +450,13 @@ class HarvestSampleUpdate(UpdateView):
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.sample.id])
 
-class HarvestSampleDelete(DeleteView):
+class HarvestSampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete Harvest
     """
     model = HarvestSample
     template_name = 'sample/subsample-confirm-delete.html'
+    permission_required = 'can_delete'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -454,7 +471,7 @@ SUBSAMPLES
 """
 
 
-class SubSampleCreate(CreateView):
+class SubSampleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Add subsample of various types: Lymphocyte, LCL, DNA
     """
@@ -463,6 +480,7 @@ class SubSampleCreate(CreateView):
     form_class = SubSampleForm
     sample = Sample
     subtitle = 'Create Subsample'
+    permission_required = 'can_create'
 
     def get_initial(self, **kwargs):
         initial = super(SubSampleCreate, self).get_initial(**kwargs)
@@ -510,13 +528,14 @@ class SubSampleCreate(CreateView):
         return reverse('sample_detail', args=[self.sample.id])
 
 
-class SubSampleUpdate(UpdateView):
+class SubSampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Update Sample data for new Sample
     """
     model = SubSample
     template_name = 'sample/sample-create.html'
     form_class = SubSampleForm
+    permission_required = 'can_update'
 
     def get_initial(self, **kwargs):
         initial = super(SubSampleUpdate, self).get_initial(**kwargs)
@@ -558,12 +577,13 @@ class SubSampleUpdate(UpdateView):
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.sample.id])
 
-class SubSampleDelete(DeleteView):
+class SubSampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete SubSample
     """
     model = SubSample
     template_name = 'sample/subsample-confirm-delete.html'
+    permission_required = 'can_delete'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)

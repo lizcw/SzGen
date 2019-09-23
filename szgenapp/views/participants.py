@@ -6,6 +6,8 @@ from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
 from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 from szgenapp.filters.participants import *
 from szgenapp.forms.participants import StudyParticipantForm, StudyParticipantRelatedForm
@@ -14,7 +16,7 @@ from szgenapp.tables.participants import *
 logger = logging.getLogger(__name__)
 
 ######## STUDY PARTICIPANT ########
-class StudyParticipantDetail(DetailView):
+class StudyParticipantDetail(LoginRequiredMixin, DetailView):
     """
     View details of a study
     """
@@ -23,13 +25,14 @@ class StudyParticipantDetail(DetailView):
     context_object_name = 'participant'
 
 
-class StudyParticipantCreate(CreateView):
+class StudyParticipantCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     Enter study data for new study
     """
     model = StudyParticipant
     template_name = 'participant/studyparticipant-create.html'
     form_class = StudyParticipantForm
+    permission_required = 'can_create'
 
 
     def get_success_url(self):
@@ -41,13 +44,14 @@ class StudyParticipantCreate(CreateView):
         return initial
 
 
-class StudyParticipantUpdate(UpdateView):
+class StudyParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Enter study data for new study
     """
     model = StudyParticipant
     template_name = 'participant/studyparticipant-create.html'
     form_class = StudyParticipantForm
+    permission_required = 'can_update'
 
 
     def get_success_url(self):
@@ -71,7 +75,7 @@ class StudyParticipantList(SingleTableMixin, ExportMixin, FilterView):
     def get_queryset(self):
         return StudyParticipant.objects.all().order_by('fullnumber')
 
-class StudyParticipantDelete(DeleteView):
+class StudyParticipantDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete a Participant and all studyparticipants, samples
     """
@@ -79,8 +83,9 @@ class StudyParticipantDelete(DeleteView):
     success_url = reverse_lazy("participants")
     template_name = 'participant/participant-confirm-delete.html'
     context_object_name = 'participant'
+    permission_required = 'can_delete'
 
-class StudyParticipantAdd(UpdateView):
+class StudyParticipantAdd(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     Add a related participant
     """
@@ -88,17 +93,19 @@ class StudyParticipantAdd(UpdateView):
     template_name = 'participant/participant-related.html'
     context_object_name = 'participant'
     form_class = StudyParticipantRelatedForm
+    permission_required = 'can_update'
 
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.id])
 
-class StudyParticipantRemove(DeleteView):
+class StudyParticipantRemove(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Remove a related participant
     """
     model = StudyParticipant
     template_name = 'participant/participant-confirm-remove.html'
     success_url = reverse_lazy("participants")
+    permission_required = 'can_delete'
 
     def get_context_data(self, *args, **kwargs):
         data = super(StudyParticipantRemove, self).get_context_data(*args, **kwargs)

@@ -7,6 +7,7 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 from django_tables2.views import SingleTableMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from szgenapp.filters import *
 from szgenapp.forms.clinical import *
@@ -15,13 +16,13 @@ from szgenapp.tables import *
 logger = logging.getLogger(__name__)
 
 
-class ClinicalDetail(DetailView):
+class ClinicalDetail(LoginRequiredMixin, DetailView):
     model = Clinical
     template_name = 'clinical/clinical.html'
     context_object_name = 'clinical'
 
 
-class ClinicalList(SingleTableMixin, ExportMixin, FilterView):
+class ClinicalList(LoginRequiredMixin, SingleTableMixin, ExportMixin, FilterView):
     """
     List of top level Clinical records with filters and export
     """
@@ -51,7 +52,7 @@ class ClinicalList(SingleTableMixin, ExportMixin, FilterView):
         return qs.order_by('id')
 
 
-class ClinicalDemographicList(SingleTableMixin, FilterView):
+class ClinicalDemographicList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Demographic
     table_class = DemographicTable
     paginate_by = 10
@@ -65,7 +66,7 @@ class ClinicalDemographicList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalDiagnosisList(SingleTableMixin, FilterView):
+class ClinicalDiagnosisList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Diagnosis
     table_class = DiagnosisTable
     paginate_by = 10
@@ -79,7 +80,7 @@ class ClinicalDiagnosisList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalMedicalList(SingleTableMixin, FilterView):
+class ClinicalMedicalList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = MedicalHistory
     table_class = MedicalHistoryTable
     paginate_by = 10
@@ -93,7 +94,7 @@ class ClinicalMedicalList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalSymptomsGeneralList(SingleTableMixin, FilterView):
+class ClinicalSymptomsGeneralList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsGeneral
     table_class = SymptomsGeneralTable
     paginate_by = 10
@@ -107,7 +108,7 @@ class ClinicalSymptomsGeneralList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalSymptomsDelusionList(SingleTableMixin, FilterView):
+class ClinicalSymptomsDelusionList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsDelusion
     table_class = SymptomsDelusionTable
     paginate_by = 10
@@ -121,7 +122,7 @@ class ClinicalSymptomsDelusionList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalSymptomsHallucinationList(SingleTableMixin, FilterView):
+class ClinicalSymptomsHallucinationList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsHallucination
     table_class = SymptomsHallucinationTable
     paginate_by = 10
@@ -135,7 +136,7 @@ class ClinicalSymptomsHallucinationList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalSymptomsBehaviourList(SingleTableMixin, FilterView):
+class ClinicalSymptomsBehaviourList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsBehaviour
     table_class = SymptomsBehaviourTable
     paginate_by = 10
@@ -149,7 +150,7 @@ class ClinicalSymptomsBehaviourList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalSymptomsDepressionList(SingleTableMixin, FilterView):
+class ClinicalSymptomsDepressionList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsDepression
     table_class = SymptomsDepressionTable
     paginate_by = 10
@@ -163,7 +164,7 @@ class ClinicalSymptomsDepressionList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalSymptomsManiaList(SingleTableMixin, FilterView):
+class ClinicalSymptomsManiaList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsMania
     table_class = SymptomsManiaTable
     paginate_by = 10
@@ -177,10 +178,11 @@ class ClinicalSymptomsManiaList(SingleTableMixin, FilterView):
         return data
 
 
-class ClinicalCreate(CreateView):
+class ClinicalCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Clinical
     template_name = 'clinical/clinical-create.html'
     form_class = ClinicalForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalCreate, self).get_initial(**kwargs)
@@ -252,19 +254,21 @@ class ClinicalCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.id])
 
 
-class ClinicalDelete(DeleteView):
+class ClinicalDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     Delete a clinical record with all subsets
     """
     model = Clinical
     success_url = reverse_lazy('clinical_list')
     template_name = 'clinical/clinical-confirm-delete.html'
+    permission_required = 'can_delete'
 
 
-class ClinicalDemographicCreate(CreateView):
+class ClinicalDemographicCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Demographic
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DemographicForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDemographicCreate, self).get_initial(**kwargs)
@@ -278,10 +282,11 @@ class ClinicalDemographicCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalDemographicUpdate(UpdateView):
+class ClinicalDemographicUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Demographic
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DemographicForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDemographicUpdate, self).get_initial(**kwargs)
@@ -293,10 +298,11 @@ class ClinicalDemographicUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalDiagnosisCreate(CreateView):
+class ClinicalDiagnosisCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Diagnosis
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DiagnosisForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -310,10 +316,11 @@ class ClinicalDiagnosisCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalDiagnosisUpdate(UpdateView):
+class ClinicalDiagnosisUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Diagnosis
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DiagnosisForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDiagnosisUpdate, self).get_initial(**kwargs)
@@ -325,10 +332,11 @@ class ClinicalDiagnosisUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalMedicalCreate(CreateView):
+class ClinicalMedicalCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = MedicalHistory
     template_name = 'clinical/clinical-sub-create.html'
     form_class = MedicalHistoryForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -342,10 +350,11 @@ class ClinicalMedicalCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalMedicalUpdate(UpdateView):
+class ClinicalMedicalUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = MedicalHistory
     template_name = 'clinical/clinical-sub-create.html'
     form_class = MedicalHistoryForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalMedicalUpdate, self).get_initial(**kwargs)
@@ -357,10 +366,11 @@ class ClinicalMedicalUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsGeneralCreate(CreateView):
+class ClinicalSymptomsGeneralCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SymptomsGeneral
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsGeneralForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -374,10 +384,11 @@ class ClinicalSymptomsGeneralCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsGeneralUpdate(UpdateView):
+class ClinicalSymptomsGeneralUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SymptomsGeneral
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsGeneralForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsGeneralUpdate, self).get_initial(**kwargs)
@@ -389,10 +400,11 @@ class ClinicalSymptomsGeneralUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsDelusionCreate(CreateView):
+class ClinicalSymptomsDelusionCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SymptomsDelusion
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDelusionForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -407,10 +419,11 @@ class ClinicalSymptomsDelusionCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsDelusionUpdate(UpdateView):
+class ClinicalSymptomsDelusionUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SymptomsDelusion
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDelusionForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDelusionUpdate, self).get_initial(**kwargs)
@@ -422,10 +435,11 @@ class ClinicalSymptomsDelusionUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsHallucinationCreate(CreateView):
+class ClinicalSymptomsHallucinationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SymptomsHallucination
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsHallucinationForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -439,10 +453,11 @@ class ClinicalSymptomsHallucinationCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsHallucinationUpdate(UpdateView):
+class ClinicalSymptomsHallucinationUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SymptomsHallucination
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsHallucinationForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsHallucinationUpdate, self).get_initial(**kwargs)
@@ -454,10 +469,11 @@ class ClinicalSymptomsHallucinationUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsBehaviourCreate(CreateView):
+class ClinicalSymptomsBehaviourCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SymptomsBehaviour
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsBehaviourForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -471,10 +487,11 @@ class ClinicalSymptomsBehaviourCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsBehaviourUpdate(UpdateView):
+class ClinicalSymptomsBehaviourUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SymptomsBehaviour
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsBehaviourForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsBehaviourUpdate, self).get_initial(**kwargs)
@@ -486,10 +503,11 @@ class ClinicalSymptomsBehaviourUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsDepressionCreate(CreateView):
+class ClinicalSymptomsDepressionCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SymptomsDepression
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDepressionForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -503,10 +521,11 @@ class ClinicalSymptomsDepressionCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsDepressionUpdate(UpdateView):
+class ClinicalSymptomsDepressionUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SymptomsDepression
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDepressionForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDepressionUpdate, self).get_initial(**kwargs)
@@ -518,10 +537,11 @@ class ClinicalSymptomsDepressionUpdate(UpdateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsManiaCreate(CreateView):
+class ClinicalSymptomsManiaCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SymptomsMania
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsManiaForm
+    permission_required = 'can_create'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -535,10 +555,11 @@ class ClinicalSymptomsManiaCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.clinical.id])
 
 
-class ClinicalSymptomsManiaUpdate(UpdateView):
+class ClinicalSymptomsManiaUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SymptomsMania
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsManiaForm
+    permission_required = 'can_update'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsManiaUpdate, self).get_initial(**kwargs)
