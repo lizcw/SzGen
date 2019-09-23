@@ -115,7 +115,7 @@ class Shipment(models.Model):
     Shipment details for sending/receiving samples
     """
     id = models.AutoField(primary_key=True)
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE, related_name='shipment')
     shipment_date = models.DateField(verbose_name='Shipment Date', null=False, blank=False,
                                      help_text='Date on which sample shipped')
     reference = models.CharField(max_length=60, null=False, blank=False)
@@ -128,7 +128,7 @@ class TransformSample(models.Model):
     Transform process
     """
     id = models.AutoField(primary_key=True)
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE, related_name='transform')
     transform_date = models.DateField(verbose_name='Transform Date', null=True, blank=True)
     failed = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
@@ -139,7 +139,7 @@ class HarvestSample(models.Model):
     Harvest process
     """
     id = models.AutoField(primary_key=True)
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE, related_name='harvest')
     regrow_date = models.DateField(verbose_name='Regrow Date', null=True, blank=True)
     harvest_date = models.DateField(verbose_name='Harvest Date', null=True, blank=True)
     complete = models.BooleanField(default=False)

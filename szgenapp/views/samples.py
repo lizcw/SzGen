@@ -149,6 +149,20 @@ class SubSampleList(SingleTableMixin, ExportMixin, FilterView):
     filterset_class = SubSampleListFilter
     table_class = SubSampleTable
 
+    def get_table_class(self):
+        sampletype = self.kwargs.get('sampletype')
+        klass = SubSampleTable
+        if sampletype is not None and sampletype == 'DNA':
+            klass = SubSampleDNATable
+        return klass
+
+    def get_filterset_class(self):
+        sampletype = self.kwargs.get('sampletype')
+        klass = SubSampleListFilter
+        if sampletype is not None and sampletype == 'DNA':
+            klass = SubSampleDNAListFilter
+        return klass
+
     def get_context_data(self, *args, **kwargs):
         initial = super(SubSampleList, self).get_context_data(*args, **kwargs)
         initial['collections'] = SAMPLE_TYPES

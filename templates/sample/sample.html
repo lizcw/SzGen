@@ -71,7 +71,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <a data-toggle="collapse" href="#collapse2">Shipments</a>
-                            <span class="badge blue-grey">{{ sample.shipment_set.count }}</span>
+                            <span class="badge blue-grey">{{ sample.shipment.count }}</span>
                             <div class="fixed-action-btn">
                                 <a class="btn-floating blue-grey" title="Add shipment"
                                    href="{% url 'sample_shipment_add' sample.id %}">
@@ -93,8 +93,8 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% if sample.shipment_set.count > 0 %}
-                                    {% for ship in sample.shipment_set.all %}
+                                {% if sample.shipment.count > 0 %}
+                                    {% for ship in sample.shipment.all %}
                                         <tr>
                                             <td>{{ ship.shipment_date|date:"c" }}</td>
                                             <td>{{ ship.reference }}</td>
@@ -174,7 +174,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <a data-toggle="collapse" href="#collapse3">Transforms</a>
-                            <span class="badge blue-grey">{{ sample.transformsample_set.count }}</span>
+                            <span class="badge blue-grey">{{ sample.transform.count }}</span>
                             <div class="fixed-action-btn">
                                 <a class="btn-floating blue-grey" title="Add transform"
                                    href="{% url 'sample_transform_add' sample.id %}">
@@ -195,7 +195,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for transform in sample.transformsample_set.all %}
+                                {% for transform in sample.transform.all %}
                                     <tr>
                                         <td>{{ transform.transform_date|date:"c" }}</td>
                                         <td>{{ transform.failed|yesno }}</td>
@@ -220,7 +220,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <a data-toggle="collapse" href="#collapse4">Harvests</a>
-                            <span class="badge blue-grey">{{ sample.harvestsample_set.count }}</span>
+                            <span class="badge blue-grey">{{ sample.harvest.count }}</span>
                             <div class="fixed-action-btn">
                                 <a class="btn-floating blue-grey" title="Add harvest"
                                    href="{% url 'sample_harvest_add' sample.id %}">
@@ -242,7 +242,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for harvest in sample.harvestsample_set.all %}
+                                {% for harvest in sample.harvest.all %}
                                     <tr>
                                         <td>{{ harvest.regrow_date|date:"c" }}</td>
                                         <td>{{ harvest.harvest_date|date:"c" }}</td>

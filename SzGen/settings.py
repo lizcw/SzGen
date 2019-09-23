@@ -142,6 +142,8 @@ USE_L10N = False
 USE_TZ = True
 
 DATE_FORMAT = "d-m-Y"
+SHORT_DATE_FORMAT = "d-m-Y"  # Django-tables2
+SHORT_DATETIME_FORMAT = 'd-m-Y, H:i:s.u'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/

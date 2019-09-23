@@ -41,7 +41,7 @@ class SampleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Sample
-        fields = ['participant', 'study', 'arrival_date',  'rebleed', 'notes']
+        fields = ['participant', 'study', 'arrival_date', 'rebleed', 'notes']
 
 
 class SubSampleListFilter(django_filters.FilterSet):
@@ -62,3 +62,18 @@ class SubSampleListFilter(django_filters.FilterSet):
         model = SubSample
         fields = ['participant', 'study', 'sample_num', 'storage_date', 'used', 'tank',
                   'shelf', 'cell', 'cell__contains', 'notes__contains']
+
+
+class SubSampleDNAListFilter(django_filters.FilterSet):
+    participant = django_filters.CharFilter(field_name='sample__participant__fullnumber',
+                                            lookup_expr='icontains', label='Participant Full Number'
+                                            )
+    study = django_filters.ModelChoiceFilter(
+        field_name='sample__participant__study', label='Study',
+        queryset=Study.objects.all())
+
+    notes__contains = django_filters.CharFilter(field_name='notes', lookup_expr='icontains')
+
+    class Meta:
+        model = SubSample
+        fields = ['participant', 'study', 'sample_num', 'storage_date', 'extraction_date', 'notes__contains']
