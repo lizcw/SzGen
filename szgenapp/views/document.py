@@ -59,7 +59,7 @@ class DocumentCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'document/document-create.html'
     form_class = DocumentForm
     success_url = reverse_lazy('documents_list')
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_document'
 
     def form_valid(self, form):
         try:
@@ -89,7 +89,7 @@ class DocumentUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = DocumentForm
     template_name = 'document/document-create.html'
     success_url = reverse_lazy('documents_list')
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_document'
 
 
 class DocumentDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -99,7 +99,7 @@ class DocumentDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Document
     success_url = reverse_lazy("documents_list")
     template_name = 'document/document-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_document'
 
 
 class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):

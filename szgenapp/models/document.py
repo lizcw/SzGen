@@ -22,6 +22,9 @@ class Document(models.Model):
     study = models.ForeignKey("Study", on_delete=models.SET_NULL, blank=True, null=True,
                               help_text='Select only if document is related to one particular study')
 
+    class Meta:
+        permissions = [("can_import_data", "Can import data from CSV files")]
+
     def __str__(self):
         return self.docfile.name
 

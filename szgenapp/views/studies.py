@@ -65,7 +65,7 @@ class StudyCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Study
     template_name = 'study/study-create.html'
     form_class = StudyForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_study'
 
     def form_valid(self, form):
         try:
@@ -93,7 +93,7 @@ class StudyUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Study
     template_name = 'study/study-create.html'
     form_class = StudyForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_study'
 
     def form_valid(self, form):
         try:
@@ -120,4 +120,4 @@ class StudyDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Study
     success_url = reverse_lazy("index")
     template_name = 'study/study-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_study'

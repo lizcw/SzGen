@@ -44,7 +44,7 @@ class DatasetCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Dataset
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_dataset'
 
     def get_context_data(self, **kwargs):
         data = super(DatasetCreate, self).get_context_data(**kwargs)
@@ -83,7 +83,7 @@ class DatasetUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Dataset
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_dataset'
 
     def get_context_data(self, **kwargs):
         data = super(DatasetUpdate, self).get_context_data(**kwargs)
@@ -124,7 +124,7 @@ class DatasetDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Dataset
     success_url = reverse_lazy("datasets")
     template_name = 'dataset/dataset-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_dataset'
 
 
 class DatasetParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -134,7 +134,7 @@ class DatasetParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, Upda
     model = DatasetRow
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetRowForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_datasetrow'
 
     def get_initial(self):
         data = super(DatasetParticipantUpdate, self).get_initial()
@@ -220,7 +220,7 @@ class DatasetRowCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = DatasetRow
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetRowForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_datasetrow'
 
     def get_initial(self, *args, **kwargs):
         initial = super(DatasetRowCreate, self).get_initial(**kwargs)
@@ -250,7 +250,7 @@ class DatasetFileCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     model = DatasetFile
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetFileForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_datasetfile'
 
     def get_initial(self, *args, **kwargs):
         initial = super(DatasetFileCreate, self).get_initial(**kwargs)
@@ -271,7 +271,7 @@ class DatasetFileUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     model = DatasetFile
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetFileForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_datasetfile'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)

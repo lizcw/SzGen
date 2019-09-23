@@ -32,7 +32,7 @@ class StudyParticipantCreate(LoginRequiredMixin, PermissionRequiredMixin, Create
     model = StudyParticipant
     template_name = 'participant/studyparticipant-create.html'
     form_class = StudyParticipantForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_studyparticipant'
 
 
     def get_success_url(self):
@@ -51,7 +51,7 @@ class StudyParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, Update
     model = StudyParticipant
     template_name = 'participant/studyparticipant-create.html'
     form_class = StudyParticipantForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_studyparticipant'
 
 
     def get_success_url(self):
@@ -83,7 +83,7 @@ class StudyParticipantDelete(LoginRequiredMixin, PermissionRequiredMixin, Delete
     success_url = reverse_lazy("participants")
     template_name = 'participant/participant-confirm-delete.html'
     context_object_name = 'participant'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_studyparticipant'
 
 class StudyParticipantAdd(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
@@ -93,7 +93,7 @@ class StudyParticipantAdd(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     template_name = 'participant/participant-related.html'
     context_object_name = 'participant'
     form_class = StudyParticipantRelatedForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.add_studyparticipant'
 
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.id])
@@ -105,7 +105,7 @@ class StudyParticipantRemove(LoginRequiredMixin, PermissionRequiredMixin, Delete
     model = StudyParticipant
     template_name = 'participant/participant-confirm-remove.html'
     success_url = reverse_lazy("participants")
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.change_studyparticipant'
 
     def get_context_data(self, *args, **kwargs):
         data = super(StudyParticipantRemove, self).get_context_data(*args, **kwargs)

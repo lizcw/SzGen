@@ -45,7 +45,7 @@ class SampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     model = Sample
     template_name = 'sample/sample-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_sample'
 
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.participant.id])
@@ -59,7 +59,7 @@ class SampleParticipantCreate(LoginRequiredMixin, PermissionRequiredMixin, Creat
     model = Sample
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_sample'
 
     def get_initial(self, *args, **kwargs):
         initial = super(SampleParticipantCreate, self).get_initial(**kwargs)
@@ -90,7 +90,7 @@ class SampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = 'sample/sample-create.html'
     form_class = SampleForm
     context_object_name = 'sample'
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_sample'
 
     def get_initial(self, *args, **kwargs):
         initial = super(SampleUpdate, self).get_initial(**kwargs)
@@ -203,7 +203,7 @@ class ShipmentCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'sample/sample-create.html'
     form_class = ShipmentForm
     sample = Sample
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_shipment'
 
     def get_initial(self):
         initial = super(ShipmentCreate, self).get_initial()
@@ -227,7 +227,7 @@ class ShipmentUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Shipment
     template_name = 'sample/sample-create.html'
     form_class = ShipmentForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_shipment'
 
     def get_initial(self):
         data = super(ShipmentUpdate, self).get_initial()
@@ -248,7 +248,7 @@ class ShipmentDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     model = Shipment
     template_name = 'sample/subsample-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_shipment'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -271,7 +271,7 @@ class QCCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'sample/sample-create.html'
     form_class = QCForm
     sample = Sample
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_qc'
 
     def get_initial(self):
         initial = super(QCCreate, self).get_initial()
@@ -295,7 +295,7 @@ class QCUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = QC
     template_name = 'sample/sample-create.html'
     form_class = QCForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_qc'
 
     def get_initial(self):
         data = super(QCUpdate, self).get_initial()
@@ -317,7 +317,7 @@ class QCDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     model = QC
     template_name = 'sample/subsample-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_qc'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -340,7 +340,7 @@ class TransformSampleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateV
     template_name = 'sample/sample-create.html'
     form_class = TransformSampleForm
     sample = Sample
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_transformsample'
 
     def get_initial(self):
         data = super(TransformSampleCreate, self).get_initial()
@@ -365,7 +365,7 @@ class TransformSampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateV
     model = TransformSample
     template_name = 'sample/sample-create.html'
     form_class = TransformSampleForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_transformsample'
 
     def get_initial(self):
         data = super(TransformSampleUpdate, self).get_initial()
@@ -387,7 +387,7 @@ class TransformSampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteV
     """
     model = TransformSample
     template_name = 'sample/subsample-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_transformsample'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -410,7 +410,7 @@ class HarvestSampleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     template_name = 'sample/sample-create.html'
     form_class = HarvestSampleForm
     sample = Sample
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_harvestsample'
 
     def get_initial(self):
         data = super(HarvestSampleCreate, self).get_initial()
@@ -435,7 +435,7 @@ class HarvestSampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     model = HarvestSample
     template_name = 'sample/sample-create.html'
     form_class = HarvestSampleForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_harvestsample'
 
     def get_initial(self):
         data = super(HarvestSampleUpdate, self).get_initial()
@@ -456,7 +456,7 @@ class HarvestSampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
     """
     model = HarvestSample
     template_name = 'sample/subsample-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_harvestsample'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
@@ -480,7 +480,7 @@ class SubSampleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = SubSampleForm
     sample = Sample
     subtitle = 'Create Subsample'
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_subsample'
 
     def get_initial(self, **kwargs):
         initial = super(SubSampleCreate, self).get_initial(**kwargs)
@@ -535,7 +535,7 @@ class SubSampleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = SubSample
     template_name = 'sample/sample-create.html'
     form_class = SubSampleForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_subsample'
 
     def get_initial(self, **kwargs):
         initial = super(SubSampleUpdate, self).get_initial(**kwargs)
@@ -583,7 +583,7 @@ class SubSampleDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     model = SubSample
     template_name = 'sample/subsample-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_subsample'
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)

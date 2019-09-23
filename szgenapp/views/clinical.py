@@ -182,7 +182,7 @@ class ClinicalCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Clinical
     template_name = 'clinical/clinical-create.html'
     form_class = ClinicalForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_clinical'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalCreate, self).get_initial(**kwargs)
@@ -261,14 +261,14 @@ class ClinicalDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Clinical
     success_url = reverse_lazy('clinical_list')
     template_name = 'clinical/clinical-confirm-delete.html'
-    permission_required = 'can_delete'
+    permission_required = 'szgenapp.delete_clinical'
 
 
 class ClinicalDemographicCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Demographic
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DemographicForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_demographic'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDemographicCreate, self).get_initial(**kwargs)
@@ -286,7 +286,7 @@ class ClinicalDemographicUpdate(LoginRequiredMixin, PermissionRequiredMixin, Upd
     model = Demographic
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DemographicForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_demographic'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDemographicUpdate, self).get_initial(**kwargs)
@@ -302,7 +302,7 @@ class ClinicalDiagnosisCreate(LoginRequiredMixin, PermissionRequiredMixin, Creat
     model = Diagnosis
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DiagnosisForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_diagnosis'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -320,7 +320,7 @@ class ClinicalDiagnosisUpdate(LoginRequiredMixin, PermissionRequiredMixin, Updat
     model = Diagnosis
     template_name = 'clinical/clinical-sub-create.html'
     form_class = DiagnosisForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_diagnosis'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDiagnosisUpdate, self).get_initial(**kwargs)
@@ -336,7 +336,7 @@ class ClinicalMedicalCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateV
     model = MedicalHistory
     template_name = 'clinical/clinical-sub-create.html'
     form_class = MedicalHistoryForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_medicalhistory'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -354,7 +354,7 @@ class ClinicalMedicalUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateV
     model = MedicalHistory
     template_name = 'clinical/clinical-sub-create.html'
     form_class = MedicalHistoryForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_medicalhistory'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalMedicalUpdate, self).get_initial(**kwargs)
@@ -370,7 +370,7 @@ class ClinicalSymptomsGeneralCreate(LoginRequiredMixin, PermissionRequiredMixin,
     model = SymptomsGeneral
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsGeneralForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_symptomsgeneral'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -388,7 +388,7 @@ class ClinicalSymptomsGeneralUpdate(LoginRequiredMixin, PermissionRequiredMixin,
     model = SymptomsGeneral
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsGeneralForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_symptomsgeneral'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsGeneralUpdate, self).get_initial(**kwargs)
@@ -404,7 +404,7 @@ class ClinicalSymptomsDelusionCreate(LoginRequiredMixin, PermissionRequiredMixin
     model = SymptomsDelusion
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDelusionForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_symptomsdelusion'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -423,7 +423,7 @@ class ClinicalSymptomsDelusionUpdate(LoginRequiredMixin, PermissionRequiredMixin
     model = SymptomsDelusion
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDelusionForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_symptomsdelusion'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDelusionUpdate, self).get_initial(**kwargs)
@@ -439,7 +439,7 @@ class ClinicalSymptomsHallucinationCreate(LoginRequiredMixin, PermissionRequired
     model = SymptomsHallucination
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsHallucinationForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_symptomshallucination'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -457,7 +457,7 @@ class ClinicalSymptomsHallucinationUpdate(LoginRequiredMixin, PermissionRequired
     model = SymptomsHallucination
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsHallucinationForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_symptomshallucination'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsHallucinationUpdate, self).get_initial(**kwargs)
@@ -473,7 +473,7 @@ class ClinicalSymptomsBehaviourCreate(LoginRequiredMixin, PermissionRequiredMixi
     model = SymptomsBehaviour
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsBehaviourForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_symptomsbehaviour'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -491,7 +491,7 @@ class ClinicalSymptomsBehaviourUpdate(LoginRequiredMixin, PermissionRequiredMixi
     model = SymptomsBehaviour
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsBehaviourForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_symptomsbehaviour'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsBehaviourUpdate, self).get_initial(**kwargs)
@@ -507,7 +507,7 @@ class ClinicalSymptomsDepressionCreate(LoginRequiredMixin, PermissionRequiredMix
     model = SymptomsDepression
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDepressionForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_symptomsdepression'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -525,7 +525,7 @@ class ClinicalSymptomsDepressionUpdate(LoginRequiredMixin, PermissionRequiredMix
     model = SymptomsDepression
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsDepressionForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_symptomsdepression'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDepressionUpdate, self).get_initial(**kwargs)
@@ -541,7 +541,7 @@ class ClinicalSymptomsManiaCreate(LoginRequiredMixin, PermissionRequiredMixin, C
     model = SymptomsMania
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsManiaForm
-    permission_required = 'can_create'
+    permission_required = 'szgenapp.add_symptomsmania'
 
     def get_initial(self, *args, **kwargs):
         initial = super(self.__class__, self).get_initial(**kwargs)
@@ -559,7 +559,7 @@ class ClinicalSymptomsManiaUpdate(LoginRequiredMixin, PermissionRequiredMixin, U
     model = SymptomsMania
     template_name = 'clinical/clinical-sub-create.html'
     form_class = SymptomsManiaForm
-    permission_required = 'can_update'
+    permission_required = 'szgenapp.change_symptomsmania'
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsManiaUpdate, self).get_initial(**kwargs)
