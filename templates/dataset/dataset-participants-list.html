@@ -3,10 +3,12 @@
     <div class="container">
         <h2>Datasets</h2>
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large blue-grey" title="Add dataset"
-               href="{% url 'dataset_create' %}">
-                <i class="large material-icons">add</i>
-            </a>
+            {% if perms.szgenapp.add_dataset %}
+                <a class="btn-floating btn-large blue-grey" title="Add dataset"
+                   href="{% url 'dataset_create' %}">
+                    <i class="large material-icons">add</i>
+                </a>
+            {% endif %}
         </div>
         {% if datasets.count > 0 %}
             <table id="dataset-list">
@@ -14,9 +16,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Participant</th>
-                    {%  for dtype in datasets.FIELD_CODES %}
+                    {% for dtype in datasets.FIELD_CODES %}
                         <th>{{ dtype }}</th>
-                    {%  endfor  %}
+                    {% endfor %}
                     <th>Notes</th>
                 </tr>
                 </thead>
@@ -27,7 +29,7 @@
                         <td>{{ dataset.participant.getFullNumber }}</td>
                         <td>{{ dataset.digs }}</td>
                         <td>{{ dataset.figs }}</td>
-                        <td>{{ dataset.narrative}}</td>
+                        <td>{{ dataset.narrative }}</td>
                         <td>{{ dataset.records }}</td>
                         <td>{{ dataset.consensus }}</td>
                         <td>{{ dataset.notes }}</td>
@@ -38,8 +40,9 @@
             </table>
         {% else %}
             <p>No Datasets found</p>
-
-            <a href="{% url 'dataset_create' %}">Add a Dataset</a>
+            {% if perms.szgenapp.add_dataset %}
+                <a href="{% url 'dataset_create' %}">Add a Dataset</a>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock content %}

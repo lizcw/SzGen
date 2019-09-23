@@ -14,7 +14,9 @@
                 <div class="card-action">
                     <a href="#" data-target="#details" data-toggle="collapse">Edit my details</a>
                     <a href="{% url 'password_change' %}">Change Password</a>
+                    {% if perms.szgenapp.add_study %}
                     <a href="{% url 'study_create' %}">Add a Study</a>
+                    {% endif %}
                 </div>
             </div>
             <div id="details">

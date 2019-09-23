@@ -13,14 +13,18 @@
         <div class="well col-md-12">
             <h3>{{ participant|force_escape }}</h3>
             <div class="fixed-action-btn">
+                {% if perms.szgenapp.change_studyparticipant %}
                 <a class="btn-floating btn-large green" title="Edit Participant"
                    href="{% url 'participant_update' participant.id %}">
                     <i class="material-icons">edit</i>
                 </a>
+                    {% endif %}
+            {% if perms.szgenapp.delete_studyparticipant %}
                 <a class="btn-floating btn-large red" title="Delete Participant"
                    href="{% url 'participant_delete' participant.id %}">
                     <i class="large material-icons">delete</i>
                 </a>
+                {% endif %}
             </div>
         </div>
         <div id="panel-group" class="accordion">
@@ -103,10 +107,12 @@
                         <span class="badge blue-grey">{{ participant.clinical.count }}</span>
 
                         <div class="fixed-action-btn">
+                            {%  if perms.szgenapp.add_clinical %}
                             <a class="btn-floating blue-grey small" title="Add Clinical Record"
                                href="{% url 'clinical_participant_create' participant.id %}">
                                 <i class="material-icons">add</i>
                             </a>
+                            {% endif %}
 
                         </div>
                     </h3>
@@ -157,10 +163,12 @@
                         <a data-toggle="collapse" href="#collapse4">Samples</a>
                         <span class="badge blue-grey">{{ participant.samples.count }}</span>
                         <div class="fixed-action-btn">
+                            {%  if perms.szgenapp.add_sample %}
                             <a class="btn-floating blue-grey small" title="Add Sample"
                                href="{% url 'sample_participant_create' participant.id %}">
                                 <i class="material-icons">add</i>
                             </a>
+                            {% endif %}
                         </div>
                     </h3>
                 </div>
@@ -283,10 +291,13 @@
                                             <td>{{ subsample.extraction_date }}</td>
                                         {% endif %}
                                         <td>{{ subsample.notes }}</td>
-                                        <td><a class="btn-floating green small" title="Edit SubSample"
+
+                                        <td>{% if perms.szgenapp.change_subsample %}
+                                            <a class="btn-floating green small" title="Edit SubSample"
                                                href="{% url 'subsample_update' subsample.id %}">
                                             <i class="material-icons">edit</i>
-                                        </a></td>
+                                        </a>
+                                        {% endif %}</td>
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
@@ -344,11 +355,11 @@
                                     <td>{{ dataset.get_consensus_display }}</td>
                                     <td>{{ dataset.get_ldps_display }}</td>
                                     <td>{{ dataset.notes }}</td>
-                                    <td>
+                                    <td>{% if perms.szgenapp.change_dataset %}
                                         <a class="btn-floating green small" title="Edit Dataset"
                                            href="{% url 'dataset_participant_update' dataset.id %}">
                                             <i class="material-icons">edit</i>
-                                        </a>
+                                        </a>{% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -366,10 +377,12 @@
                     <a data-toggle="collapse" href="#collapse6">Related Participants</a>
                     <span class="badge blue-grey">{{ participant.related_participant.count }}</span>
                     <div class="fixed-action-btn">
+                        {%  if perms.szgenapp.add_studyparticipant %}
                         <a class="btn-floating blue-grey small" title="Add Related Participant"
                            href="{% url 'participant_add_related' participant.id %}">
                             <i class="material-icons">add</i>
                         </a>
+                        {% endif %}
                     </div>
                 </h3>
             </div>

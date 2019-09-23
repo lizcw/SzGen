@@ -11,10 +11,12 @@
         <div>
             <h2>Datasets : {{ title }}</h2>
             <div class="fixed-action-btn">
+                {%  if perms.szgenapp.add_dataset %}
                 <a class="btn-floating btn-large blue-grey" title="Add dataset"
                    href="{% url 'dataset_create' %}">
                     <i class="large material-icons">add</i>
                 </a>
+                {% endif %}
             </div>
             <ul class="nav nav-tabs">
                 <li class="{% if title == 'Summary' %}active{% endif %}">

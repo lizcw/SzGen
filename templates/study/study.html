@@ -13,14 +13,18 @@
             <div>
                 <h3>Study {{ study.title|force_escape }}</h3>
                 <div class="fixed-action-btn">
-                    <a class="btn-floating btn-large green" title="Edit Study"
-                       href="{% url 'study_update' study.id %}">
-                        <i class="large material-icons">edit</i>
-                    </a>
-                    <a class="btn-floating btn-large red" title="Delete Study"
-                       href="{% url 'study_delete' study.id %}">
-                        <i class="large material-icons">delete</i>
-                    </a>
+                    {% if perms.szgenapp.change_study %}
+                        <a class="btn-floating btn-large green" title="Edit Study"
+                           href="{% url 'study_update' study.id %}">
+                            <i class="large material-icons">edit</i>
+                        </a>
+                    {% endif %}
+                    {% if perms.szgenapp.delete_study %}
+                        <a class="btn-floating btn-large red" title="Delete Study"
+                           href="{% url 'study_delete' study.id %}">
+                            <i class="large material-icons">delete</i>
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="well">
                     <table id="view-table" class="ui-responsive table table-hover">
@@ -59,10 +63,12 @@
                             <a data-toggle="collapse" href="#collapse6">Related Documents</a>
                             <span class="badge blue-grey">{{ study.document_set.count }}</span>
                             <div class="fixed-action-btn">
-                                <a class="btn-floating blue-grey small" title="Add Document"
-                                   href="{% url 'documents_create' %}">
-                                    <i class="material-icons">add</i>
-                                </a>
+                                {% if perms.szgenapp.add_document %}
+                                    <a class="btn-floating blue-grey small" title="Add Document"
+                                       href="{% url 'documents_create' %}">
+                                        <i class="material-icons">add</i>
+                                    </a>
+                                {% endif %}
                             </div>
                         </h3>
                     </div>

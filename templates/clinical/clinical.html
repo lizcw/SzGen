@@ -21,15 +21,12 @@
                    href="{% url 'participant_detail' clinical.participant.id %}">
                     <i class="large material-icons">perm_identity</i>
                 </a>
-{#                <a class="btn-floating btn-large green" title="Edit Clinical Record"#}
-{#                   href="{% url 'clinical_update' clinical.id %}">#}
-{#                    <i class="material-icons">edit</i>#}
-{#                </a>#}
-                <a class="btn-floating btn-large red" title="Delete Clinical Record"
-                   href="{% url 'clinical_delete' clinical.id %}">
-                    <i class="large material-icons">delete</i>
-                </a>
-
+                {% if perms.szgenapp.delete_clinical %}
+                    <a class="btn-floating btn-large red" title="Delete Clinical Record"
+                       href="{% url 'clinical_delete' clinical.id %}">
+                        <i class="large material-icons">delete</i>
+                    </a>
+                {% endif %}
             </div>
         </div>
 
@@ -39,12 +36,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse1">Demographic</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.demographic %}
+                            {% if clinical.demographic and perms.szgenapp.change_demographic %}
                                 <a class="btn-floating green" title="Edit Demographic"
                                    href="{% url 'clinical_demographic_update' clinical.demographic.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.add_demographic %}
                                 <a class="btn-floating blue-grey" title="Add Demographic"
                                    href="{% url 'clinical_demographic_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -73,12 +70,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse2">Diagnosis</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.diagnosis %}
+                            {% if clinical.diagnosis and perms.szgenapp.change_diagnosis %}
                                 <a class="btn-floating green" title="Edit Diagnosis"
                                    href="{% url 'clinical_diagnosis_update' clinical.diagnosis.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.add_diagnosis %}
                                 <a class="btn-floating blue-grey" title="Add Diagnosis"
                                    href="{% url 'clinical_diagnosis_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -107,12 +104,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse3">Medical</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.medicalhistory %}
+                            {% if clinical.medicalhistory and perms.szgenapp.change_medicalhistory %}
                                 <a class="btn-floating green" title="Edit Medical"
                                    href="{% url 'clinical_medical_update' clinical.medicalhistory.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.add_medicalhistory %}
                                 <a class="btn-floating blue-grey" title="Add Medical"
                                    href="{% url 'clinical_medical_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -141,12 +138,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse4">Symptoms: General</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptomsgeneral %}
+                            {% if clinical.symptomsgeneral and perms.szgenapp.change_symptomsgeneral %}
                                 <a class="btn-floating green" title="Edit General Symptoms"
                                    href="{% url 'clinical_symptoms_general_update' clinical.symptomsgeneral.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.add_symptomsgeneral %}
                                 <a class="btn-floating blue-grey" title="Add General Symptoms"
                                    href="{% url 'clinical_symptoms_general_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -175,12 +172,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse5">Symptoms: Delusion</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptomsdelusion %}
+                            {% if clinical.symptomsdelusion and perms.szgenapp.change_symptomsdelusion %}
                                 <a class="btn-floating green" title="Edit Delusion Symptoms"
                                    href="{% url 'clinical_symptoms_delusion_update' clinical.symptomsdelusion.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.add_symptomsdelusion %}
                                 <a class="btn-floating blue-grey" title="Add Delusion Symptoms"
                                    href="{% url 'clinical_symptoms_delusion_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -209,13 +206,13 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse6">Symptoms: Hallucination</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptomshallucination %}
-                                <a class="btn-floating green" title="Edit General Symptoms"
+                            {% if clinical.symptomshallucination and perms.szgenapp.change_symptomshallucination %}
+                                <a class="btn-floating green" title="Edit Hallucination Symptoms"
                                    href="{% url 'clinical_symptoms_hallucination_update' clinical.symptomshallucination.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
-                                <a class="btn-floating blue-grey" title="Add General Symptoms"
+                            {% elif perms.szgenapp.add_symptomshallucination %}
+                                <a class="btn-floating blue-grey" title="Add Hallucination Symptoms"
                                    href="{% url 'clinical_symptoms_hallucination_create' clinical.id %}">
                                     <i class="material-icons">add</i>
                                 </a>
@@ -243,12 +240,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse7">Symptoms: Behaviour</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptomsbehaviour %}
+                            {% if clinical.symptomsbehaviour and perms.szgenapp.change_symptomsbehaviour %}
                                 <a class="btn-floating green" title="Edit Behaviour Symptoms"
                                    href="{% url 'clinical_symptoms_behaviour_update' clinical.symptomsbehaviour.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.add_symptomsbehaviour %}
                                 <a class="btn-floating blue-grey" title="Add Behaviour Symptoms"
                                    href="{% url 'clinical_symptoms_behaviour_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -277,12 +274,12 @@
                     <h3 class="panel-title">
                         <a data-toggle="collapse" href="#collapse8">Symptoms: Depression</a>
                         <div class="fixed-action-btn">
-                            {% if clinical.symptomsdepression %}
+                            {% if clinical.symptomsdepression and perms.szgenapp.change_symptomsdepression %}
                                 <a class="btn-floating green" title="Edit Depression Symptoms"
                                    href="{% url 'clinical_symptoms_depression_update' clinical.symptomsdepression.pk %}">
                                     <i class="material-icons">edit</i>
                                 </a>
-                            {% else %}
+                            {% elif perms.szgenapp.change_symptomsdepression %}
                                 <a class="btn-floating blue-grey" title="Add Depression Symptoms"
                                    href="{% url 'clinical_symptoms_depression_create' clinical.id %}">
                                     <i class="material-icons">add</i>
@@ -313,12 +310,12 @@
                 <h3 class="panel-title">
                     <a data-toggle="collapse" href="#collapse9">Symptoms: Mania</a>
                     <div class="fixed-action-btn">
-                        {% if clinical.symptomsmania %}
+                        {% if clinical.symptomsmania and perms.szgenapp.change_symptomsmania %}
                             <a class="btn-floating green" title="Edit Mania Symptoms"
                                href="{% url 'clinical_symptoms_mania_update' clinical.symptomsmania.pk %}">
                                 <i class="material-icons">edit</i>
                             </a>
-                        {% else %}
+                        {% elif perms.szgenapp.add_symptomsmania %}
                             <a class="btn-floating blue-grey" title="Add Mania Symptoms"
                                href="{% url 'clinical_symptoms_mania_create' clinical.id %}">
                                 <i class="material-icons">add</i>

@@ -11,10 +11,12 @@
         <div>
             <h2>Participants
                 <div class="fixed-action-btn">
+                    {%  if perms.szgenapp.add_studyparticipant %}
                     <a class="btn-floating btn-large blue-grey" title="Add participant"
                        href="{% url 'participant_create' %}">
                         <i class="large material-icons">add</i>
                     </a>
+                    {% endif %}
                 </div>
             </h2>
         </div>

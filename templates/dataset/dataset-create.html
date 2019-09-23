@@ -31,9 +31,12 @@
                 <hr/>
                 {% if datasetfiles %}
                     <h5>Add a Dataset File
-                        <a class="btn-floating grey add-formset" title="Add a Dataset File">
+                        {%  if perms.szgenapp.add_datasetfile %}
+                        <a href="{% url 'dataset_files_create' object.pk %}"
+                           class="btn-floating grey add-formset" title="Add a Dataset File">
                             <i class="material-icons">add</i>
                         </a>
+                            {% endif %}
                     </h5>
                     {{ datasetfiles.management_form }}
                     <ul class="well dsfileform">

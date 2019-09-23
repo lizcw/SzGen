@@ -32,8 +32,9 @@
                             </select>
                         </form>
                     </div>
-
+                    {%  if perms.szgenapp.add_study %}
                     <a href="{% url 'study_create' %}">Add a Study</a>
+                {% endif %}
                 </div>
             </div>
 
@@ -100,10 +101,12 @@
                     </div>
                     <div class="card-action">
                         <div class="fixed-action-btn">
+                            {% if perms.szgenapp.add_study %}
                             <a class="btn-floating btn-large red" title="Add new study"
                                href="{% url 'study_create' %}">
                                 <i class="large material-icons">add_circle</i>
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

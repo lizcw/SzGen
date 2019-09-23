@@ -13,15 +13,18 @@
         <div class="well col col-md-12">
             <h3>Dataset: {{ dataset.group|force_escape }}</h3>
             <div class="fixed-action-btn">
-                <a class="btn-floating btn-large green" title="Edit dataset"
-                   href="{% url 'dataset_update' dataset.id %}">
-                    <i class="material-icons">edit</i>
-                </a>
-                <a class="btn-floating btn-large red" title="Delete dataset"
-                   href="{% url 'dataset_delete' dataset.id %}">
-                    <i class="material-icons">delete</i>
-                </a>
-
+                {% if perms.szgenapp.change_dataset %}
+                    <a class="btn-floating btn-large green" title="Edit dataset"
+                       href="{% url 'dataset_update' dataset.id %}">
+                        <i class="material-icons">edit</i>
+                    </a>
+                {% endif %}
+                {% if perms.szgenapp.delete_dataset %}
+                    <a class="btn-floating btn-large red" title="Delete dataset"
+                       href="{% url 'dataset_delete' dataset.id %}">
+                        <i class="material-icons">delete</i>
+                    </a>
+                {% endif %}
             </div>
         </div>
 
@@ -33,10 +36,12 @@
                         <a data-toggle="collapse" href="#collapse2">Files</a>
                         <span class="badge blue-grey">{{ dataset.dataset_files.count }}</span>
                         <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey" title="Add dataset file"
-                               href="{% url 'dataset_files_create' dataset.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                            {% if perms.szgenapp.add_datasetfile %}
+                                <a class="btn-floating blue-grey" title="Add dataset file"
+                                   href="{% url 'dataset_files_create' dataset.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
+                            {% endif %}
                         </div>
                     </h3>
 
@@ -58,10 +63,13 @@
                                     <td>{{ file.type }}</td>
                                     <td>{{ file.filetype }}</td>
                                     <td>{{ file.location }}</td>
-                                    <td><a class="btn-floating green" title="Edit dataset file"
+                                    <td>
+                                        {% if perms.szgenapp.change_dataset %}
+                                        <a class="btn-floating green" title="Edit dataset file"
                                            href="{% url 'dataset_files_update' file.id %}">
                                         <i class="material-icons">edit</i>
-                                    </a></td>
+                                    </a>{% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -76,10 +84,12 @@
                         <a data-toggle="collapse" href="#collapse3">Participants</a>
                         <span class="badge blue-grey">{{ dataset.dataset_participants.count }}</span>
                         <div class="fixed-action-btn">
-                            <a class="btn-floating blue-grey" title="Add dataset participant"
-                               href="{% url 'dataset_row_create' dataset.id %}">
-                                <i class="material-icons">add</i>
-                            </a>
+                            {% if perms.szgenapp.add_datasetparticipant %}
+                                <a class="btn-floating blue-grey" title="Add dataset participant"
+                                   href="{% url 'dataset_row_create' dataset.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
+                            {% endif %}
                         </div>
                     </h3>
                 </div>

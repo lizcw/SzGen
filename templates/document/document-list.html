@@ -13,10 +13,12 @@
         <div>
             <h2>Documents
             <div class="fixed-action-btn">
+                {% if perms.szgenapp.add_document %}
                 <a class="btn-floating btn-large blue-grey" title="Add Document"
                    href="{% url 'documents_create' %}">
                     <i class="large material-icons">add</i>
                 </a>
+                {% endif %}
             </div></h2>
         </div>
         <div class="right-panel">

@@ -12,13 +12,14 @@
         <div class="page-header">
             <h2>Document Details</h2>
             <div class="fixed-action-btn">
-
-                <a class="btn btn-floating btn-large green" href="{% url 'documents_update' document.id %}"
-                   title="Edit document"><i class="large material-icons">edit</i></a>
-
-                <a class="btn btn-floating btn-large  red" href="{% url 'documents_delete' document.id %}"
-                   title="Delete document"><i class="large material-icons">delete</i></a>
-
+                {% if perms.szgenapp.change_document %}
+                    <a class="btn btn-floating btn-large green" href="{% url 'documents_update' document.id %}"
+                       title="Edit document"><i class="large material-icons">edit</i></a>
+                {% endif %}
+                {% if perms.szgenapp.delete_document %}
+                    <a class="btn btn-floating btn-large  red" href="{% url 'documents_delete' document.id %}"
+                       title="Delete document"><i class="large material-icons">delete</i></a>
+                {% endif %}
                 {% if document.getextension == '.pdf' %}
                     <a class="btn btn-floating orange btn-large"
                        href="/static/pdfjs/web/viewer.html?file={{ document.docfile.url }}"
