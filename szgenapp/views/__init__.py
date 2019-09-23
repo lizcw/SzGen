@@ -32,13 +32,15 @@ logging.config.dictConfig({
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'file',
             'filename': settings.LOG_FILE,
-            'maxBytes': 1024*1024*5, # 5 MB
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2
         }
     },
     'loggers': {
         '': {
             'level': settings.LOG_LEVEL,
-            'handlers': ['console', 'file']
+            'handlers': ['console', 'file'],
+            'propagate': True
         },
         'django.db.backends': {
             'level': settings.LOG_DB_LEVEL,
