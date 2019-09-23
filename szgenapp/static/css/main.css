@@ -10,6 +10,10 @@ footer {
     clear: both;
 }
 
+h3 {
+    font-size: x-large;
+}
+
 .content-table {
     display: flex;
     max-width: 100%;
@@ -26,7 +30,7 @@ footer {
 .sidenav-header {
     background: url("/static/img/sidenav.svg") no-repeat center center;
     background-size: cover;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     padding: 15px 0 0 15px;
 }
 
@@ -124,6 +128,9 @@ footer {
     flex: auto;
     align-content: space-around;
     float: right;
+}
+.btn-group a:hover{
+    color: white;
 }
 
 li.active {

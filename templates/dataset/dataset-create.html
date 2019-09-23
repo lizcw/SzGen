@@ -9,6 +9,10 @@
             <li><a href="{% url 'dataset_detail' dataset.id %}">Dataset</a></li>
             <li>&nbsp;&gt;&nbsp;</li>
             <li>{{ subtitle }}</li>
+        {% elif form.initial.dataset %}
+            <li><a href="{% url 'dataset_detail' form.initial.dataset.id %}">Dataset</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
+            <li>{{ subtitle }}</li>
         {% else %}
             <li>Dataset</li>
         {% endif %}
@@ -61,12 +65,10 @@
         });
 
         $(document).ready(function () {
-            console.log("document loaded");
             $("body").addClass("loading");
         });
 
         $(window).on("load", function () {
-            console.log("window loaded");
             $("body").removeClass("loading");
         });
 

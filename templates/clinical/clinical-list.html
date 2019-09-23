@@ -12,12 +12,6 @@
         <div>
             <h2>Clinical Records: {{ title }}</h2>
 
-            <div class="fixed-action-btn">
-                <a class="btn-floating btn-large blue-grey" title="Add clinical record"
-                   href="{% url 'clinical_create' %}">
-                    <i class="large material-icons">add</i>
-                </a>
-            </div>
             <ul class="nav nav-tabs">
                 <li><a href="{% url 'clinical_list' %}">Summary</a></li>
                 <li><a href="{% url 'clinical_demographic_list' %}">Demographics</a></li>
@@ -43,7 +37,6 @@
             {% endif %}
         </div>
         <div class="left-panel">
-
             <div id="summary" class="card fade in active">
                 <div class="btn-group">
                     <a class="btn btn-small" href="{% export_url 'csv' %}">
@@ -53,27 +46,9 @@
                         <code>.xls</code>
                     </a>
                 </div>
-
                 {% render_table table %}
             </div>
         </div>
-
-
     </section>
-
-    {#        <ul class="nav nav-tabs">#}
-    {#            {% for key, label in tablist %}#}
-    {#                <li><a data-toggle="tab" href="#{{ key }}">{{ label }}</a></li>#}
-    {#            {% endfor %}#}
-    {#        </ul>#}
-    {#        <div class="tab-content">#}
-    {#            <div id="summary" class="tab-pane fade in active">#}
-    {#                {% render_table table %}#}
-    {#            </div>#}
-    {##}
-    {#            <div id="demographic" class="tab-pane fade in">#}
-    {#                {% render_table demographic %}#}
-    {#            </div>#}
-    {#        </div>#}
 
 {% endblock %}

@@ -12,6 +12,16 @@ def filtersamples(value, arg):
     """
     return value.filter(sample_type=arg)
 
+@register.filter(name='countsamples')
+def countsamples(value, arg):
+    """
+    Count subsamples set by type
+    :param value: subsamples_set
+    :param arg: string type
+    :return: number
+    """
+    return value.filter(sample_type=arg).count()
+
 @register.filter(name='failpass')
 def failpass(value):
     """

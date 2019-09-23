@@ -83,42 +83,9 @@
                         </div>
                     </h3>
                 </div>
-                <div id="collapse3" class="collapse" data-parent="#panel-group">
+                <div id="collapse3" class="collapse in" data-parent="#panel-group">
                     <div class="panel-body">
                         {% render_table participant_table %}
-{#                        <table class="table table-hover">#}
-{#                            <thead>#}
-{#                            <tr>#}
-{#                                <th>Participant</th>#}
-{#                                <th>DIGS</th>#}
-{#                                <th>FIGS</th>#}
-{#                                <th>Narrative</th>#}
-{#                                <th>Records</th>#}
-{#                                <th>Consensus</th>#}
-{#                                <th>LDPS</th>#}
-{#                                <th>Notes</th>#}
-{#                                <th>Actions</th>#}
-{#                            </tr>#}
-{#                            </thead>#}
-{#                            <tbody>#}
-{#                            {% for p in dataset.dataset_participants.all %}#}
-{#                                <tr>#}
-{#                                    <td>{{ p.participant.getFullNumber }}</td>#}
-{#                                    <td>{{ p.get_digs_display }}</td>#}
-{#                                    <td>{{ p.get_figs_display }}</td>#}
-{#                                    <td>{{ p.get_narrative_display }}</td>#}
-{#                                    <td>{{ p.get_records_display }}</td>#}
-{#                                    <td>{{ p.get_consensus_display }}</td>#}
-{#                                    <td>{{ p.get_ldps_display }}</td>#}
-{#                                    <td>{{ p.notes }}</td>#}
-{#                                    <td><a class="btn-floating green" title="Edit dataset participant"#}
-{#                                           href="{% url 'dataset_participant_update' p.id %}">#}
-{#                                        <i class="material-icons">edit</i>#}
-{#                                    </a></td>#}
-{#                                </tr>#}
-{#                            {% endfor %}#}
-{#                            </tbody>#}
-{#                        </table>#}
                     </div>
                     <div class="panel-footer"></div>
                 </div>

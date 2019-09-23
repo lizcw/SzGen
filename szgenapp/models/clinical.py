@@ -84,17 +84,17 @@ SYMPTOM_PATTERN_CHOICES = (
     (0, 'Unknown')
 )
 RELIGIOUS_CHOICES = (
-    ('NO', 'No'),
-    ('YES', 'Yes'),
-    ('CUL', 'Culturally acceptable (non-delusional) beliefs'),
-    ('U', 'Unknown')
+    ('No', 'No'),
+    ('Yes', 'Yes'),
+    ('Cul', 'Culturally acceptable (non-delusional) beliefs'),
+    ('Unk', 'Unknown')
 )
 
 ONSET_CHOICES = (
-    ('ABRUPT', 'Abrupt (within a day)'),
-    ('ACUTE', 'Acute (within a week)'),
-    ('MODACUTE', 'Moderately acute (within a month)'),
-    ('GRADUAL', 'Gradual (longer than a month)')
+    ('Abrupt', 'Abrupt (within a day)'),
+    ('Acute', 'Acute (within a week)'),
+    ('ModAcute', 'Moderately acute (within a month)'),
+    ('Gradual', 'Gradual (longer than a month)')
 )
 
 ILLNESS_CHOICES = (
@@ -249,8 +249,8 @@ class Diagnosis(models.Model):
                                                   help_text='Period for illness duration is approximate (eg 20+)')
     age_first_treatment = models.IntegerField(help_text='Age at which psychiatric treatment first accessed',
                                               validators=[validate_onset_age], null=True, blank=True)
-    dup = models.IntegerField(verbose_name='Duration of Untreated Psychosis (DUP)',
-                              help_text='Period between onset and first treatment (in years)',
+    dup = models.IntegerField(verbose_name='DUP',
+                              help_text='Duration of Untreated Psychosis (DUP): Period between onset and first treatment (in years)',
                               null=True, blank=True)
     dup_approx = models.BooleanField(default=False,
                                      verbose_name="DUP is approximate",
@@ -377,7 +377,7 @@ class SymptomsDelusion(models.Model):
                                          verbose_name='Bizarre Delusions',
                                          help_text='Presence (lifetime) of definitely bizarre delusions')
     biw_delusions = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                     verbose_name='Broadcast /Insertion /Withdrawal Delusions',
+                                     verbose_name='Broadcast / Insertion / Withdrawal Delusions',
                                      help_text='Presence (lifetime) of thought broadcast/insertion/withdrawal'
                                                ' delusions')
     control_delusions = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
@@ -394,13 +394,13 @@ class SymptomsDelusion(models.Model):
                                           verbose_name='Jealousy Delusions',
                                           help_text='Presence (lifetime) of delusions of jealousy')
     guilt_sin_delusions = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                           verbose_name='Guilt/Sin Delusions',
+                                           verbose_name='Guilt / Sin Delusions',
                                            help_text='Presence (lifetime) of guilt or sin delusions')
     grandiose_delusions = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                            verbose_name='Grandiose Delusions',
                                            help_text='Presence (lifetime) of grandiose delusions')
     religious_delusions = models.CharField(max_length=20, choices=RELIGIOUS_CHOICES, null=True, blank=True,
-                                           verbose_name='Religious /Magic Delusions',
+                                           verbose_name='Religious / Magic Delusions',
                                            help_text='Presence (lifetime) of religious delusions or delusions of magic')
     somatic_delusions = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
                                          verbose_name='Somatic Delusions',
@@ -431,7 +431,7 @@ class SymptomsHallucination(models.Model):
                                                verbose_name='Auditory hallucinations',
                                                help_text='Presence (lifetime) of auditory hallucinations')
     auditory_commentary_hallucinations = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                                          verbose_name='Commentary /3rd Person Auditory '
+                                                          verbose_name='Commentary / 3rd Person Auditory '
                                                                        'Hallucinations',
                                                           help_text='Presence (lifetime) of auditory '
                                                                     'hallucinations involving commentary or '
@@ -440,11 +440,11 @@ class SymptomsHallucination(models.Model):
                                              verbose_name='Visual Hallucinations',
                                              help_text='Presence (lifetime) of visual hallucinations')
     olf_gust_hallucinations = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                               verbose_name='Olfactory /Gustatory Hallucinations',
+                                               verbose_name='Olfactory / Gustatory Hallucinations',
                                                help_text='Presence (lifetime) of olfactory or gustatory '
                                                          'hallucinations')
     somatic_hallucinations = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                              verbose_name='Somatic/Tactile Hallucinations',
+                                              verbose_name='Somatic / Tactile Hallucinations',
                                               help_text='Presence (lifetime) of somatic/tactile hallucinations')
 
 
@@ -463,7 +463,7 @@ class SymptomsBehaviour(models.Model):
                                                       "thought disorder (past 30 days). 'Question' category usually "
                                                       "grouped with 'Unknown' category for analyses")
     disorg_catatonic_behav = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                              verbose_name='Disorganised /Catatonic Behaviour',
+                                              verbose_name='Disorganised / Catatonic Behaviour',
                                               help_text='Definite (lifetime) presence of disorganised/catatonic '
                                                         'behaviour')
     severe_disorg_catatonic_behav = models.CharField(max_length=20, choices=SEVERITY_CHOICES, null=True, blank=True,
@@ -480,10 +480,10 @@ class SymptomsBehaviour(models.Model):
     allogia = models.CharField(max_length=20, choices=SEVERITY_CHOICES, null=True, blank=True, verbose_name='Alogia',
                                help_text='Severity of current alogia/negative thought disorder (past 30 days)')
     avolition = models.CharField(max_length=20, choices=SEVERITY_CHOICES, null=True, blank=True,
-                                 verbose_name='Avolition /Apathy',
+                                 verbose_name='Avolition / Apathy',
                                  help_text='Severity of current avolition/apathy (past 30 days)')
     anhedonia = models.CharField(max_length=20, choices=SEVERITY_CHOICES, null=True, blank=True,
-                                 verbose_name='Anhedonia /Asociality',
+                                 verbose_name='Anhedonia / Asociality',
                                  help_text='Severity of current anhedonia/asociality (past 30 days)')
 
 
@@ -507,7 +507,7 @@ class SymptomsDepression(models.Model):
                                                       'symptom – either depressed mood or anhedonia must be present '
                                                       'for a major depressive episode)')
     app_wt_change = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                     verbose_name='Appetite/Weight Change',
+                                     verbose_name='Appetite / Weight Change',
                                      help_text='Significant appetite and/or weight change during depression '
                                                '(DSMIV depression symptom)')
     sleep_disturb = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
@@ -519,11 +519,11 @@ class SymptomsDepression(models.Model):
                                     help_text='Psychomotor agitation or retardation during depression '
                                               '(DSMIV depression symptom)')
     fatigue_energyloss = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                          verbose_name='Fatigue/Energy Loss',
+                                          verbose_name='Fatigue / Energy Loss',
                                           help_text='Fatigue or loss of energy during depression '
                                                     '(DSMIV depression symptom)')
     worthless_guilt = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                       verbose_name='Worthlessness/Guilt',
+                                       verbose_name='Worthlessness / Guilt',
                                        help_text='Persistent feelings of worthlessness or guilt during depression '
                                                  '(DSMIV depression symptom)')
     decreased_conc = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
@@ -531,7 +531,7 @@ class SymptomsDepression(models.Model):
                                       help_text='Decreased concentration during depression '
                                                 '(DSMIV depression symptom)')
     death_suicide = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                     verbose_name='Thoughts of Death/Suicide',
+                                     verbose_name='Thoughts of Death / Suicide',
                                      help_text='Persistent thoughts of death or suicide during depression '
                                                '(DSMIV depression symptom)')
     depressive_symptoms_count = models.IntegerField(null=True, blank=True, verbose_name='Count of Depressive Symptoms',
@@ -554,7 +554,7 @@ class SymptomsMania(models.Model):
                                    verbose_name='Final mania',
                                    help_text='Definite (lifetime) presence of at least one DSMIV manic episode')
     elevated_mood = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                     verbose_name='Elevated/Elated mood',
+                                     verbose_name='Elevated / Elated mood',
                                      help_text='Elated mood for 1+ week (or any duration if hospitalised) '
                                                '(either elated or irritable mood must be present for a '
                                                'DSMIV manic episode)')
@@ -574,7 +574,7 @@ class SymptomsMania(models.Model):
                                         verbose_name='Pressured Speech',
                                         help_text='More talkative or pressured speech (DSMIV manic symptom)')
     racing_thoughts = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,
-                                       verbose_name='Racing Thoughts/Flight of Ideas',
+                                       verbose_name='Racing Thoughts / Flight of Ideas',
                                        help_text='Flight of ideas or subjective racing thoughts '
                                                  '(DSMIV manic symptom)')
     distractibility = models.CharField(max_length=10, choices=BOOLEAN_CHOICES, null=True, blank=True,

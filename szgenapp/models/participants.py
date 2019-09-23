@@ -6,6 +6,7 @@ COUNTRY_CHOICES = (
     ('FIJ', 'Fiji'),
     ('IND', 'India'),
     ('MAL', 'Malaysia'),
+    ('SWK', 'Sarawak'),
     ('UNK', 'Unknown')
 )
 PARTICIPANT_STATUS_CHOICES = (

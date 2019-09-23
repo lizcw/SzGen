@@ -16,7 +16,7 @@ from szgenapp.forms.document import DocumentForm, ImportForm
 from szgenapp.models.clinical import *
 from szgenapp.models.datasets import *
 from szgenapp.models.document import Document
-from szgenapp.models.participants import StudyParticipant
+from szgenapp.models.participants import StudyParticipant, COUNTRY_CHOICES
 from szgenapp.models.samples import *
 from szgenapp.models.studies import Study
 from szgenapp.tables.document import DocumentTable
@@ -376,9 +376,9 @@ class DocumentImport(FormView):
             else:
                 studyparticipant = studyparticipants.first()
                 if hasattr(studyparticipant, 'clinical') and hasattr(studyparticipant.clinical, 'id'):
-                    msg = "%s - %s: [Row %d] %s" % (
+                    msg = "%s - %s: [Row %d] %s clinicalID=%d" % (
                     fmsg, 'StudyParticipant already has clinical record. Delete this first then rerun import - Skipping',
-                    index, participantid)
+                    index, participantid, studyparticipant.clinical.id)
                     logger.error(msg)
                     continue
                 # Update participant fields
@@ -386,10 +386,13 @@ class DocumentImport(FormView):
                     participant = studyparticipant
                     if len(row['secondaryid']) > 0:
                         participant.secondaryid = row['secondaryid'].strip()
-                    participant.country = row['country'].strip()
+                    # Country validate
+                    row_country = row['country'].strip().upper()
+                    country = [x for x in COUNTRY_CHOICES if x[0] == row_country]
+                    participant.country = country[0][0]
                     participant.save()
-                    msg = "%s - %s: [Row %d] %d fullnumber:%s" % (fmsg, 'Participant UPDATED', index,
-                                                                  participant.id, participantid)
+                    msg = "%s - %s: [Row %d] %d fullnumber:%s country:%s" % (
+                        fmsg, 'Participant UPDATED', index, participant.id, participant.fullnumber, participant.country)
                     logger.debug(msg)
                 except Error as e:
                     msg = "%s - %s: [Row %d] %s" % (fmsg, 'Unable to update Participant', index, e)

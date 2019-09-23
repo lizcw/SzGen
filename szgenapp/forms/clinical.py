@@ -1,27 +1,21 @@
-from django.forms import ModelForm, BooleanField, ChoiceField
+from django.forms import ModelForm, BooleanField, HiddenInput
 from django.forms.models import inlineformset_factory
 
 from szgenapp.models.clinical import *
-from szgenapp.models.participants import StudyParticipant
 
 
 class ClinicalForm(ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super(ClinicalForm, self).__init__(*args, **kwargs)
-        if hasattr(kwargs.get('initial'), 'participant'):
-            pid = kwargs.get('initial')['participant'].id
-            self.fields['participant'].queryset = StudyParticipant.objects.filter(pk=pid)
-
     class Meta:
         model = Clinical
         fields = '__all__'
+        widgets = {'participant': HiddenInput()}
 
 
 class DemographicForm(ModelForm):
     class Meta:
         model = Demographic
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class DiagnosisForm(ModelForm):
@@ -32,48 +26,56 @@ class DiagnosisForm(ModelForm):
     class Meta:
         model = Diagnosis
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class MedicalHistoryForm(ModelForm):
     class Meta:
         model = MedicalHistory
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class SymptomsGeneralForm(ModelForm):
     class Meta:
         model = SymptomsGeneral
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class SymptomsDelusionForm(ModelForm):
     class Meta:
         model = SymptomsDelusion
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class SymptomsHallucinationForm(ModelForm):
     class Meta:
         model = SymptomsHallucination
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class SymptomsDepressionForm(ModelForm):
     class Meta:
         model = SymptomsDepression
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class SymptomsBehaviourForm(ModelForm):
     class Meta:
         model = SymptomsBehaviour
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 class SymptomsManiaForm(ModelForm):
     class Meta:
         model = SymptomsMania
         fields = '__all__'
+        widgets = {'clinical': HiddenInput()}
 
 
 DemographicFormset = inlineformset_factory(Clinical, Demographic, form=DemographicForm, extra=1, can_delete=False)

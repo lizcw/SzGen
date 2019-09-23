@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="{% url 'samples' %}">Samples</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li><a href="{% url 'sample_detail' object.sample.id %}">Sample</a></li>
+    </ul>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>{{ title }}</h2></div>
+    <div class="row col-md-6">
+        <div class="well">
+            <form action="" method="post">{% csrf_token %}
+                <p>Are you sure you want to delete ID={{ object.id }}?</p>
+                <input type="submit" class="btn btn-success" value="Confirm"/>
+                <button type="button" class="btn btn-default" onclick="javascript:history.back();return false;">Cancel
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

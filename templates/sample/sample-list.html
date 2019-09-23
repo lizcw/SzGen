@@ -11,12 +11,6 @@
         <div>
             <h2>{{ title }} Samples</h2>
 
-            <div class="fixed-action-btn">
-                <a class="btn-floating btn-large blue-grey" title="Add sample"
-                   href="{% url 'sample_create' %}">
-                    <i class="large material-icons">add</i>
-                </a>
-            </div>
             <ul class="nav nav-tabs">
                 <li><a href="{% url 'samples' %}">Summary</a></li>
                 {% for key, subtype in collections %}
@@ -33,7 +27,7 @@
                     <form action="" method="get" class="form">
                         {% bootstrap_form filter.form %}
                         {% bootstrap_button 'filter' %}
-                        <a class="btn grey" href="{% url 'samples' %}">Reset</a>
+                        <a class="btn grey" href="{{ reset_url }}">Reset</a>
                     </form>
                 </div>
             {% endif %}

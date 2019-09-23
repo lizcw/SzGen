@@ -184,11 +184,10 @@ class ClinicalCreate(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalCreate, self).get_initial(**kwargs)
-        if hasattr(self.kwargs, 'participantid'):
-            pid = self.kwargs.get('participantid')
+        pid = self.kwargs.get('participantid')
+        if pid is not None:
             studyparticipant = StudyParticipant.objects.get(pk=pid)
             initial['participant'] = studyparticipant
-            # self.object.form = ClinicalForm(studyparticipant)
         initial['action'] = 'Create'
         return initial
 
@@ -253,77 +252,6 @@ class ClinicalCreate(CreateView):
         return reverse('clinical_detail', args=[self.object.id])
 
 
-class ClinicalUpdate(UpdateView):
-    model = Clinical
-    template_name = 'clinical/clinical-create.html'
-    form_class = ClinicalForm
-    context_object_name = 'clinical'
-
-    def get_initial(self, *args, **kwargs):
-        initial = super(ClinicalUpdate, self).get_initial()
-        initial['action'] = 'Create'
-        return initial
-
-    def get_context_data(self, **kwargs):
-        data = super(ClinicalUpdate, self).get_context_data(**kwargs)
-        data['title'] = 'Update Clinical Record'
-        if self.request.POST:
-            data['demographic'] = DemographicFormset(self.request.POST)
-            data['diagnosis'] = DiagnosisFormset(self.request.POST)
-            data['medical'] = MedicalHistoryFormset(self.request.POST)
-            data['symptoms_general'] = SymptomsGeneralFormset(self.request.POST)
-            data['symptoms_delusion'] = SymptomsDelusionFormset(self.request.POST)
-            data['symptoms_hallucination'] = SymptomsHallucinationFormset(self.request.POST)
-            data['symptoms_behaviour'] = SymptomsBehaviourFormset(self.request.POST)
-            data['symptoms_depression'] = SymptomsDepressionFormset(self.request.POST)
-            data['symptoms_mania'] = SymptomsManiaFormset(self.request.POST)
-        else:
-            init = {'clinical': self.object}
-            if hasattr(self.object, 'demographic'):
-                data['demographic'] = DemographicFormset(instance=self.get_object().demographic)
-            else:
-                data['demographic'] = DemographicFormset(initial=init)
-            if hasattr(self.object, 'diagnosis'):
-                data['diagnosis'] = DiagnosisFormset(instance=self.get_object().diagnosis)
-            else:
-                data['diagnosis'] = DiagnosisFormset(initial=init)
-            if hasattr(self.object, 'medicalhistory'):
-                data['medical'] = MedicalHistoryFormset(instance=self.get_object().medicalhistory)
-            else:
-                data['medical'] = MedicalHistoryFormset(initial=init)
-            if hasattr(self.object, 'symptomsgeneral'):
-                data['symptoms_general'] = SymptomsGeneralFormset(instance=self.get_object().symptomsgeneral)
-            else:
-                data['symptoms_general'] = SymptomsGeneralFormset(initial=init)
-            if hasattr(self.object, 'symptomsdelusion'):
-                data['symptoms_delusion'] = SymptomsDelusionFormset(instance=self.get_object().symptomsdelusion)
-            else:
-                data['symptoms_delusion'] = SymptomsDelusionFormset(initial=init)
-            if hasattr(self.object, 'symptomsbehaviour'):
-                data['symptoms_hallucination'] = SymptomsHallucinationFormset(
-                    instance=self.get_object().symptomshallucination)
-            else:
-                data['symptoms_hallucination'] = SymptomsHallucinationFormset(initial=init)
-            if hasattr(self.object, 'symptomsbehaviour'):
-                data['symptoms_behaviour'] = SymptomsBehaviourFormset(instance=self.get_object().symptomsbehaviour)
-            else:
-                data['symptoms_behaviour'] = SymptomsBehaviourFormset(initial=init)
-            if hasattr(self.object, 'symptomsdepression'):
-                data['symptoms_depression'] = SymptomsDepressionFormset(instance=self.get_object().symptomsdepression)
-            else:
-                data['symptoms_depression'] = SymptomsDepressionFormset(initial=init)
-            if hasattr(self.object, 'symptomsmania'):
-                data['symptoms_mania'] = SymptomsManiaFormset(instance=self.get_object().symptomsmania)
-            else:
-                data['symptoms_mania'] = SymptomsManiaFormset(initial=init)
-        data['tablist'] = [(key, key.replace('_', ': ').upper()) for key in data.keys() if key != 'form' and
-                           key != 'view' and key != 'title' and key != 'object' and key != 'clinical']
-        return data
-
-    def get_success_url(self):
-        return reverse('clinical_detail', args=[self.object.id])
-
-
 class ClinicalDelete(DeleteView):
     """
     Delete a clinical record with all subsets
@@ -358,6 +286,7 @@ class ClinicalDemographicUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDemographicUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Demographic Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -389,6 +318,7 @@ class ClinicalDiagnosisUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalDiagnosisUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Diagnosis Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -420,6 +350,7 @@ class ClinicalMedicalUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalMedicalUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Medical Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -451,6 +382,7 @@ class ClinicalSymptomsGeneralUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsGeneralUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical General Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -468,6 +400,7 @@ class ClinicalSymptomsDelusionCreate(CreateView):
             pid = self.kwargs.get('clinicalid')
             initial['clinical'] = Clinical.objects.get(pk=pid)
         initial['title'] = 'Create Clinical Delusion Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -482,6 +415,7 @@ class ClinicalSymptomsDelusionUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDelusionUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Delusion Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -513,6 +447,7 @@ class ClinicalSymptomsHallucinationUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsHallucinationUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Hallucination Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -544,6 +479,7 @@ class ClinicalSymptomsBehaviourUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsBehaviourUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Behaviour Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -575,6 +511,7 @@ class ClinicalSymptomsDepressionUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsDepressionUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Depression Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):
@@ -606,6 +543,7 @@ class ClinicalSymptomsManiaUpdate(UpdateView):
     def get_initial(self, *args, **kwargs):
         initial = super(ClinicalSymptomsManiaUpdate, self).get_initial(**kwargs)
         initial['title'] = 'Update Clinical Mania Symptoms Record'
+        initial['clinical'] = self.get_object().clinical
         return initial
 
     def get_success_url(self):

@@ -8,7 +8,7 @@ class StudyParticipantFilter(django_filters.FilterSet):
     status = django_filters.MultipleChoiceFilter(choices=PARTICIPANT_STATUS_CHOICES, field_name='status')
     alphacode = django_filters.CharFilter(field_name='alphacode')
     secondaryid = django_filters.CharFilter(field_name='secondaryid')
-    accessid = django_filters.CharFilter(field_name='accessid')
+    accessid = django_filters.CharFilter(field_name='accessid', lookup_expr='icontains')
     npid = django_filters.CharFilter(field_name='npid')
     fullnumber = django_filters.CharFilter('fullnumber', lookup_expr='icontains')
 

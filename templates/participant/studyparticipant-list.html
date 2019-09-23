@@ -23,10 +23,10 @@
 
                 <div id="summary" class="card fade in active">
                     <div class="btn-group">
-                        <a class="btn btn-small" href="{% export_url 'csv' %}">
+                        <a class="btn btn-small" href="{% export_url 'csv' %}" onclick="showLoading()">
                             download <code>.csv</code>
                         </a>
-                        <a class="btn btn-small" href="{% export_url 'xls' %}">
+                        <a class="btn btn-small" href="{% export_url 'xls' %}" onclick="showLoading()">
                             <code>.xls</code>
                         </a>
                     </div>
@@ -46,5 +46,20 @@
                 {% endif %}
             </div>
         </div>
+        <div id="modal" onclick="hideLoading()"></div>
+        <script type="text/javascript">
+            function showLoading() {
+                $("body").addClass("loading");
+            }
+            function hideLoading() {
+                $("body").removeClass("loading");
+            }
+
+            $(window).on("load", function () {
+                console.log("window loaded");
+                $("body").removeClass("loading");
+            });
+
+        </script>
     </section>
 {% endblock content %}

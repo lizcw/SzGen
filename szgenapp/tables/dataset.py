@@ -33,9 +33,10 @@ class DatasetFileTable(tables.Table):
 
 
 class DatasetParticipantTable(tables.Table):
-    id = tables.LinkColumn('dataset_detail', text='View', args=[A('dataset.id')], verbose_name='')
+    id = tables.LinkColumn('dataset_participant_update', text='View', args=[A('id')], verbose_name='')
+    group = tables.LinkColumn('dataset_detail', args=[A('dataset.id')], accessor=A('dataset.group'))
     participant = tables.LinkColumn('participant_detail', args=[A('participant.id')])
-    group = tables.Column(verbose_name='Group', accessor=A('dataset.group'))
+
 
     class Meta:
         model = DatasetRow

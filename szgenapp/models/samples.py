@@ -5,7 +5,7 @@ from multiselectfield import MultiSelectField
 SAMPLE_TYPES = (
     ('PLASMA', 'Plasma'),
     ('SERUM', 'Serum'),
-    ('PAXGENE', 'PAXGENE'),
+    ('PAXGENE', 'PAXgene'),
     ('WB', 'Whole blood'),
     ('SALIVA', 'Saliva'),
     ('UNKNOWN', 'Unknown')
@@ -103,7 +103,7 @@ class QC(models.Model):
     Quality control for subsamples
     """
     id = models.AutoField(primary_key=True)
-    subsample = models.ForeignKey('SubSample', on_delete=models.CASCADE, related_name='sample_qc')
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE, related_name='sample_qc')
     qc_date = models.DateField(verbose_name='QC Date', blank=True, null=True,
                                help_text='Date on which quality control ran')
     passed = models.BooleanField(default=False, help_text='True if passed QC')

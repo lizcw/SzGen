@@ -1,7 +1,9 @@
-from django import forms
-from django.forms import ModelForm, Form, ChoiceField
-from django.forms.models import BaseInlineFormSet, inlineformset_factory
+from django.forms import ModelForm, HiddenInput
+from django.forms import ModelForm, HiddenInput
+from django.forms.models import inlineformset_factory
+
 from szgenapp.models.datasets import DatasetRow, Dataset, DatasetFile
+from szgenapp.models.participants import StudyParticipant
 
 
 class DatasetForm(ModelForm):
@@ -21,6 +23,17 @@ class DatasetFileForm(ModelForm):
 
 
 class DatasetRowForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(DatasetRowForm, self).__init__(*args, **kwargs)
+        init = kwargs.get('initial')
+        if init is not None:
+            p = init.get('participant')
+            if p is not None:
+                self.fields['participant'].queryset = StudyParticipant.objects.filter(pk=p.id)
+            else:
+                self.fields['participant'].queryset = StudyParticipant.objects.order_by('fullnumber')
+
     class Meta:
         model = DatasetRow
         fields = '__all__'

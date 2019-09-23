@@ -257,12 +257,13 @@
                                 <th>Sample Arrival</th>
                                 <th>Num</th>
                                 <th>Storage date</th>
-                                <th>Location</th>
-                                <th>Used</th>
-                                {% if type == 'DNA' %}
+                                {% if type != 'DNA' %}
+                                    <th>Used</th>
+                                    <th>Location</th>
+
+                                {% else %}
                                     <th>Extraction date</th>
                                 {% endif %}
-                                <th>QC</th>
                                 <th>Notes</th>
                                 <th>Actions</th>
                             </tr>
@@ -275,14 +276,12 @@
                                         <td>{{ sample.arrival_date }}</td>
                                         <td>{{ subsample.sample_num }}</td>
                                         <td>{{ subsample.storage_date }}</td>
-                                        <td>{{ subsample.location }}</td>
-                                        <td>{{ subsample.used|yesno }}</td>
-                                        {% if type == 'DNA' %}
+                                        {% if type != 'DNA' %}
+                                            <td>{{ subsample.used|yesno }}</td>
+                                            <td>{{ subsample.location }}</td>
+                                        {% else %}
                                             <td>{{ subsample.extraction_date }}</td>
                                         {% endif %}
-                                        <td>{% if subsample.get_qc_result %}
-                                            {{ subsample.get_qc_result.passed|passfail }}
-                                        {% endif %}</td>
                                         <td>{{ subsample.notes }}</td>
                                         <td><a class="btn-floating green small" title="Edit SubSample"
                                                href="{% url 'subsample_update' subsample.id %}">
@@ -404,12 +403,12 @@
                                     <td>
                                         <a class="btn-floating grey small" title="View Participant"
                                            href="{% url 'participant_detail' related.id %}">
-                                        <i class="material-icons">visibility</i>
-                                    </a>
+                                            <i class="material-icons">visibility</i>
+                                        </a>
                                         <a class="btn-floating red small" title="Remove Related Participant"
                                            href="{% url 'participant_remove_related' participant.id related.id %}">
-                                        <i class="material-icons">remove</i>
-                                    </a>
+                                            <i class="material-icons">remove</i>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}

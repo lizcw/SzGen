@@ -16,7 +16,8 @@
     {% autoescape on %}
         <div class="container">
             <div class="well col-md-12">
-                <h3>Sample {{ sample.participant|force_escape }}</h3>
+                <h3>Sample for {{ sample.participant|force_escape }}</h3>
+                <p>{% for type in  sample.sample_types.all %} {{ type.name }}{% endfor %}</p>
                 <div class="fixed-action-btn">
                     <a class="btn-floating btn-large green" title="Edit Sample"
                        href="{% url 'sample_update' sample.id %}">
@@ -115,6 +116,59 @@
                         </div>
                     </div>
                 </div>
+            <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse6">Quality Controls</a>
+                            <span class="badge blue-grey">{{ sample.sample_qc.count }}</span>
+                            <div class="fixed-action-btn">
+                                <a class="btn-floating blue-grey" title="Add quality control"
+                                   href="{% url 'sample_qc_add' sample.id %}">
+                                    <i class="material-icons">add</i>
+                                </a>
+                            </div>
+                        </h3>
+                    </div>
+                    <div id="collapse6" class="collapse" data-parent="#panel-group">
+                        <div class="panel-body">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>QC date</th>
+                                    <th>Passed</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if sample.sample_qc.count > 0 %}
+                                    {% for qc in sample.sample_qc.all %}
+                                        <tr>
+                                            <td>{{ qc.qc_date|date:"c" }}</td>
+                                            <td>{{ qc.passed|passfail }}</td>
+                                            <td>{{ qc.notes }}</td>
+                                            <td>
+                                                <a class="btn-floating small green" title="Edit QC"
+                                                   href="{% url 'sample_qc_update' qc.id %}">
+                                                <i class="material-icons">edit</i>
+                                            </a>
+                                                <a class="btn-floating small red" title="Delete QC"
+                                                   href="{% url 'sample_qc_delete' qc.id %}">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5">No Quality Control tests</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -149,7 +203,12 @@
                                         <td><a class="btn-floating small green" title="Edit Transform"
                                                href="{% url 'sample_transform_update' transform.id %}">
                                             <i class="material-icons">edit</i>
-                                        </a></td>
+                                        </a>
+                                        <a class="btn-floating small red" title="Delete Transform"
+                                                   href="{% url 'sample_transform_delete' transform.id %}">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -192,7 +251,11 @@
                                         <td><a class="btn-floating small green" title="Edit Harvest"
                                                href="{% url 'sample_harvest_update' harvest.id %}">
                                             <i class="material-icons">edit</i>
-                                        </a></td>
+                                        </a>
+                                        <a class="btn-floating small red" title="Delete Harvest"
+                                                   href="{% url 'sample_harvest_delete' harvest.id %}">
+                                                <i class="material-icons">delete</i>
+                                            </a></td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -205,6 +268,7 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">
                                 <a data-toggle="collapse" href="#subpanel{{ forloop.counter0 }}">{{ val }}s</a>
+                                <span class="badge blue-grey">{{ sample.subsample_set.all|countsamples:type }}</span>
                                 <div class="fixed-action-btn">
                                     <a class="btn-floating blue-grey" title="Add subsample"
                                        href="{% url 'subsample_add' type sample.id %}">
@@ -222,13 +286,10 @@
                                         <th>Storage date</th>
                                         {% if type != 'DNA' %}
                                             <th>Used</th>
+                                            <th>Location</th>
                                         {% else %}
                                             <th>Extraction date</th>
                                         {% endif %}
-                                        {% if type != 'DNA' %}
-                                            <th>Location</th>
-                                        {% endif %}
-                                        <th>QC</th>
                                         <th>Notes</th>
                                         <th>Actions</th>
                                     </tr>
@@ -240,20 +301,18 @@
                                             <td>{{ sub.storage_date|date:"c" }}</td>
                                             {% if type != 'DNA' %}
                                                 <td>{{ sub.used|yesno }}</td>
+                                                <td>{{ sub.location }}</td>
                                             {% else %}
                                                 <td>{{ sub.extraction_date|date:"c" }}</td>
                                             {% endif %}
-                                            {% if type != 'DNA' %}
-                                                <td>{{ sub.location }}</td>
-                                            {% endif %}
-                                            <td>{% if sub.get_qc_result %}
-                                                {{ sub.get_qc_result.qc_date|date:"c" }} -
-                                                {{ sub.get_qc_result.passed|passfail }}
-                                            {% endif %}</td>
                                             <td>{{ sub.notes }}</td>
                                             <td><a class="btn-floating small green" title="Edit SubSample"
                                                    href="{% url 'subsample_update' sub.id %}">
                                                 <i class="material-icons">edit</i>
+                                            </a>
+                                            <a class="btn-floating small red" title="Delete SubSample"
+                                                   href="{% url 'subsample_delete' sub.id %}">
+                                                <i class="material-icons">delete</i>
                                             </a></td>
                                         </tr>
 

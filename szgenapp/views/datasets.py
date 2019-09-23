@@ -130,6 +130,12 @@ class DatasetParticipantUpdate(UpdateView):
     template_name = 'dataset/dataset-create.html'
     form_class = DatasetRowForm
 
+    def get_initial(self):
+        data = super(DatasetParticipantUpdate, self).get_initial()
+        data['participant'] = self.get_object().participant
+        data['dataset'] = self.get_object().dataset
+        return data
+
     def get_context_data(self, **kwargs):
         data = super(DatasetParticipantUpdate, self).get_context_data(**kwargs)
         data['action'] = 'Edit'

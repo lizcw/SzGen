@@ -5,58 +5,35 @@
     <ul>
         <li><a href="{% url 'samples' %}">Samples</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
-
-        {% if sample.participant %}
-            <li><a href="{% url 'participant_detail' sample.participant.id %}">Participant</a></li>
+        {% if participant %}
+            <li><a href="{% url 'participant_detail' participant.pk %}">Participant</a></li>
             <li>&nbsp;&gt;&nbsp;</li>
         {% endif %}
         {% if sample %}
-            <li><a href="{% url 'sample_detail' sample.id %}">Sample</a></li>
+            <li><a href="{% url 'sample_detail' sample.pk %}">Sample</a></li>
             <li> &gt;</li>
-            <li>{{ sample }}</li>
-        {% else %}
-            <li>Sample</li>
+        {% elif form.initial.sample %}
+            <li><a href="{% url 'sample_detail' form.initial.sample.pk %}">Sample</a></li>
+            <li> &gt;</li>
         {% endif %}
+        <li>{{ subtitle }}</li>
     </ul>
 {% endblock %}
 
 {% block content %}
     <div class="container row">
         <div class="col s10">
-            <h3>{{ subtitle }} {% if sample %}{{ sample.id }} for {{ sample.participant }}{% endif %}</h3>
+            <h3>{{ subtitle }}</h3>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 {% form form=form %}{% endform %}
-                {% if location %}
-                    <h5>Add Location</h5>
+                {% if location and not form.initial.sample_type == 'DNA' %}
+                    <h5> Location</h5>
                     {{ location.management_form }}
                     {% form form=location %}{% endform %}
                 {% endif %}
-                {% if shipment %}
-                    <h5>Add Shipment</h5>
-                    {{ shipment.management_form }}
-                    {% form form=shipment.forms.0 %}{% endform %}
-                {% endif %}
-                {% if transform %}
-                    <h5>Add Transform</h5>
-                    {{ transform.management_form }}
-                    {% form form=transform.forms.0 %}{% endform %}
-                {% endif %}
-                {% if harvest %}
-                    <h5>Add Harvest</h5>
-                    {{ harvest.management_form }}
-                    {% form form=harvest.forms.0 %}{% endform %}
-                {% endif %}
-                {% if qc %}
-                    <h5>Add Quality Control</h5>
-                    {{ qc.management_form }}
-                    {% for qc_form in qc.forms %}
-                        <div class="well">
-                            {% form form=qc_form %}{% endform %}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+
                 <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
 
             </form>

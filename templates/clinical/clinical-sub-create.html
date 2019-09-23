@@ -5,9 +5,12 @@
     <ul>
         <li><a href="{% url 'clinical_list' %}">Clinical Records</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
-        {% if form.initial.clinical %}
-        <li><a href="{% url 'clinical_detail' form.initial.clinical %}">Clinical</a></li>
-        <li>&nbsp;&gt;&nbsp;</li>
+        {% if object.clinical %}
+            <li><a href="{% url 'clinical_detail' object.clinical.id %}">Clinical</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
+        {% elif form.initial.clinical %}
+            <li><a href="{% url 'clinical_detail' form.initial.clinical.id %}">Clinical</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
         {% endif %}
         <li>{{ form.initial.title }}</li>
     </ul>
@@ -16,7 +19,7 @@
 {% block content %}
     <div class="container row">
         <div class="col s10">
-            <h3>{{ form.initial.title }}</h3>
+            <h3>{{ form.initial.title }} for {{ form.initial.clinical.participant }}</h3>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 

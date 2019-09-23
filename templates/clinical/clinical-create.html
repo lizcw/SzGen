@@ -5,9 +5,12 @@
     <ul>
         <li><a href="{% url 'clinical_list' %}">Clinical Records</a></li>
         <li>&nbsp;&gt;&nbsp;</li>
-        {% if participant %}
-        <li><a href="{% url 'participant_detail' participant.id %}">Participant</a></li>
-        <li>&nbsp;&gt;&nbsp;</li>
+        {% if object.participant %}
+            <li><a href="{% url 'participant_detail' object.participant.id %}">Participant</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
+        {% elif participant %}
+            <li><a href="{% url 'participant_detail' participant.id %}">Participant</a></li>
+            <li>&nbsp;&gt;&nbsp;</li>
         {% endif %}
         <li>{{ title }}</li>
     </ul>
