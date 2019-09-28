@@ -1,8 +1,11 @@
-from django.shortcuts import render
 from rest_framework import viewsets, mixins
-from szgenrest.serializers import StudySerializer, StudyParticipantSerializer, ClinicalSerializer, SampleSerializer, DatasetSerializer
-from szgenapp.models import Study, StudyParticipant, Clinical, Sample, SubSample, Dataset
+from rest_framework.permissions import IsAuthenticated
+
 from szgenapp.filters import ClinicalFilter, StudyParticipantFilter, SampleFilter
+from szgenapp.models import Study, StudyParticipant, Clinical, Sample, Dataset
+from szgenrest.serializers import StudySerializer, StudyParticipantSerializer, ClinicalSerializer, SampleSerializer, \
+    DatasetSerializer
+
 
 #################################################################################
 #
@@ -15,6 +18,8 @@ class StudyViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.Ge
     """
     queryset = Study.objects.all().order_by('title')
     serializer_class = StudySerializer
+    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 
 class ParticipantViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -24,6 +29,8 @@ class ParticipantViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, views
     queryset = StudyParticipant.objects.all().order_by('fullnumber')
     serializer_class = StudyParticipantSerializer
     filter_class = StudyParticipantFilter
+    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 
 class ClinicalViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -33,6 +40,7 @@ class ClinicalViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
     queryset = Clinical.objects.all().order_by('participant__fullnumber')
     serializer_class = ClinicalSerializer
     filter_class = ClinicalFilter
+    permission_classes = (IsAuthenticated,)
 
 
 class SampleViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -42,6 +50,8 @@ class SampleViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.G
     queryset = Sample.objects.all().order_by('participant__fullnumber')
     serializer_class = SampleSerializer
     filter_class = SampleFilter
+    permission_classes = (IsAuthenticated,)
+
 
 class DatasetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     """
@@ -49,3 +59,4 @@ class DatasetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
     """
     queryset = Dataset.objects.all().order_by('pk')
     serializer_class = DatasetSerializer
+    permission_classes = (IsAuthenticated,)
