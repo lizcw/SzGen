@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'axes.middleware.AxesMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'SzGen.urls'
@@ -100,14 +100,15 @@ DATABASES = {
     }
 }
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#     },
-#     'axes_cache': {
-#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#     }
-# }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'axes_cache': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -164,12 +165,9 @@ LOGIN_URL = '/'
 # Lockout params
 AXES_LOGIN_FAILURE_LIMIT = 3
 AXES_COOLOFF_TIME = 1  # hours
-AXES_LOCKOUT_URL = '/locked/'
-AXES_LOCKOUT_TEMPLATE = os.path.join(BASE_DIR, 'templates/auth/locked.html')
-# AXES_COOLOFF_MESSAGE = 'You are now locked out for an hour'
-# AXES_PERMALOCK_MESSAGE = 'You are permanently locked out'
-# AXES_CACHE = 'axes_cache'
-# AXES_HANDLER = 'axes.handlers.cache.AxesCacheHandler'
+AXES_LOCKOUT_URL = '/locked'
+AXES_CACHE = 'axes_cache'
+AXES_HANDLER = 'axes.handlers.cache.AxesCacheHandler'
 
 CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
 # LOGGER configured in views/__init__.py
