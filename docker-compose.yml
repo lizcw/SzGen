@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+    web:
+        build: .
+        env_file:
+            - .env
+        command: pipenv run gunicorn szgenapp.wsgi:application --bind 0.0.0.0:8700
+        ports:
+            - "8700:8700"
+        expose:
+            - "8700"
+        volumes:
+            - static_volume:/code/static
+            - media_volume:/code/media
+            - log_volume:/code/logs
+            - db_volume:/code/db
+
+    nginx:
+        build: ./nginx
+        ports:
+            - "8337:8443"
+        depends_on:
+            - web
+        volumes:
+            - static_volume:/code/static
+            - media_volume:/code/media
+
+volumes:
+    db_volume:
+    static_volume:
+    media_volume:
+    log_volume:
