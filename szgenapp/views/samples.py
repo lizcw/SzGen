@@ -252,7 +252,8 @@ class ShipmentDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         data = super(self.__class__, self).get_context_data(**kwargs)
-        data['title'] = 'Confirm %s delete' % self.__class__
+        data['title'] = 'Confirm Shipment delete for %s' % self.object.sample.participant
+        return data
 
     def get_success_url(self):
         return reverse('sample_detail', args=[self.object.sample.id])

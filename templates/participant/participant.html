@@ -200,19 +200,20 @@
                                         <td>{{ sample.rebleed|yesno }}</td>
                                         <td>
                                             <ul>
-                                                {% for transform in sample.transformsample_set.all %}
-                                                    <li>{{ transform.transform_date }}({{ transform.failed|failpass }})</li>
+                                                {% for transform in sample.transform.all %}
+                                                    <li>{{ transform.transform_date }} ({{ transform.failed|failpass }})</li>
                                                 {% endfor %}
                                             </ul>
                                         </td>
                                         <td>
                                             <ul>
-                                                {% for harvest in sample.harvestsample_set.all %}
+                                                {% for harvest in sample.harvest.all %}
                                                     <li>
                                                         <ul>
                                                             <li>Regrow: {{ harvest.regrow_date }}</li>
                                                             <li>Harvest: {{ harvest.harvest_date }}</li>
                                                             <li>Notes: {{ harvest.notes }}</li>
+                                                            <li>&nbsp;</li>
                                                         </ul>
                                                     </li>
                                                 {% endfor %}
@@ -220,9 +221,10 @@
                                         </td>
                                         <td>
                                             <ul>
-                                                {% for ship in sample.shipment_set.all %}
+                                                {% for ship in sample.shipment.all %}
                                                     <li>
                                                         <ul>
+                                                            <li>Ref: {{ ship.reference }}</li>
                                                             <li>Rutgers: {{ ship.rutgers_number }}</li>
                                                             <li>Date: {{ ship.shipment_date }}</li>
                                                             <li>Notes: {{ ship.notes }}</li>

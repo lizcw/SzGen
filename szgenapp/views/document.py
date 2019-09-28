@@ -604,10 +604,11 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         fmsg = 'IMPORT Sample table data'
         for index, row in df.iterrows():
             fullnumber = row['full number'].strip()
+            sample = None  #INITIALISE
             participants = StudyParticipant.objects.filter(fullnumber__exact=fullnumber)
             if len(fullnumber) <= 0 or participants.count() <= 0:
-                msg = "%s - %s: [Row %d] %s" % (fmsg, 'StudyParticipant NOT FOUND or Full number is blank - Skipping',
-                                                index, fullnumber)
+                msg = "%s - %s: [Row %d] ID=%s Fullnumber=%s" % (fmsg, 'StudyParticipant NOT FOUND or Full number is blank - Skipping',
+                                                index, row['id'], fullnumber)
                 logger.error(msg)
                 continue
             else:
@@ -616,7 +617,7 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 sample_types = []
                 plasma = row['plasma'].strip()
                 notes = row['Notes'].strip()
-                wb = row['WB'].strip()  # Highly inconsistent data field
+                wb = row['WB']  # Highly inconsistent data field
                 if wb not in ['No', 'No?', 'no', 0, ''] or notes == 'WB DNA ONLY':
                     sample_types.append('WB')
                 if len(sample_types) <= 0 and (plasma is None or len(plasma) <= 0):
@@ -649,20 +650,22 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                             logger.info(msg)
                     stypes = SampleType.objects.filter(name__in=sample_types)
 
-
                 # REBLEED
                 rebleed = validate_bool(row['rebleed'])
                 # ARRIVAL DATE
                 arrival = validate_date(row['Arrival date'])
                 # CHECK IF SAMPLE ALREADY EXISTS - DUPLICATED
                 existing = Sample.objects.filter(participant=participant).filter(arrival_date=arrival).filter(rebleed=rebleed)
-                if existing.count() > 0:
+                duplicate = existing.count() > 0
+                if duplicate:
                     # Append access id if different otherwise assume re-run and just skip (DEBUG)
                     if str(row['id']) in participant.accessid:
                         msg = "%s - %s: [Row %d] %s SampleId=%d already loaded" % (
                             fmsg, 'Sample LOADED - Skipping', index, fullnumber, existing[0].pk)
                         logger.debug(msg)
+                        continue
                     else:
+                        # Try and load sample in duplicate
                         accessid = "%s, %s" % (participant.accessid, row['id'])
                         participant.accessid = accessid
                         participant.save()
@@ -670,45 +673,57 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                             fmsg, 'Sample DUPLICATE - Access ID appended', index, fullnumber, existing[0].pk, participant.accessid,
                             row['id'])
                         logger.error(msg)
+                        # USE EXISTING SAMPLE (SHOULD ONLY BE ONE)
+                        sample = existing.first()
+
+                # CREATE NEW SAMPLE
+                else:
+                    try:
+                        with transaction.atomic():
+                            sample = Sample.objects.create(participant=participant,
+                                                           rebleed=rebleed,
+                                                           arrival_date=arrival,
+                                                           notes=row['Notes'])
+                            msg = "%s - %s: [Row %d] %s sampleid=%d" % (fmsg, 'Sample CREATED',
+                                                                        index, fullnumber, sample.pk)
+                            for stype in stypes:
+                                sample.sample_types.add(stype)
+                                msg += ' sample_type=%s' % stype.name
+                            sample.save()
+                            logger.debug(msg)
+                    except Error as e:
+                        msg = "%s - %s: [Row %d] %s : %s" % (fmsg, 'Error: Sample could not be created',
+                                                        index, fullnumber, e)
+                        logger.error(msg)
+                if sample is None:
                     continue
-                # CREATE SAMPLE
-                try:
-                    with transaction.atomic():
-                        sample = Sample.objects.create(participant=participant,
-                                                       rebleed=rebleed,
-                                                       arrival_date=arrival,
-                                                       notes=row['Notes'])
-                        msg = "%s - %s: [Row %d] %s sampleid=%d" % (fmsg, 'Sample CREATED',
-                                                                    index, fullnumber, sample.pk)
-                        for stype in stypes:
-                            sample.sample_types.add(stype)
-                            msg += ' sample_type=%s' % stype.name
-                        sample.save()
-                        logger.debug(msg)
-                except Error as e:
-                    msg = "%s - %s: [Row %d] %s : %s" % (fmsg, 'Error: Sample could not be created',
-                                                    index, fullnumber, e)
-                    logger.error(msg)
                 # CREATE HARVEST SAMPLE
-                complete = validate_date(row['harvest date']) is not None
-                try:
-                    with transaction.atomic():
-                        harvest = HarvestSample.objects.create(sample=sample,
-                                                               regrow_date=validate_date(row['re-grow date']),
-                                                               harvest_date=validate_date(row['harvest date']),
-                                                               complete=complete,
-                                                               notes=row['harvest notes'])
-                        msg = "%s - %s: [Row %d] %s harvestid=%d" % (fmsg, 'Sample HARVEST CREATED',
-                                                                    index, fullnumber, harvest.pk)
-                        logger.debug(msg)
-                except Error as e:
-                    msg = "%s - %s: [Row %d] %s : %s" % (fmsg, 'Error: Sample HARVEST could not be created',
-                                                         index, fullnumber, e)
-                    logger.error(msg)
+                harvest_date = validate_date(row['harvest date'])
+                regrow_date = validate_date(row['re-grow date'])
+                notes = row['harvest notes']
+                harvests = sample.harvest.filter(harvest_date=harvest_date).filter(regrow_date=regrow_date).filter(notes=notes)
+                if harvests.count() == 0 and (harvest_date is not None or regrow_date is not None or len(notes) > 0):
+                    complete = harvest_date is not None
+                    try:
+                        with transaction.atomic():
+                            harvest = HarvestSample.objects.create(sample=sample,
+                                                                   regrow_date=regrow_date,
+                                                                   harvest_date=harvest_date,
+                                                                   complete=complete,
+                                                                   notes=notes)
+                            msg = "%s - %s: [Row %d] %s harvestid=%d" % (fmsg, 'Sample HARVEST CREATED',
+                                                                        index, fullnumber, harvest.pk)
+                            logger.debug(msg)
+                    except Error as e:
+                        msg = "%s - %s: [Row %d] %s : %s" % (fmsg, 'Error: Sample HARVEST could not be created',
+                                                             index, fullnumber, e)
+                        logger.error(msg)
 
                 # TRANSFORM SAMPLE
                 transform_date = validate_date(row['T-date'])
-                if transform_date is not None:
+                tdates = sample.transform.filter(transform_date=transform_date) \
+                    .filter(failed=validate_bool(row['T-failed']))
+                if transform_date is not None and tdates.count() == 0:
                     try:
                         with transaction.atomic():
                             transform = TransformSample.objects.create(sample=sample,
@@ -726,7 +741,9 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
                 # SHIPMENT
                 shipment_date = validate_date(row['Shipment Date'])
-                if shipment_date is not None:
+                sdates = sample.shipment.filter(shipment_date=shipment_date) \
+                    .filter(reference=row['Reference No']).filter(rutgers_number=row['Rutgers No'])
+                if shipment_date is not None and sdates.count() == 0:
                     try:
                         with transaction.atomic():
                             shipment = Shipment.objects.create(sample=sample,
@@ -742,27 +759,40 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         msg = "%s - %s: [Row %d] %s : %s" % (fmsg, 'Error: Sample SHIPMENT could not be created',
                                                      index, fullnumber, e)
                         logger.error(msg)
-                # SUBSAMPLE - LCYTES
 
+                # SUBSAMPLE - LCYTES
                 with transaction.atomic():
                     # Create 3 locations = 3 subsamples
                     try:
                         for loc in range(1,4):
-                            location = row['lcyte loc ' + str(loc)]
+                            location = row['lcyte loc ' + str(loc)].strip()
                             notes = ''
+                            duplicates = sample.subsample_set.filter(sample_num=loc).filter(sample_type='LCYTE')\
+                                .filter(storage_date=validate_date(row['Storage date']))
                             if location is None or location == '':
                                 continue
-                            if location == 'o' or location == 'O' or location == 0:
+                            if location in ['o', 'O', '0', 0]:
                                 used = True
                                 location_obj = None
+                                duplicate = duplicates.filter(used=True).count() > 0
+                                if duplicate:
+                                    continue
                             else:
                                 used = False
                                 parts = location.split('/')
                                 if len(parts) == 3:
+                                    duplicate = duplicates.filter(location__tank=parts[0])\
+                                        .filter(location__shelf=parts[1]).filter(location__cell=parts[2]).count() > 0
+                                    if duplicate:
+                                        continue
                                     location_obj = Location.objects.create(tank=parts[0], shelf=parts[1], cell=parts[2])
+
                                 else:
                                     notes = 'Location could not be parsed during import: ' + location
                                     location_obj = None
+                                    duplicate = duplicates.filter(notes=notes).count() > 0
+                                    if duplicate:
+                                        continue
                             lcl = SubSample.objects.create(sample=sample,
                                                            sample_num=loc,
                                                            sample_type='LCYTE',
@@ -779,30 +809,43 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         logger.error(msg)
 
                 # SUBSAMPLE - LCL
-
                 with transaction.atomic():
                     try:
                         # Create 5 locations = 5 subsamples
+                        storage_date = validate_date(row['LCL storage date'])
                         for loc in range(1, 6):
                             location = row['LCL Location ' + str(loc)]
                             notes = ''
+                            duplicates = sample.subsample_set.filter(sample_num=loc).filter(sample_type='LCL')\
+                                .filter(storage_date=storage_date)
                             if location is None or location == '':
                                 continue
                             if location == 'O' or location == 0:
                                 used = True
                                 location_obj = None
+                                duplicate = duplicates.filter(used=True).count() > 0
+                                if duplicate:
+                                    continue
                             else:
                                 used = False
                                 parts = location.split('/')
                                 if len(parts) == 3:
+                                    duplicate = duplicates.filter(location__tank=parts[0]) \
+                                                    .filter(location__shelf=parts[1]).filter(
+                                        location__cell=parts[2]).count() > 0
+                                    if duplicate:
+                                        continue
                                     location_obj = Location.objects.create(tank=parts[0], shelf=parts[1], cell=parts[2])
                                 else:
                                     notes = 'Location could not be parsed during import: ' + location
                                     location_obj = None
+                                    duplicate = duplicates.filter(notes=notes).count() > 0
+                                    if duplicate:
+                                        continue
                             lcl = SubSample.objects.create(sample=sample,
                                                            sample_num=loc,
                                                            sample_type='LCL',
-                                                           storage_date=validate_date(row['LCL storage date']),
+                                                           storage_date=storage_date,
                                                            used=used,
                                                            location=location_obj,
                                                            notes=notes)
@@ -820,16 +863,22 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         # No location
                         notes = row['DNA Notes']
                         extraction_date = validate_date(row['DNA Extraction Date'])
-                        if notes.find('DNA') > 0 and extraction_date is not None:
-                            dna = SubSample.objects.create(sample=sample,
-                                                           sample_num=1,
-                                                           sample_type='DNA',
-                                                           storage_date=validate_date(row['Storage date']),
-                                                           extraction_date=extraction_date,
-                                                           notes=notes)
-                            msg = "%s - %s: [Row %d] %s id=%d" % (fmsg, 'SUBSAMPLE DNA CREATED',
+                        storage_date = validate_date(row['Storage date'])
+                        if extraction_date is not None:
+                            duplicates = sample.subsample_set.filter(sample_type='DNA') \
+                                .filter(storage_date=storage_date)\
+                                .filter(extraction_date=extraction_date)\
+                                .filter(notes=notes)
+                            if duplicates.count() == 0:
+                                dna = SubSample.objects.create(sample=sample,
+                                                               sample_num=1,
+                                                               sample_type='DNA',
+                                                               storage_date=storage_date,
+                                                               extraction_date=extraction_date,
+                                                               notes=notes)
+                                msg = "%s - %s: [Row %d] %s id=%d" % (fmsg, 'SUBSAMPLE DNA CREATED',
                                                                   index, fullnumber, dna.pk)
-                            logger.debug(msg)
+                                logger.debug(msg)
                     except Error as e:
                         msg = "%s - %s: [Row %d] %s: %s" % (fmsg, 'Error: SUBSAMPLE DNA could not be created',
                                                             index, fullnumber, e)
