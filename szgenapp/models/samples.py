@@ -33,10 +33,7 @@ class Sample(models.Model):
     """
     id = models.AutoField(primary_key=True)
     participant = models.ForeignKey('StudyParticipant', on_delete=models.CASCADE, related_name="samples")
-    # sample_type = models.CharField(max_length=60, blank=False, null=False,
-    #                                choices=SAMPLE_TYPES, help_text='Type of blood sample')
     sample_types = models.ManyToManyField(SampleType, help_text='Type of sample')
-
     rebleed = models.BooleanField(blank=False, default=False)
     arrival_date = models.DateField(verbose_name='Arrival Date', default=date.today, null=True, blank=True,
                                     help_text='Date of sample arrival')
@@ -64,7 +61,7 @@ class SubSample(models.Model):
     Sub sample derived from sample for further processing
     """
     id = models.AutoField(primary_key=True)
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE, related_name='subsamples')
     sample_num = models.IntegerField(blank=False, default=1, help_text='For example, number 1 of 5 subsamples')
     sample_type = models.CharField(max_length=30, choices=SUBSAMPLE_TYPES, help_text='Type of the sub sample')
     storage_date = models.DateField(verbose_name='Storage Date', blank=True, null=True, help_text="Date stored")

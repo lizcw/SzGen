@@ -19,7 +19,11 @@ from rest_framework import routers
 from szgenrest import views as app_views
 
 router = routers.DefaultRouter()
-router.register(r'studys', app_views.StudyViewSet)
+router.register(r'study', app_views.StudyViewSet)
+router.register(r'participant', app_views.ParticipantViewSet)
+router.register(r'clinical', app_views.ClinicalViewSet)
+router.register(r'sample', app_views.SampleViewSet)
+router.register(r'dataset', app_views.DatasetViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
