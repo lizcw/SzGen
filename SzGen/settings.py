@@ -14,6 +14,8 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_DIR = os.getenv('DB_DIR', '')
+LOG_DIR = os.getenv('LOG_DIR', '')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -96,7 +98,7 @@ WSGI_APPLICATION = 'SzGen.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3', # os.getenv('DB_NAME'),
+        'NAME': os.path.join(DB_DIR, os.getenv("DB_NAME", 'db.sqlite3')),
     }
 }
 
@@ -171,6 +173,6 @@ AXES_HANDLER = 'axes.handlers.cache.AxesCacheHandler'
 
 CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
 # LOGGER configured in views/__init__.py
-LOG_FILE = os.getenv("LOG_FILE")
+LOG_FILE = os.path.join(LOG_DIR, os.getenv("LOG_FILE", 'szgen.log'))
 LOG_LEVEL = os.getenv("LOG_LEVEL")
 LOG_DB_LEVEL = os.getenv("LOG_DB_LEVEL")
