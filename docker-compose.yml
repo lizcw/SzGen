@@ -23,8 +23,8 @@ services:
         depends_on:
             - web
         volumes:
-            - static_volume:/code/static
-            - media_volume:/code/media
+            - static_volume:/code/szgenapp/static
+            - media_volume:/code/szgenapp/media
 
 volumes:
     db_volume:
