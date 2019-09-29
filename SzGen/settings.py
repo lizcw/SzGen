@@ -21,10 +21,10 @@ LOG_DIR = os.getenv('LOG_DIR', '')
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else 'ot$e_7x86%r)(ycu5-^sdg&0emq4i_9seax)=txjdr2n$8^l4-'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG", False)
 
 ALLOWED_HOSTS = ['43.240.98.43', 'localhost', '127.0.0.1']
 
