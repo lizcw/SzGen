@@ -14,7 +14,7 @@ services:
             - static_volume:/code/static
             - media_volume:/code/media
             - log_volume:/code/logs
-            - db_volume:/code/db
+            - db_volume:/code/data
 
     nginx:
         build: ./nginx
