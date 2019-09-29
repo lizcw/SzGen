@@ -94,7 +94,7 @@ class SamplesPageTests(TestCase):
             response, 'Welcome to the SZGEN Database')
 
     def test_sample_subsample(self):
-        self.assertEqual(self.sample.subsample_set.count(), 3)
+        self.assertEqual(self.sample.subsamples.count(), 3)
 
     def test_sample_qc(self):
         qc1 = QC.objects.create(subsample=self.lc001, qc_date=datetime.date(2013, 1, 2), passed=False)

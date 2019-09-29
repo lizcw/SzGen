@@ -49,7 +49,7 @@ class Sample(models.Model):
         :return:
         """
         next_num = 1
-        subsamples = self.subsample_set.filter(sample_type=type)
+        subsamples = self.subsamples.filter(sample_type=type)
         if subsamples.count() > 0:
             next_num = subsamples.order_by('-sample_num').first().sample_num + 1
 

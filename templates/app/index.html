@@ -19,19 +19,19 @@
                 </div>
                 <div class="card-action">
 
-                    <a href="/">View all Studies</a>
-                    <div class="filter-group">
-                        <a href="#" id="filter-by">Filter by Status</a>
-                        <form>
-                            <select id="filter-by-status" name="filter-by-status"
-                                    class="select-dropdown"
-                                    onchange="form.submit();">
-                                {% for val, name in statusOptions %}
-                                    <option value="{{ val }}">{{ name }}</option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                    </div>
+{#                    <a href="/">View all Studies</a>#}
+{#                    <div class="filter-group">#}
+{#                        <a href="#" id="filter-by">Filter by Status</a>#}
+{#                        <form>#}
+{#                            <select id="filter-by-status" name="filter-by-status"#}
+{#                                    class="select-dropdown"#}
+{#                                    onchange="form.submit();">#}
+{#                                {% for val, name in statusOptions %}#}
+{#                                    <option value="{{ val }}">{{ name }}</option>#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </form>#}
+{#                    </div>#}
                     {%  if perms.szgenapp.add_study %}
                     <a href="{% url 'study_create' %}">Add a Study</a>
                 {% endif %}

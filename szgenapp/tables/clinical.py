@@ -6,7 +6,8 @@ from szgenapp.models.clinical import *
 
 class ClinicalTable(tables.Table):
     id = tables.LinkColumn('clinical_detail', text='View', args=[A('pk')], verbose_name='')
-    participant = tables.LinkColumn('participant_detail', args=[A('participant.id')])
+    participant = tables.LinkColumn('participant_detail', args=[A('participant.id')],
+                                    accessor=A('participant.fullnumber'))
     gender = tables.Column(verbose_name='Gender', accessor=A('demographic.gender'))
     diagnosis = tables.Column(verbose_name='Diagnosis', accessor=A('diagnosis.summary'))
     age = tables.Column(verbose_name='Age', accessor=A('demographic.age_assessment'))

@@ -141,8 +141,8 @@
                                         <td>{{ clinical.demographic.get_gender_display }}</td>
                                         <td>{{ clinical.diagnosis.summary }}</td>
                                         <td>{{ clinical.demographic.age_assessment }}</td>
-                                        <td>{{ clinical.symptoms_general.get_onset_display }}</td>
-                                        <td>{{ clinical.symptoms_general.get_severity_pattern_display }}</td>
+                                        <td>{{ clinical.symptomsgeneral.get_onset_display }}</td>
+                                        <td>{{ clinical.symptomsgeneral.get_severity_pattern_display }}</td>
                                         <td><a class="btn-floating green small" title="View Full Clinical Record"
                                                href="{% url 'clinical_detail' clinical.id %}">
                                             <i class="material-icons">visibility</i>
@@ -281,7 +281,7 @@
                             <tbody>
 
                             {% for sample in participant.sample_set.all %}
-                                {% for subsample in sample.subsample_set|filtersamples:type %}
+                                {% for subsample in sample.subsamples|filtersamples:type %}
                                     <tr>
                                         <td>{{ sample.arrival_date }}</td>
                                         <td>{{ subsample.sample_num }}</td>

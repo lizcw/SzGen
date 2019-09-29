@@ -295,7 +295,7 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">
                                 <a data-toggle="collapse" href="#subpanel{{ forloop.counter0 }}">{{ val }}s</a>
-                                <span class="badge blue-grey">{{ sample.subsample_set.all|countsamples:type }}</span>
+                                <span class="badge blue-grey">{{ sample.subsamples.all|countsamples:type }}</span>
                                 <div class="fixed-action-btn">
                                     {% if perms.szgenapp.add_subsample %}
                                         <a class="btn-floating blue-grey" title="Add subsample"
@@ -324,7 +324,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for sub in sample.subsample_set.all|filtersamples:type %}
+                                    {% for sub in sample.subsamples.all|filtersamples:type %}
                                         <tr>
                                             <td>{{ sub.sample_num }}</td>
                                             <td>{{ sub.storage_date|date:"c" }}</td>

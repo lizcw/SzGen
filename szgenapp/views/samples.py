@@ -33,9 +33,9 @@ class SampleDetail(LoginRequiredMixin, DetailView):
         sample = data['sample']
         if sample:
             data['subsampletypes'] = SUBSAMPLE_TYPES
-            data['LCYTE'] = sample.subsample_set.filter(sample_type='LCYTE')
-            data['LCL'] = sample.subsample_set.filter(sample_type='LCL')
-            data['DNA'] = sample.subsample_set.filter(sample_type='DNA')
+            data['LCYTE'] = sample.subsamples.filter(sample_type='LCYTE')
+            data['LCL'] = sample.subsamples.filter(sample_type='LCL')
+            data['DNA'] = sample.subsamples.filter(sample_type='DNA')
         return data
 
 

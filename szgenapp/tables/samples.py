@@ -5,7 +5,8 @@ from szgenapp.models.samples import Sample, SubSample
 
 class SampleTable(tables.Table):
     id = tables.LinkColumn('sample_detail', text='View', args=[A('pk')], verbose_name='')
-    participant = tables.LinkColumn('participant_detail', args=[A('participant.id')])
+    participant = tables.LinkColumn('participant_detail', args=[A('participant.id')],
+                                    accessor=A('participant.fullnumber'), verbose_name='Participant')
     shipment = tables.Column(verbose_name="Shipments", accessor=A('shipment'))
     qc = tables.Column(verbose_name="QC", accessor=A('sample_qc'))
 
@@ -25,6 +26,7 @@ class SampleTable(tables.Table):
 class SubSampleTable(tables.Table):
     id = tables.LinkColumn('sample_detail', text='View', verbose_name='', args=[A('sample.id')])
     sample = tables.LinkColumn('participant_detail', verbose_name='Participant',
+                               accessor=A('sample.participant.fullnumber'),
                                args=[A('sample.participant.id')])
 
     class Meta:
@@ -48,6 +50,7 @@ class SubSampleDNATable(tables.Table):
     """
     id = tables.LinkColumn('sample_detail', text='View', verbose_name='', args=[A('sample.id')])
     sample = tables.LinkColumn('participant_detail', verbose_name='Participant',
+                               accessor=A('sample.participant.fullnumber'),
                                args=[A('sample.participant.id')])
 
     class Meta:
