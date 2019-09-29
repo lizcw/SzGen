@@ -5,7 +5,7 @@ services:
         build: .
         env_file:
             - .env
-        command: pipenv run gunicorn SzGen.wsgi:application --bind 0.0.0.0:8700 --timeout 10800
+        command: pipenv run gunicorn SzGen.wsgi:application --bind 0.0.0.0:8700 --timeout 1800
         ports:
             - "8700:8700"
         expose:
