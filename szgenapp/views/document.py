@@ -767,7 +767,7 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         for loc in range(1,4):
                             location = row['lcyte loc ' + str(loc)].strip()
                             notes = ''
-                            duplicates = sample.subsample_set.filter(sample_num=loc).filter(sample_type='LCYTE')\
+                            duplicates = sample.subsamples.filter(sample_num=loc).filter(sample_type='LCYTE')\
                                 .filter(storage_date=validate_date(row['Storage date']))
                             if location is None or location == '':
                                 continue
@@ -816,7 +816,7 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         for loc in range(1, 6):
                             location = row['LCL Location ' + str(loc)]
                             notes = ''
-                            duplicates = sample.subsample_set.filter(sample_num=loc).filter(sample_type='LCL')\
+                            duplicates = sample.subsamples.filter(sample_num=loc).filter(sample_type='LCL')\
                                 .filter(storage_date=storage_date)
                             if location is None or location == '':
                                 continue
@@ -865,7 +865,7 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         extraction_date = validate_date(row['DNA Extraction Date'])
                         storage_date = validate_date(row['Storage date'])
                         if extraction_date is not None:
-                            duplicates = sample.subsample_set.filter(sample_type='DNA') \
+                            duplicates = sample.subsamples.filter(sample_type='DNA') \
                                 .filter(storage_date=storage_date)\
                                 .filter(extraction_date=extraction_date)\
                                 .filter(notes=notes)
