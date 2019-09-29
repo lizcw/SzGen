@@ -55,6 +55,7 @@ Django = "==2.2.5"
 et_xmlfile = "==1.0.1"
 Pillow = "==6.1.0"
 PyYAML = "==5.1.1"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
