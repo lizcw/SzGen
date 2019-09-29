@@ -11,8 +11,8 @@ services:
         expose:
             - "8700"
         volumes:
-            - static_volume:/code/static
-            - media_volume:/code/media
+            - static_volume:/code/szgenapp/static
+            - media_volume:/code/szgenapp/media
             - log_volume:/code/logs
             - db_volume:/code/data
 
