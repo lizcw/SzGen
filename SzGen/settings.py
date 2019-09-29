@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else 'ot$e_7x86%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True # os.getenv("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['43.240.98.43', 'localhost', '127.0.0.1']
 
 # Application definition
 
