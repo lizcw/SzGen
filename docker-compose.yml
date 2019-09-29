@@ -5,7 +5,7 @@ services:
         build: .
         env_file:
             - .env
-        command: pipenv run gunicorn szgenapp.wsgi:application --bind 0.0.0.0:8700
+        command: pipenv run gunicorn SzGen.wsgi:application --bind 0.0.0.0:8700
         ports:
             - "8700:8700"
         expose:

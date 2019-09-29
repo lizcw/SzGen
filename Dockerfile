@@ -8,7 +8,7 @@ WORKDIR /code
 RUN pip install --upgrade pip
 RUN pip install pipenv
 COPY Pipfile* /code/
-RUN pipenv install psycopg2-binary
+#RUN pipenv install psycopg2-binary
 RUN pipenv install --dev
 
 COPY . /code/
