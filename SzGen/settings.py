@@ -102,15 +102,6 @@ DATABASES = {
     }
 }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
-    'axes_cache': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -164,12 +155,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'szgenapp/media')
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/'
 
-# Lockout params
+# Lockout params - Captcha not working but using Cache stops everything
 AXES_LOGIN_FAILURE_LIMIT = 3
 AXES_COOLOFF_TIME = 1  # hours
 AXES_LOCKOUT_URL = '/locked'
-AXES_CACHE = 'axes_cache'
-AXES_HANDLER = 'axes.handlers.cache.AxesCacheHandler'
 
 CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
 # LOGGER configured in views/__init__.py
