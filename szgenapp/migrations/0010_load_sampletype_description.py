@@ -10,7 +10,7 @@ def load_sampletypedescription(apps, schema_editor):
     :return:
     """
     for item in SAMPLE_TYPES:
-        sampletype = SampleType.objects.get(pk=item[0])
+        sampletype = SampleType.objects.filter(name=item[1]).first()
         if sampletype:
             sampletype.description = item[2]
             sampletype.save()

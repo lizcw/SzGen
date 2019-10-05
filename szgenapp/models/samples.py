@@ -3,12 +3,12 @@ from datetime import date
 from django.db import models
 
 SAMPLE_TYPES = (
-    (4, 'PLASMA', 'Plasma'),
-    (1, 'SERUM', 'Serum'),
-    (5, 'PAXGENE', 'PAXgene'),
-    (2, 'WB', 'Whole blood'),
-    (6, 'SALIVA', 'Saliva'),
-    (3, 'UNKNOWN', 'Unknown')
+    (1, 'PLASMA', 'Plasma'),
+    (2, 'SERUM', 'Serum'),
+    (3, 'PAXGENE', 'PAXgene'),
+    (4, 'WB', 'Whole blood'),
+    (5, 'SALIVA', 'Saliva'),
+    (6, 'UNKNOWN', 'Unknown')
 )
 
 SUBSAMPLE_TYPES = (

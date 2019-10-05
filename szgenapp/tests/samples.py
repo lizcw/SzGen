@@ -33,15 +33,17 @@ class SamplesPageTests(TestCase):
                                                                fullnumber='',
                                                                family='123',
                                                                individual='001')
+        # Get a Sample type
+        cls.sampletype = SampleType.objects.get(pk=1)
         # Create a Sample for this studyparticipant
         cls.sample = Sample.objects.create(participant=cls.studyparticipant,
-                                           sample_type=SAMPLE_TYPES[0],
+                                           sample_type=cls.sampletype,
                                            rebleed=False,
                                            arrival_date=datetime.date(2009, 9, 5),
                                            notes='Test sample')
         # Process sample to subsamples with own locations, indicate subsample number
         cls.lc001 = SubSample.objects.create(sample=cls.sample,
-                                             sample_type=SAMPLE_TYPES[0],
+                                             sample_type=cls.sampletype,
                                              sample_num=1,
                                              used=True,
                                              storage_date=datetime.date(2010, 10, 6),
@@ -50,7 +52,7 @@ class SamplesPageTests(TestCase):
                                              location=cls.loc1)
 
         cls.lc2 = SubSample.objects.create(sample=cls.sample,
-                                           sample_type=SAMPLE_TYPES[0],
+                                           sample_type=cls.sampletype,
                                            sample_num=2,
                                            used=False,
                                            storage_date=datetime.date(2010, 10, 6),
@@ -58,7 +60,7 @@ class SamplesPageTests(TestCase):
                                            notes='Leukocyte sample',
                                            location=cls.loc2)
         cls.lcl = SubSample.objects.create(sample=cls.sample,
-                                           sample_type=SAMPLE_TYPES[1],
+                                           sample_type=cls.sampletype,
                                            sample_num=1,
                                            used=True,
                                            storage_date=datetime.date(2010, 10, 6),

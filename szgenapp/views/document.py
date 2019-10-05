@@ -17,9 +17,9 @@ from szgenapp.forms.document import DocumentForm, ImportForm
 from szgenapp.models.clinical import *
 from szgenapp.models.datasets import *
 from szgenapp.models.document import Document
-from szgenapp.models.participants import StudyParticipant, COUNTRY_CHOICES
+from szgenapp.models.participants import StudyParticipant, Country, Status
 from szgenapp.models.samples import *
-from szgenapp.models.studies import Study
+from szgenapp.models.studies import Study, StudyStatus
 from szgenapp.tables.document import DocumentTable
 from szgenapp.validators import validate_int, validate_bool, validate_date, convert_Nil
 
@@ -191,7 +191,7 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             if qs.count() == 0:
                 precursor = row['Precursor']
                 description = row['Description']
-                status = row['Status']
+                status = StudyStatus.objects.filter(name=row['Status']).first()
                 notes = row['Notes']
                 # Create Study
                 try:
@@ -349,7 +349,9 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                     individual = ''
                     family = ''
                 try:
-                    sp = StudyParticipant.objects.create(status='ACTIVE', country='UNK', alphacode=alpha, accessid=sid,
+                    country = Country.objects.filter(name='UNK').first()
+                    status = Status.objects.filter(name='ACTIVE').first()
+                    sp = StudyParticipant.objects.create(status=status, country=country, alphacode=alpha, accessid=sid,
                                                          study=study, fullnumber=fullnumber,
                                                          district=district, family=family, individual=individual)
                     msg = "%s - %s: [Row %d] %d fullnumber:%s" % (fmsg, 'StudyParticipant CREATED', index, sp.id, fullnumber)
@@ -393,8 +395,8 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                         participant.secondaryid = row['secondaryid'].strip()
                     # Country validate
                     row_country = row['country'].strip().upper()
-                    country = [x for x in COUNTRY_CHOICES if x[0] == row_country]
-                    participant.country = country[0][0]
+                    country = Country.objects.filter(name=row_country).first()
+                    participant.country = country
                     participant.save()
                     msg = "%s - %s: [Row %d] %d fullnumber:%s country:%s" % (
                         fmsg, 'Participant UPDATED', index, participant.id, participant.fullnumber, participant.country)
