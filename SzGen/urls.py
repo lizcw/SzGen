@@ -33,5 +33,6 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('rest-auth/', include('rest_auth.urls')),
     path('captcha/', include('captcha.urls')),
+    path('session_security/', include('session_security.urls')),
     path('', include('szgenapp.urls'))
 ]

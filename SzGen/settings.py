@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'axes',
     'captcha',
     'django_cleanup.apps.CleanupConfig',
+    'session_security'
 ]
 
 REST_FRAMEWORK = {
@@ -67,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'session_security.middleware.SessionSecurityMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
@@ -165,3 +167,8 @@ CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
 LOG_FILE = os.path.join(LOG_DIR, os.getenv("LOG_FILE", 'szgen.log'))
 LOG_LEVEL = os.getenv("LOG_LEVEL")
 LOG_DB_LEVEL = os.getenv("LOG_DB_LEVEL")
+
+# Session settings
+SESSION_SECURITY_EXPIRE_AFTER=1800
+SESSION_SECURITY_WARN_AFTER=1730
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
