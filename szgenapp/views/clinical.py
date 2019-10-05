@@ -14,7 +14,7 @@ from szgenapp.forms.clinical import *
 from szgenapp.tables import *
 
 logger = logging.getLogger(__name__)
-
+PAGINATE_BY = 20
 
 class ClinicalDetail(LoginRequiredMixin, DetailView):
     model = Clinical
@@ -28,7 +28,7 @@ class ClinicalList(LoginRequiredMixin, SingleTableMixin, ExportMixin, FilterView
     """
     model = Clinical
     template_name = 'clinical/clinical-list.html'
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = ClinicalFilter
     table_class = ClinicalTable
 
@@ -55,7 +55,7 @@ class ClinicalList(LoginRequiredMixin, SingleTableMixin, ExportMixin, FilterView
 class ClinicalDemographicList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Demographic
     table_class = DemographicTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = DemographicFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -69,7 +69,7 @@ class ClinicalDemographicList(LoginRequiredMixin, SingleTableMixin, FilterView):
 class ClinicalDiagnosisList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Diagnosis
     table_class = DiagnosisTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = DiagnosisFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -83,7 +83,7 @@ class ClinicalDiagnosisList(LoginRequiredMixin, SingleTableMixin, FilterView):
 class ClinicalMedicalList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = MedicalHistory
     table_class = MedicalHistoryTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = MedicalHistoryFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -97,7 +97,7 @@ class ClinicalMedicalList(LoginRequiredMixin, SingleTableMixin, FilterView):
 class ClinicalSymptomsGeneralList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsGeneral
     table_class = SymptomsGeneralTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = SymptomsGeneralFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -111,7 +111,7 @@ class ClinicalSymptomsGeneralList(LoginRequiredMixin, SingleTableMixin, FilterVi
 class ClinicalSymptomsDelusionList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsDelusion
     table_class = SymptomsDelusionTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = SymptomsDelusionFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -125,7 +125,7 @@ class ClinicalSymptomsDelusionList(LoginRequiredMixin, SingleTableMixin, FilterV
 class ClinicalSymptomsHallucinationList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsHallucination
     table_class = SymptomsHallucinationTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = SymptomsHallucinationFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -139,7 +139,7 @@ class ClinicalSymptomsHallucinationList(LoginRequiredMixin, SingleTableMixin, Fi
 class ClinicalSymptomsBehaviourList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsBehaviour
     table_class = SymptomsBehaviourTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = SymptomsBehaviourFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -153,7 +153,7 @@ class ClinicalSymptomsBehaviourList(LoginRequiredMixin, SingleTableMixin, Filter
 class ClinicalSymptomsDepressionList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsDepression
     table_class = SymptomsDepressionTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = SymptomsDepressionFilter
     template_name = 'clinical/clinical-list.html'
 
@@ -167,7 +167,7 @@ class ClinicalSymptomsDepressionList(LoginRequiredMixin, SingleTableMixin, Filte
 class ClinicalSymptomsManiaList(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = SymptomsMania
     table_class = SymptomsManiaTable
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
     filterset_class = SymptomsManiaFilter
     template_name = 'clinical/clinical-list.html'
 

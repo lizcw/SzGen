@@ -5,7 +5,8 @@ from szgenapp.models.studies import Study
 
 
 class ClinicalFilter(django_filters.FilterSet):
-    participant = django_filters.CharFilter(field_name='participant__fullnumber', lookup_expr='icontains')
+    participant = django_filters.CharFilter(field_name='participant__fullnumber', lookup_expr='exact')
+    participant__contains = django_filters.CharFilter(field_name='participant__fullnumber', lookup_expr='icontains')
     study = django_filters.ModelChoiceFilter(
         field_name='participant__study', label='Study',
         queryset=Study.objects.all())
@@ -19,7 +20,7 @@ class ClinicalFilter(django_filters.FilterSet):
 
     class Meta:
         model = Clinical
-        fields = ['participant', 'study']
+        fields = ['participant', 'participant__contains', 'study']
 
 
 class DemographicFilter(django_filters.FilterSet):

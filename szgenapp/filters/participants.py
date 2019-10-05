@@ -10,9 +10,10 @@ class StudyParticipantFilter(django_filters.FilterSet):
     secondaryid = django_filters.CharFilter(field_name='secondaryid')
     accessid = django_filters.CharFilter(field_name='accessid', lookup_expr='icontains')
     npid = django_filters.CharFilter(field_name='npid')
-    fullnumber = django_filters.CharFilter('fullnumber', lookup_expr='icontains')
+    fullnumber__contains = django_filters.CharFilter('fullnumber', lookup_expr='icontains')
+    fullnumber__exact = django_filters.CharFilter('fullnumber', lookup_expr='exact')
 
     class Meta:
         model = StudyParticipant
-        fields = ['fullnumber', 'country', 'study', 'status', 'accessid','alphacode', 'secondaryid', 'npid', 'family',
+        fields = ['fullnumber__exact', 'fullnumber__contains', 'country', 'study', 'status', 'accessid','alphacode', 'secondaryid', 'npid', 'family',
                   'individual', 'district']

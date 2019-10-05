@@ -19,7 +19,6 @@ class StudyViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.Ge
     queryset = Study.objects.all().order_by('title')
     serializer_class = StudySerializer
     permission_classes = (IsAuthenticated,)
-    # authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 
 class ParticipantViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -30,7 +29,6 @@ class ParticipantViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, views
     serializer_class = StudyParticipantSerializer
     filter_class = StudyParticipantFilter
     permission_classes = (IsAuthenticated,)
-    # authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 
 class ClinicalViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):

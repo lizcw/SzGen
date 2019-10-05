@@ -13,23 +13,12 @@ class DurationRangeWidget(RangeWidget):
         self.widgets[1].attrs.update({'class': 'datepicker', 'placeholder': 'to'})
 
 
-class StudyFilter(django_filters.FilterSet):
-    status = django_filters.ModelMultipleChoiceFilter()
-
-    class Meta:
-        model = Study
-        fields = ['status']
-
-    @property
-    def qs(self):
-        parent = super(StudyFilter, self).qs
-        status = getattr(self.request, 'status', None)
-        return parent.filter(status=status)
-
-
 class SampleFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='participant__fullnumber',
-                                            lookup_expr='icontains', label='Participant Full Number'
+                                            lookup_expr='exact', label='Participant Full Number (exact)'
+                                            )
+    participant__contains = django_filters.CharFilter(field_name='participant__fullnumber',
+                                            lookup_expr='icontains', label='Participant Full Number (contains)'
                                             )
     study = django_filters.ModelChoiceFilter(
         field_name='participant__study', label='Study',
@@ -41,12 +30,15 @@ class SampleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Sample
-        fields = ['participant', 'study', 'arrival_date', 'rebleed', 'notes']
+        fields = ['participant', 'participant__contains', 'study', 'arrival_date', 'rebleed', 'notes']
 
 
 class SubSampleListFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='sample__participant__fullnumber',
-                                            lookup_expr='icontains', label='Participant Full Number'
+                                            lookup_expr='exact', label='Participant Full Number (exact)'
+                                            )
+    participant__contains = django_filters.CharFilter(field_name='sample__participant__fullnumber',
+                                            lookup_expr='icontains', label='Participant Full Number (contains)'
                                             )
     study = django_filters.ModelChoiceFilter(
         field_name='sample__participant__study', label='Study',
@@ -60,14 +52,17 @@ class SubSampleListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'study', 'sample_num', 'storage_date', 'used', 'tank',
+        fields = ['participant', 'participant__contains', 'study', 'sample_num', 'storage_date', 'used', 'tank',
                   'shelf', 'cell', 'cell__contains', 'notes__contains']
 
 
 class SubSampleDNAListFilter(django_filters.FilterSet):
     participant = django_filters.CharFilter(field_name='sample__participant__fullnumber',
-                                            lookup_expr='icontains', label='Participant Full Number'
+                                            lookup_expr='icontains', label='Participant Full Number (exact)'
                                             )
+    participant__contains = django_filters.CharFilter(field_name='sample__participant__fullnumber',
+                                                      lookup_expr='icontains', label='Participant Full Number (contains)'
+                                                      )
     study = django_filters.ModelChoiceFilter(
         field_name='sample__participant__study', label='Study',
         queryset=Study.objects.all())
@@ -76,4 +71,4 @@ class SubSampleDNAListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'study', 'sample_num', 'storage_date', 'extraction_date', 'notes__contains']
+        fields = ['participant', 'participant__contains', 'study', 'sample_num', 'storage_date', 'extraction_date', 'notes__contains']
