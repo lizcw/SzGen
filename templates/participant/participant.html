@@ -66,11 +66,11 @@
                             </tr>
                             <tr>
                                 <th>Country:</th>
-                                <td>{{ participant.get_country_display }}</td>
+                                <td>{{ participant.country }}</td>
                             </tr>
                             <tr>
                                 <th>Status:</th>
-                                <td>{{ participant.get_status_display }}</td>
+                                <td>{{ participant.status }}</td>
                             </tr>
                             <tr>
                                 <th>Access Database ID:</th>
@@ -413,8 +413,8 @@
                                     <td>{{ related.study.title }}</td>
                                     <td>{{ related.family }}</td>
                                     <td>{{ related.individual }}</td>
-                                    <td>{{ related.get_country_display }}</td>
-                                    <td>{{ related.get_status_display }}</td>
+                                    <td>{{ related.country }}</td>
+                                    <td>{{ related.status }}</td>
                                     <td>
                                         <a class="btn-floating grey small" title="View Participant"
                                            href="{% url 'participant_detail' related.id %}">

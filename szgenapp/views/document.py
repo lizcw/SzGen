@@ -640,11 +640,11 @@ class DocumentImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                     logger.error(msg)
 
                 stypes = SampleType.objects.filter(name__in=sample_types)
-                # Check SampleType exists (should be set up by Admin) otherwise create based on SAMPLE_TYPES
-                if stypes.count() == 0:
-                    types = [x for x in SAMPLE_TYPES if x[0] in sample_types]
+                # Check SampleType exists (should be set up by migrations or Admin)
+                if stypes.count() == 0 or stypes.count() != len(sample_types):
+                    types = [x for x in SAMPLE_TYPES if x[1] in sample_types]
                     for type in types:
-                        s, created = SampleType.objects.get_or_create(name=type[0])
+                        s, created = SampleType.objects.get_or_create(name=type[1])
                         if created:
                             msg = "%s - %s: [Row %d] %s" % (fmsg, 'Sample TYPE created', index, s)
                             logger.info(msg)

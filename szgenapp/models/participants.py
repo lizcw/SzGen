@@ -16,6 +16,27 @@ PARTICIPANT_STATUS_CHOICES = (
     ('UNKNOWN', 'Unknown')
 )
 
+class Status(models.Model):
+    code = models.CharField(primary_key=True, max_length=10, blank=False, null=False, help_text='Status code')
+    name = models.CharField(max_length=40, blank=False, null=False, help_text='Status name')
+
+    class Meta:
+        verbose_name = 'Status'
+        verbose_name_plural = 'Statuses'
+
+    def __str__(self):
+        return '%s' % self.name
+
+class Country(models.Model):
+    code = models.CharField(primary_key=True, max_length=10, blank=False, null=False, help_text='Country code')
+    name = models.CharField(max_length=40, blank=False, null=False, help_text='Country name')
+
+    class Meta:
+        verbose_name = 'Country'
+        verbose_name_plural = 'Countries'
+
+    def __str__(self):
+        return '%s' % self.name
 
 class StudyParticipant(models.Model):
     """
@@ -23,9 +44,8 @@ class StudyParticipant(models.Model):
     """
     id = models.AutoField(primary_key=True)
     # Static fields
-    country = models.CharField(max_length=30, blank=False, choices=COUNTRY_CHOICES, help_text='Participant Country')
-    status = models.CharField(max_length=20, blank=False, choices=PARTICIPANT_STATUS_CHOICES, default="ACTIVE",
-                              help_text='Participant status')
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, help_text='Participant Country')
+    status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, help_text='Participant Status')
     # Alternative IDs should all be stored here
     alphacode = models.CharField(max_length=30, blank=True, verbose_name="Alpha Code", null=True,
                                  help_text="Alpha code if available")

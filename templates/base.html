@@ -85,11 +85,19 @@
             <li>
                 <span class="divider"></span>
             </li>
-            <li><a class="subheader">Admin</a></li>
+            <li><a class="subheader">Additional</a></li>
             <li><a href="{% url 'documents_list' %}" >Documents
                 <i class="material-icons">link</i></a>
             </li>
+            <li><a href="api/v1/">REST API
+                <i class="material-icons">speaker_phone</i></a>
+            </li>
+            <li><a href="api/v1/">Help
+                <i class="material-icons">info</i></a>
+            </li>
+
             {% if user.is_superuser %}
+                <li><a class="subheader">Admin</a></li>
                 <li><a href="/admin">Settings<i class="material-icons">settings</i></a></li>
             {% endif %}
         </ul>

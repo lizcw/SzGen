@@ -119,14 +119,14 @@ class SampleList(SingleTableMixin, ExportMixin, FilterView):
 
     def get_context_data(self, *args, **kwargs):
         initial = super(SampleList, self).get_context_data(*args, **kwargs)
-        initial['collections'] = SAMPLE_TYPES
+        initial['collections'] = SampleType.objects.all()
         initial['subcollections'] = SUBSAMPLE_TYPES
         sampletype = self.kwargs.get('sampletype')
         if sampletype is None:
             initial['title'] = 'All'
             initial['reset_url'] = reverse('samples')
         else:
-            initial['title'] = [x[1] for x in SAMPLE_TYPES if x[0] == sampletype][0]
+            initial['title'] = SampleType.objects.filter(name=sampletype).first().description
             initial['reset_url'] = '/samples/%s' % sampletype
         study = self.kwargs.get('study')
         if study is not None:
@@ -170,7 +170,7 @@ class SubSampleList(SingleTableMixin, ExportMixin, FilterView):
 
     def get_context_data(self, *args, **kwargs):
         initial = super(SubSampleList, self).get_context_data(*args, **kwargs)
-        initial['collections'] = SAMPLE_TYPES
+        initial['collections'] = SampleType.objects.all()
         initial['subcollections'] = SUBSAMPLE_TYPES
         sampletype = self.kwargs.get('sampletype')
         if sampletype is None:

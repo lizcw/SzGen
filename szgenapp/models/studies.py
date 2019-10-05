@@ -9,13 +9,23 @@ STATUS_CHOICES = (('Completed', 'Completed'),
                   ('Not funded', 'Not funded'),
                   ('Omit', 'Omit'))
 
+class StudyStatus(models.Model):
+    code = models.CharField(primary_key=True, max_length=10, blank=False, null=False, help_text='Study Status code')
+    name = models.CharField(max_length=40, blank=False, null=False, help_text='Study Status description')
+
+    class Meta:
+        verbose_name = 'Study Status'
+        verbose_name_plural = 'Study Statuses'
+
+    def __str__(self):
+        return '%s' % self.name
 
 class Study(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=60, blank=False)
     precursor = models.CharField(max_length=10, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    status = models.ForeignKey(StudyStatus, on_delete=models.SET_NULL, null=True, help_text='Status of this study')
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -24,7 +34,7 @@ class Study(models.Model):
         verbose_name_plural = 'Studies'
 
     def __str__(self):
-        return '[%s] %s' % (self.get_status_display(), self.title)
+        return '[%s] %s' % (self.status, self.title)
 
     def get_absolute_url(self):
         return reverse('study_detail', args=[str(self.id)])

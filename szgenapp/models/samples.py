@@ -1,14 +1,14 @@
-from django.db import models
 from datetime import date
-from multiselectfield import MultiSelectField
+
+from django.db import models
 
 SAMPLE_TYPES = (
-    ('PLASMA', 'Plasma'),
-    ('SERUM', 'Serum'),
-    ('PAXGENE', 'PAXgene'),
-    ('WB', 'Whole blood'),
-    ('SALIVA', 'Saliva'),
-    ('UNKNOWN', 'Unknown')
+    (4, 'PLASMA', 'Plasma'),
+    (1, 'SERUM', 'Serum'),
+    (5, 'PAXGENE', 'PAXgene'),
+    (2, 'WB', 'Whole blood'),
+    (6, 'SALIVA', 'Saliva'),
+    (3, 'UNKNOWN', 'Unknown')
 )
 
 SUBSAMPLE_TYPES = (
@@ -21,11 +21,12 @@ class SampleType(models.Model):
     """
     Type of Sample
     """
-    name = models.CharField(max_length=30, choices=SAMPLE_TYPES, unique=True)
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=30, unique=True, help_text="Value for sample type matched to data")
+    description = models.CharField(max_length=50, blank=True, null=True, help_text='Description of sample type')
 
     def __str__(self):
         return self.name
-
 
 class Sample(models.Model):
     """
