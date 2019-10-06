@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% block title %}Help{% endblock %}
+{% load material_form %}
+
+{% block content %}
+    <div id="help" class="container">
+        <div class="page-header">
+            <h2><i class="material-icons large">info</i> Help Guide</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card blue-grey darken-1">
+                    <div class="card-content-help white-text">
+                        <span class="card-title">Overview</span>
+                        <p>The SZGEN database is a custom database application designed specifically to handle the data
+                            of Prof Mowry's research.</p>
+                        <p>The basic structure of stored data is:</p>
+                        <ol>
+                            <li><b>Studies</b> which group participants into specific study groups</li>
+                            <li><b>Participant</b> which holds all data related to a specific participant (patient)</li>
+                            <li><b>Sample</b> which represents a physical participant sample used for lab work</li>
+                            <li><b>Clinical</b> which holds a summary of the results of clinical assessment</li>
+                            <li><b>Dataset</b> which references the data files held containing participant data</li>
+                            <li><b>Document</b> which is a simple document respository to link to a study or use for
+                                importing data
+                            </li>
+                        </ol>
+                        <br/>
+                        <p>A <b>REST API</b> is also provided for access to the data via Python or R scripts.</p>
+                        <p>A brief description of how to's are included here as a quick reference.</p>
+
+                    </div>
+                    <div class="card-action white-text">
+                        <p>The code repository is on <a href="https://github.com/lizcw/SzGen">Github</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="wrapper">
+            <div class="card">
+                <div class="card-title">User profile</div>
+                <div class="card-content-help">
+                    <p><a href="{% url 'profile' %}" class="pull-right" title="View User Profile">
+                        <i class="material-icons large">account_circle</i></a> Access your user details by clicking on
+                        the big blue person icon. From here you can: </p>
+                    <ol>
+                        <li>Update your username, name and email details</li>
+                        <li>Change your password</li>
+                    </ol>
+                    <table class="table table-condensed">
+                        <tr>
+                            <th>Standard User</th>
+                            <td>Read only rights: can update their own details or export data from tables and download
+                                documents.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Staff User</th>
+                            <td>Editing rights: can create or edit a study, participant, sample, dataset, clinical
+                                record, document but they cannot delete or import data.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Admin User</th>
+                            <td>Full create, edit, delete, import rights. Can also update the dropdown lists, add a new
+                                user, clear a blocked login, reset another user's password. Training is required for
+                                this.
+                            </td>
+                        </tr>
+                    </table>
+                    <p>A standard user is the default when a new user is created.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Creating, editing or deleting data</div>
+                <div class="card-content-help">
+                    <p>If you are a staff user, you will have editing rights otherwise you won't see none of this!</p>
+                    <table class="table table-condensed">
+                        <tr>
+                            <th>Add A Study</th>
+                            <td>To create a new study, click on the 'Studies' link in the side bar to the left then
+                                click the link called 'Add A
+                                Study' to take you to a form page (or the link here). Enter information and click
+                                'Save'.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><a class="btn-floating btn grey" href="#" title="Add">
+                                <i class="material-icons">add</i></a></th>
+                            <td>Look for this icon to create a Participant, Sample, Dataset or Document. It is usually
+                                in the top right of the list page or to the right of each collapsible header.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><a class="btn-floating btn green" href="#" title="Edit">
+                                <i class="material-icons">edit</i></a></th>
+                            <td>Look for this edit icon to change the data for a Participant, Sample, Dataset or
+                                Document. It is usually
+                                in the same row as the data.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><a class="btn-floating btn red" title="Remove" href="#">
+                                <i class="large material-icons">remove</i></a>
+                            </th>
+                            <td>Use the remove icon to unlink a Participant from a related participant.
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <th><a class="btn-floating btn red" title="Delete" href="#">
+                                <i class="large material-icons">delete</i></a>
+                            </th>
+                            <td>If you have admin rights, look for the delete icon to delete a Study, Participant,
+                                Sample, Dataset or Document.
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Search and Sort</div>
+                <div class="card-content-help">
+                    <p><span class="btn-group"><a class="btn blue-grey" href="#">Filter</a><a class="btn grey" href="#">Reset</a></span>
+                    </p> <br/>
+                    <p>Enter or select required search term then click on the FILTER button.</br>Use the RESET button to
+                        clear the filter fields.</p>
+                    <table>
+                        <tr>
+                            <th>Exact Search</th>
+                            <td>A full search term must be entered to find an exact match.</td>
+                        </tr>
+                        <tr>
+                            <th>Contains Search</th>
+                            <td>Either a full or partial search term will be used to filter data for this field.</td>
+                        </tr>
+                        <tr>
+                            <th>Select from list</th>
+                            <td>Click on a single item in a dropdown list. If the field allows multiple selections, it
+                                will show as an open list so that each item can be selected by holding down the Control
+                                key and clicking.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Sorting</th>
+                            <td>Click on a column header to sort the filtered data. This will toggle between ascending
+                                and descending order.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>REST-API</th>
+                            <td>In the REST API, a button called 'Filters' will popup a list of available filters. The
+                                resulting url shown in the page or in the browser, can be used in scripting.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Exporting data</div>
+                <div class="card-content-help">
+                    <p><span class="btn-group">
+                    <a class="btn btn-small" href="#">download <code>.csv</code></a>
+                        <a class="btn btn-small" href="#"><code>.xls</code></a></span></p>
+                    <br/>
+                    <ul>
+                        <li><b>CSV</b> Comma separated values (UTF-8). This is a machine readable format which can be
+                            imported or exported from Excel and function as a spreadsheet. Every row must have data in
+                            the same order as the heading and no more.
+                        </li>
+                        <li><b>XLS</b> Excel format. This is a standard Excel format.</li>
+                    </ul>
+                    <p>The data exported is the data which has been filtered by the search/filter boxes on the side.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Documents</div>
+                <div class="card-content-help">
+                    <p>Documents are uploaded in the Documents section (see the link in the left panel)</p>
+                    <ol>
+                        <li><a class="btn-floating btn grey" href="#" title="Add">
+                            <i class="material-icons">add</i></a> Click on the grey Add button
+                        </li>
+                        <li>Select FILE button to open a file from your computer, enter data in the form and save.</li>
+                        <li>The Study link is optional.</li>
+                    </ol>
+                    <p>The limits on size are currently configured to <b>20MB</b> per file. The total storage capacity
+                        of the server is currently <b>500GB</b>.</p>
+                    <p><b>Download</b></p>
+                    <ol>
+                        <li>In the Documents table, click on the filename. If it is a PDF it will open in a viewer, all
+                            others will just download.
+                        </li>
+                        <li>In an individual document page, click on the download button.</li>
+                    </ol>
+                    <p class="alert alert-danger"><b>Admin use only</b>
+                        <br/><a class="btn btn-floating blue btn" href="#" title="Import data from document"><i
+                                class="large material-icons">unarchive</i></a>
+                        <span>&nbsp;</span>
+                        A document can be used to <b>import data</b> however, the import is heavily customized to the
+                        original datasets and this should only be performed by a user with Admin training and knowledge
+                        of the system.</p>
+                </div>
+            </div>
+        </section>
+        {% if user.is_superuser %}
+            <div class="row">
+                <div class="card">
+                    <div class="card-title">Settings</div>
+                    <div class="card-content-help alert alert-danger">
+                        <p><b>Admin use only</b> This assumes training has been done and you have been granted Admin
+                            rights.<br/>
+                        <p>Click on the Settings link to go to the Admin section.</p>
+                        <table class="table table-condensed">
+                            <tr>
+                                <th>Add a new user</th>
+                                <td>Under 'Authentication & Authorization',
+                                    <ol>
+                                        <li>click on +Add next to Users</li>
+                                        <li>enter username and generate a random password (COPY IT SOMEWHERE SAFE TO
+                                            GIVE
+                                            THEM)
+                                        </li>
+                                        <li>Click SAVE</li>
+                                        <li>In the User's profile, enter further name, email details.</li>
+                                        <li>SAVE</li>
+                                    </ol>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Change a User's password</th>
+                                <td>In the Users table, click on a user, then in the tiny text under Password, click on
+                                    the
+                                    link that says 'this form'.
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Remove a login block for a User</th>
+                                <td>
+                                    <ol>
+                                        <li>Under 'AXES', click on 'Access attempts'</li>
+                                        <li>If there is a blocked entry, it should show so click on that</li>
+                                        <li>Click on the big red Delete</li>
+                                    </ol>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Set a User as Staff</th>
+                                <td>
+                                    <ol>
+                                        <li>In the Users table, click on a user</li>
+                                        <li>Under Permissions, click on 'Staff status' ONLY</li>
+                                        <li>Under Groups, select 'staffuser' then click the right arrow to put it in
+                                            'Chosen
+                                            groups'
+                                        </li>
+                                        <li>Save</li>
+                                    </ol>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Remove a User</th>
+                                <td>A user should not be deleted once they've logged in. This can be checked in their
+                                    User page at the bottom.
+                                    <ol>
+                                        <li>In the Users table, click on a user</li>
+                                        <li>Deselect the 'Active' button - this will prevent any further logins but will
+                                            not
+                                            affect the auditing
+                                        </li>
+                                        <li>Save</li>
+                                    </ol>
+                                    <p>If you do need to delete (a test user for example), use the DELETE button at the
+                                        bottom.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Add a value to a dropdown list</th>
+                                <td><p>It is assumed that you know what you're doing and know which list you need.
+                                    Please
+                                    refer to the GITHUB code repository above, under models.</p>
+                                    <ol>
+                                        <li>Under 'SZGENAPP', click on the list you wish to use</li>
+                                        <li>Check the values are as expected, click ADD + in the top right</li>
+                                        <li><b>Code</b> represents the reference to the data in original datasets and
+                                            should MATCH accordingly.
+                                        </li>
+                                        <li><b>Name</b> is used for display</li>
+                                        <li><b>Code</b> must be unique</li>
+                                        <li>Do NOT USE 'None' as a <b>Code</b> as this conflicts with Python code - use
+                                            'Nil'
+                                            instead.
+                                        </li>
+                                    </ol>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Edit or Remove a value in a dropdown list</th>
+                                <td><p>It is assumed that you know what you're doing and know which list you need.
+                                    Please
+                                    refer to the GITHUB code repository above, under models.</p>
+                                    <ol>
+                                        <li>The <b>Code</b> field represents the reference to the data in original
+                                            datasets
+                                            and should NOT be changed.
+                                        </li>
+                                        <li>A value should not be removed if it is in use by the data, as this may cause
+                                            corruption issues.
+                                        </li>
+                                        <li>To delete a value, change the data first to another value.
+                                            Direct access to the database is required to check a value is not being
+                                            used.
+                                        </li>
+                                    </ol>
+                            </tr>
+                            <tr>
+                                <th>Retrieve a token for REST-API</th>
+                                <td>Tokens are used for scripts accessing the database via the REST API so your username
+                                    and password is not saved in a file or transmitted.
+                                    <ol>
+                                        <li>Under 'AUTH TOKEN', click on 'tokens'</li>
+                                        <li>Add a new token, by clicking the Add+ button, then select a user</li>
+                                        <li>Copy the token and paste it into the script as a header</li>
+                                        <li><code>import requests</code><br/>
+                                            <code>url = 'http://127.0.0.1:8000/hello/'</code><br/>
+                                            <code>headers = {'Authorization': 'Token
+                                                9054f7aa9305e012b3c2300408c3dfdf390fcddf'}</code><br/>
+                                            <code>r = requests.get(url, headers=headers)</code></li>
+                                    </ol>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

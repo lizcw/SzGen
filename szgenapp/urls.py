@@ -1,6 +1,6 @@
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import path, include, reverse_lazy
 
 from szgenapp.views import *
 
@@ -11,6 +11,7 @@ urlpatterns = [
                   path('logout/', auth.LogoutView.as_view(), name='logout'),
                   path('locked/', auth.locked_out, name='locked_out'),
                   path('profile/', auth.ProfileView.as_view(), name='profile'),
+                  path('help/', HelpDetail.as_view(), name='help'),
                   path('app-password-change/', auth_views.PasswordChangeView.as_view(
                       template_name='registration/password_change_form.html',
                       success_url=reverse_lazy('profile')),
