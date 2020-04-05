@@ -1,5 +1,4 @@
-from django.forms import ModelForm, HiddenInput
-from django.forms import ModelForm, HiddenInput
+from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
 from szgenapp.models.datasets import DatasetRow, Dataset, DatasetFile
@@ -39,5 +38,5 @@ class DatasetRowForm(ModelForm):
         fields = '__all__'
 
 
-DatasetFileFormset = inlineformset_factory(Dataset, DatasetFile, form=DatasetFileForm, extra=1)
-DatasetParticipantFormset = inlineformset_factory(Dataset, DatasetRow, form=DatasetRowForm, extra=1)
+DatasetFileFormset = inlineformset_factory(Dataset, DatasetFile, form=DatasetFileForm, extra=0)
+DatasetParticipantFormset = inlineformset_factory(Dataset, DatasetRow, form=DatasetRowForm, extra=0)

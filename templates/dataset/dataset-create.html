@@ -9,10 +9,6 @@
             <li><a href="{% url 'dataset_detail' dataset.id %}">Dataset</a></li>
             <li>&nbsp;&gt;&nbsp;</li>
             <li>{{ subtitle }}</li>
-        {% elif form.initial.dataset %}
-            <li><a href="{% url 'dataset_detail' form.initial.dataset.id %}">Dataset</a></li>
-            <li>&nbsp;&gt;&nbsp;</li>
-            <li>{{ subtitle }}</li>
         {% else %}
             <li>Dataset</li>
         {% endif %}
@@ -44,7 +40,6 @@
                             <li class="dsfileform-row">
                                 {% form form=child_form %}{% endform %}
                             </li>
-
                         {% endfor %}
                     </ul>
                 {% endif %}
@@ -55,17 +50,6 @@
     <div id="modal"></div>
 
     <script type="text/javascript">
-
-        $(document).on('click', '.add-formset', function (e) {
-            console.log('add another');
-            e.preventDefault();
-            var newform = $('li.dsfileform-row:first').clone();
-            var numforms = $('#id_dataset_files-TOTAL_FORMS').val();
-            newform.html().replace('dataset_files-0', 'dataset_files-' + numforms);
-            $('ul.dsfileform').children().append(newform);
-            $('#id_dataset_files-TOTAL_FORMS').val(parseInt(numforms) + 1);
-            return false;
-        });
 
         $(document).ready(function () {
             $("body").addClass("loading");

@@ -46,34 +46,8 @@ class DatasetCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = DatasetForm
     permission_required = 'szgenapp.add_dataset'
 
-    def get_context_data(self, **kwargs):
-        data = super(DatasetCreate, self).get_context_data(**kwargs)
-        data['action'] = 'Create'
-        if self.request.POST:
-            data['datasetfiles'] = DatasetFileFormset(self.request.POST)
-        else:
-            data['datasetfiles'] = DatasetFileFormset()
-        return data
-
-    def form_valid(self, form):
-        try:
-            context = self.get_context_data()
-            datasetfiles = context['datasetfiles']
-            with transaction.atomic():
-                self.object = form.save()
-
-            if datasetfiles.is_valid():
-                datasetfiles.instance = self.object
-                datasetfiles.save()
-            return super(DatasetCreate, self).form_valid(form)
-        except IntegrityError as e:
-            msg = 'Database Error: Unable to create Dataset - see Administrator: %s' % e
-            form.add_error(None, msg)
-            logger.error(msg)
-            return self.form_invalid(form)
-
     def get_success_url(self):
-        return reverse('dataset_detail', args=[self.object.dataset.id])
+        return reverse('dataset_detail', args=[self.object.id])
 
 
 class DatasetUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -114,7 +88,7 @@ class DatasetUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('dataset_detail', args=[self.object.dataset.id])
+        return reverse('dataset_detail', args=[self.object.id])
 
 
 class DatasetDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):

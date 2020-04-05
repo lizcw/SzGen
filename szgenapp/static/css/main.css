@@ -262,6 +262,9 @@ Tables
 #summary td {
     max-width: 10vw;
 }
+.panel-body {
+    overflow-x: scroll;
+}
 /********************************
 Pagination
 *********************************/
