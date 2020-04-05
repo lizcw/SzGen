@@ -89,7 +89,9 @@ h3 {
     height: auto;
 }
 
-/** Help page **/
+/***********************************
+Help page
+/***********************************/
 
 #help .wrapper {
     display: flex;
@@ -109,6 +111,10 @@ h3 {
     min-width: 300px;
     max-width: 80vw;
 }
+.wiki .card-content{
+    height: auto;
+}
+
 .fixed-action-btn {
     position: relative;
     float: right;
@@ -159,7 +165,7 @@ li.active {
 
 /********************************
 Loading spinner
- */
+*********************************/
 #modal {
     position:   fixed;
     z-index:    1000;

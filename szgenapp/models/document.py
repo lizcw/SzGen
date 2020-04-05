@@ -21,6 +21,7 @@ class Document(models.Model):
     doctype = models.CharField(_("Doctype"), max_length=10)
     study = models.ForeignKey("Study", on_delete=models.SET_NULL, blank=True, null=True,
                               help_text='Select only if document is related to one particular study')
+    help = models.BooleanField(_('Link to Help'), default=False, help_text="Display document on Custom Help Pages")
 
     class Meta:
         permissions = [("can_import_data", "Can import data from CSV files")]

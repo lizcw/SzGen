@@ -92,8 +92,11 @@
             <li><a href="/api/v1/">REST API
                 <i class="material-icons">speaker_phone</i></a>
             </li>
-            <li><a href="{% url 'help' %}">Help
+            <li><a href="{% url 'help' %}">User guide
                 <i class="material-icons">info</i></a>
+            </li>
+            <li><a href="{% url 'wiki' %}">Custom Help
+                <i class="material-icons">bookmark_border</i></a>
             </li>
 
             {% if user.is_superuser %}

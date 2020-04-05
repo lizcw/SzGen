@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="{% url 'wiki' %}">Custom Help</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li>Custom Help Entry</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div class="container row">
+        <div class="field-full-width">
+            {% if form.is_bound %}
+                <h2>Edit Entry </h2>
+            {% else %}
+                <h2>New Entry </h2>
+            {% endif %}
+        </div>
+
+        <form role="form" method="POST" enctype="multipart/form-data" data-ajax="false">
+            {% csrf_token %}
+            {{ form.media }}
+            {{ form.as_p }}
+
+            <button class="btn waves-effect waves-light" type="submit" name="_submit">Save</button>
+        </form>
+    </div>
+
+{% endblock %}

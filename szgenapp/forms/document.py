@@ -1,7 +1,6 @@
 from django.forms import Form, ModelForm, FileField, FileInput, ModelChoiceField, ChoiceField
 
 from szgenapp.models.document import Document
-from szgenapp.models.studies import Study
 
 
 class DocumentForm(ModelForm):
@@ -9,7 +8,7 @@ class DocumentForm(ModelForm):
 
     class Meta:
         model = Document
-        fields = ('docfile', 'description', 'study')
+        fields = ('docfile', 'description', 'study', 'help')
         exclude = ['doctype']
         widgets = {
             'docfile': FileInput()

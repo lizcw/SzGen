@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, include, reverse_lazy
 
 from szgenapp.views import *
+from szgenapp.views.help import WikiList, WikiCreate, WikiUpdate, WikiDelete, WikiDetail
 
 urlpatterns = [
                   path('', studies.index, name='index'),
@@ -143,6 +144,11 @@ urlpatterns = [
                   path('documents/<int:pk>/update/', DocumentUpdate.as_view(), name="documents_update"),
                   path('documents/<int:pk>/delete/', DocumentDelete.as_view(), name="documents_delete"),
                   path('documents/', DocumentList.as_view(), name='documents_list'),
-                  path('documents/import/<int:pk>', DocumentImport.as_view(), name='documents_data_import')
+                  path('documents/import/<int:pk>', DocumentImport.as_view(), name='documents_data_import'),
+                  path('wiki/', WikiList.as_view(), name='wiki'),
+                  path('wiki_view/<int:pk>', WikiDetail.as_view(), name='wiki_detail'),
+                  path('wiki_create/', WikiCreate.as_view(), name='wiki_create'),
+                  path('wiki_update/<int:pk>', WikiUpdate.as_view(), name='wiki_update'),
+                  path('wiki_delete/<int:pk>', WikiDelete.as_view(), name='wiki_delete'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Custom Help{% endblock %}
+{% load material_form %}
+{% block breadcrumbs_items %}
+    <ul>
+        <li><a href="{% url 'wiki' %}">Custom Help</a></li>
+        <li>&nbsp;&gt;&nbsp;</li>
+        <li>Entry</li>
+    </ul>
+{% endblock %}
+{% block content %}
+    <div id="help" class="container">
+        <div class="fixed-action-btn">
+            {% if perms.szgenapp.change_wiki %}
+                <a class="btn-floating btn-large green" title="Edit"
+                   href="{% url 'wiki_update' wiki.id %}">
+                    <i class="material-icons">edit</i>
+                </a>{% endif %}
+            {% if perms.szgenapp.delete_wiki %}
+                <a class="btn-floating btn-large red" title="Delete"
+                   href="{% url 'wiki_delete' wiki.id %}">
+                    <i class="large material-icons">delete</i>
+                </a>
+            {% endif %}
+        </div>
+        <div class="page-header">
+            <h2>{{ wiki.title }}</h2>
+            <div>{{ wiki.content|safe }}</div>
+            <hr/>
+            <div class="panel well">
+                <small>
+                    <p>Author: {{ wiki.author }}</p>
+                    <p>Last modified: {{ wiki.modified|date:"c" }}</p>
+                </small>
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}

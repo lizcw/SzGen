@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Custom Help{% endblock %}
+
+{% block content %}
+    <div id="help" class="container">
+        <div class="page-header">
+            <h2><i class="material-icons large">bookmark_border</i> Custom Help</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card blue-grey darken-1">
+                    <div class="card-content-help white-text">
+                        <span class="card-title">Overview</span>
+                        <p>The SZGEN database is a custom database application designed specifically to handle the data
+                            of Prof Mowry's research.</p>
+                        <p>Staff users can provide extra customized information to help users here.</p>
+                    </div>
+                    <div class="card-action white-text">
+                        {% if perms.szgenapp.add_wiki %}
+                            <a href="{% url 'wiki_create' %}">Add a Help Entry</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="wiki wrapper">
+            {% if wikis %}
+                {% for wiki in wikis %}
+                    <div class="card">
+                        <div class="card-title">
+                                <span class="left"><a href="{% url 'wiki_detail' wiki.id %}"
+                                                      title="View Entry Details">{{ wiki.title }}</a></span>
+                        </div>
+                        <br/>
+                        <div class="card-content">
+                            {{ wiki.content|safe }}
+                        </div>
+                        <div class="card-action">
+                            {% if perms.szgenapp.change_wiki %}<a href="{% url 'wiki_update' wiki.id %}">Edit</a>{% endif %}
+                            {% if perms.szgenapp.delete_wiki %}<a href="{% url 'wiki_delete' wiki.id %}">Delete</a>{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Help Entries</span>
+                        <p>No help entries found in the database</p>
+                    </div>
+                    <div class="card-action">
+                        <div class="fixed-action-btn">
+                            {% if perms.szgenapp.add_wiki %}
+                                <a class="btn-floating btn-large red" title="Add new entry"
+                                   href="{% url 'wiki_create' %}">
+                                    <i class="large material-icons">add_circle</i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="wiki documents well">
+            <h5>Linked Documents</h5>
+            <div class="fixed-action-btn">
+                {% if perms.szgenapp.add_document %}
+                    <a class="btn-floating blue-grey small" title="Add Document"
+                       href="{% url 'documents_create' %}">
+                        <i class="material-icons">add</i>
+                    </a>
+                {% endif %}
+            </div>
+            {% if perms.szgenapp.add_document %}
+                <p>To link a document, check the 'Link to Help' box</p>
+            {% endif %}
+            <ol>
+                {% for doc in documents %}
+                    <li>{{ doc.description }} (<a href="/media/{{ doc.docfile.name }}"
+                                                  title="Download">{{ doc.docfile }}</a>) <a
+                            href="{% url 'documents_detail' doc.id %}">VIEW</a></li>
+                {% endfor %}
+
+            </ol>
+
+        </section>
+    </div>
+{% endblock content %}
