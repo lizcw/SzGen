@@ -12,6 +12,7 @@
     <div class="container">
         <div class="well col-md-12">
             <h3>{{ participant|force_escape }}</h3>
+            <p>{{ participant.alphacode }}</p>
             <div class="fixed-action-btn">
                 {% if perms.szgenapp.change_studyparticipant %}
                 <a class="btn-floating btn-large green" title="Edit Participant"
@@ -41,27 +42,27 @@
                         <table class="table table-condensed">
                             <tbody>
                             <tr>
-                                <th>ID:</th>
+                                <th>Record No:</th>
                                 <td>{{ participant.id }}</td>
                             </tr>
                             <tr>
-                                <th>Full number</th>
+                                <th>Full number:</th>
                                 <td>{{ participant.getFullNumber }}</td>
                             </tr>
                             <tr>
-                                <th>Study</th>
+                                <th>Study:</th>
                                 <td>{{ participant.study.title }}</td>
                             </tr>
                             <tr>
-                                <th>Study Status</th>
-                                <td>{{ participant.study.get_status_display }}</td>
+                                <th>Study Status:</th>
+                                <td>{{ participant.study.status }}</td>
                             </tr>
                             <tr>
-                                <th>Family Code</th>
+                                <th>Family Code:</th>
                                 <td>{{ participant.family }}</td>
                             </tr>
                             <tr>
-                                <th>Individual Code</th>
+                                <th>Individual Code:</th>
                                 <td>{{ participant.individual }}</td>
                             </tr>
                             <tr>
@@ -127,7 +128,6 @@
                         {% else %}
                             <table class="table table-condensed table-hover">
                                 <tr>
-                                    <th>ID</th>
                                     <th>Gender</th>
                                     <th>Diagnosis</th>
                                     <th>Age at Assessment</th>
@@ -137,12 +137,11 @@
                                 </tr>
                                 {% for clinical in participant.clinical.all %}
                                     <tr>
-                                        <td>{{ clinical.id }}</td>
-                                        <td>{{ clinical.demographic.get_gender_display }}</td>
+                                        <td>{{ clinical.demographic.gender }}</td>
                                         <td>{{ clinical.diagnosis.summary }}</td>
                                         <td>{{ clinical.demographic.age_assessment }}</td>
-                                        <td>{{ clinical.symptomsgeneral.get_onset_display }}</td>
-                                        <td>{{ clinical.symptomsgeneral.get_severity_pattern_display }}</td>
+                                        <td>{{ clinical.symptomsgeneral.onset }}</td>
+                                        <td>{{ clinical.symptomsgeneral.severity_pattern }}</td>
                                         <td><a class="btn-floating green small" title="View Full Clinical Record"
                                                href="{% url 'clinical_detail' clinical.id %}">
                                             <i class="material-icons">visibility</i>
