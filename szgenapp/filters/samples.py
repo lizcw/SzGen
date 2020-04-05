@@ -20,6 +20,12 @@ class SampleFilter(django_filters.FilterSet):
     participant__contains = django_filters.CharFilter(field_name='participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number (contains)'
                                             )
+    alphacode = django_filters.CharFilter(field_name='participant__alphacode',
+                                          lookup_expr='exact', label='Participant Alpha Code (exact)'
+                                          )
+    alphacode__contains = django_filters.CharFilter(field_name='participant__alphacode',
+                                            lookup_expr='icontains', label='Participant Alpha Code (contains)'
+                                            )
     study = django_filters.ModelChoiceFilter(
         field_name='participant__study', label='Study',
         queryset=Study.objects.all())
@@ -30,7 +36,7 @@ class SampleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Sample
-        fields = ['participant', 'participant__contains', 'study', 'arrival_date', 'rebleed', 'notes']
+        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains','study', 'arrival_date', 'rebleed', 'notes']
 
 
 class SubSampleListFilter(django_filters.FilterSet):
@@ -40,6 +46,12 @@ class SubSampleListFilter(django_filters.FilterSet):
     participant__contains = django_filters.CharFilter(field_name='sample__participant__fullnumber',
                                             lookup_expr='icontains', label='Participant Full Number (contains)'
                                             )
+    alphacode = django_filters.CharFilter(field_name='sample__participant__alphacode',
+                                          lookup_expr='exact', label='Participant Alpha Code (exact)'
+                                          )
+    alphacode__contains = django_filters.CharFilter(field_name='sample__participant__alphacode',
+                                                    lookup_expr='icontains', label='Participant Alpha Code (contains)'
+                                                    )
     study = django_filters.ModelChoiceFilter(
         field_name='sample__participant__study', label='Study',
         queryset=Study.objects.all())
@@ -52,7 +64,7 @@ class SubSampleListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'participant__contains', 'study', 'sample_num', 'storage_date', 'used', 'tank',
+        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains', 'study', 'sample_num', 'storage_date', 'used', 'tank',
                   'shelf', 'cell', 'cell__contains', 'notes__contains']
 
 
@@ -63,6 +75,12 @@ class SubSampleDNAListFilter(django_filters.FilterSet):
     participant__contains = django_filters.CharFilter(field_name='sample__participant__fullnumber',
                                                       lookup_expr='icontains', label='Participant Full Number (contains)'
                                                       )
+    alphacode = django_filters.CharFilter(field_name='sample__participant__alphacode',
+                                          lookup_expr='exact', label='Participant Alpha Code (exact)'
+                                          )
+    alphacode__contains = django_filters.CharFilter(field_name='sample__participant__alphacode',
+                                                    lookup_expr='icontains', label='Participant Alpha Code (contains)'
+                                                    )
     study = django_filters.ModelChoiceFilter(
         field_name='sample__participant__study', label='Study',
         queryset=Study.objects.all())
@@ -71,4 +89,4 @@ class SubSampleDNAListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'participant__contains', 'study', 'sample_num', 'storage_date', 'extraction_date', 'notes__contains']
+        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains','study', 'sample_num', 'storage_date', 'extraction_date', 'notes__contains']

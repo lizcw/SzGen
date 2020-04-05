@@ -16,8 +16,8 @@
     {% autoescape on %}
         <div class="container">
             <div class="well col-md-12">
-                <h3>Sample for {{ sample.participant|force_escape }}</h3>
-                <p>{% for type in  sample.sample_types.all %} {{ type.name }}{% endfor %}</p>
+                <h3>Sample for {{ sample.participant|force_escape }}  [{{ sample.participant.alphacode }}]</h3>
+                <p class="small-caps"><b>TYPE: </b>{% for type in  sample.sample_types.all %} {{ type.name }}{% endfor %}</p>
                 <div class="fixed-action-btn">
                     {% if perms.szgenapp.change_sample %}
                         <a class="btn-floating btn-large green" title="Edit Sample"
@@ -45,12 +45,12 @@
                         <div class="panel-body">
                             <table>
                                 <tr>
-                                    <th>ID:</th>
+                                    <th>Sample ID:</th>
                                     <td>{{ sample.id }}</td>
                                 </tr>
                                 <tr>
                                     <th>Participant:</th>
-                                    <td>{{ sample.participant.getFullNumber }}</td>
+                                    <td><a href="{% url 'participant_detail' sample.participant.id %}">{{ sample.participant.getFullNumber }}</a></td>
                                 </tr>
                                 <tr>
                                     <th>Type:</th>

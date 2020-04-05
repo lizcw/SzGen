@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import date
 
 COUNTRY_CHOICES = (
     ('AUS', 'Australia'),

@@ -16,6 +16,7 @@
     <div class="container">
         <div class="well col-md-12">
             <h3>Clinical Record for {{ clinical.participant|force_escape }}</h3>
+            <p>{{ clinical.participant.alphacode }}</p>
             <div class="fixed-action-btn">
                 <a class="btn-floating btn-large orange" title="View Participant Record"
                    href="{% url 'participant_detail' clinical.participant.id %}">

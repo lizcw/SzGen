@@ -14,7 +14,7 @@ class SampleTable(tables.Table):
         model = Sample
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
-        fields = ['id', 'participant', 'arrival_date', 'sample_types', 'rebleed', 'shipment', 'qc','notes']
+        fields = ['id', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed', 'shipment', 'qc','notes']
 
     def render_shipment(self, record):
         return record.shipment.count()
@@ -28,12 +28,15 @@ class SubSampleTable(tables.Table):
     sample = tables.LinkColumn('participant_detail', verbose_name='Participant',
                                accessor=A('sample.participant.fullnumber'),
                                args=[A('sample.participant.id')])
+    alphacode = tables.LinkColumn('participant_detail', verbose_name='Alpha code',
+                               accessor=A('sample.participant.alphacode'),
+                               args=[A('sample.participant.id')])
 
     class Meta:
         model = SubSample
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
-        fields = ['id', 'sample', 'sample_type', 'sample_num', 'storage_date', 'used', 'location', 'notes']
+        fields = ['id', 'sample', 'alphacode', 'sample_type', 'sample_num', 'storage_date', 'used', 'location', 'notes']
 
     def render_sample(self, record):
         return record.sample.participant
@@ -52,12 +55,15 @@ class SubSampleDNATable(tables.Table):
     sample = tables.LinkColumn('participant_detail', verbose_name='Participant',
                                accessor=A('sample.participant.fullnumber'),
                                args=[A('sample.participant.id')])
+    alphacode = tables.LinkColumn('participant_detail', verbose_name='Alpha code',
+                                  accessor=A('sample.participant.alphacode'),
+                                  args=[A('sample.participant.id')])
 
     class Meta:
         model = SubSample
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
-        fields = ['id', 'sample', 'sample_type', 'sample_num', 'storage_date', 'extraction_date', 'notes']
+        fields = ['id', 'sample', 'alphacode', 'sample_type', 'sample_num', 'storage_date', 'extraction_date', 'notes']
 
     def render_sample(self, record):
         return record.sample.participant
