@@ -14,7 +14,7 @@ class SampleTable(tables.Table):
         model = Sample
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
-        fields = ['id', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed', 'shipment', 'qc','notes']
+        fields = ['id', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed', 'sample_location','notes']
 
     def render_shipment(self, record):
         return record.shipment.count()

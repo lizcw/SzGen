@@ -61,8 +61,12 @@
                                     <td>{{ sample.rebleed|yesno }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Location:</th>
+                                    <td>{{ sample.sample_location }}</td>
+                                </tr>
+                                <tr>
                                     <th>Notes:</th>
-                                    <td>{{ sample.notes|force_escape }}</td>
+                                    <td>{{ sample.notes }}</td>
                                 </tr>
                             </table>
                         </div>

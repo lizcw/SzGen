@@ -38,6 +38,8 @@ class Sample(models.Model):
     rebleed = models.BooleanField(blank=False, default=False)
     arrival_date = models.DateField(verbose_name='Arrival Date', default=date.today, null=True, blank=True,
                                     help_text='Date of sample arrival')
+    sample_location = models.CharField(max_length=60, verbose_name='Location', blank=True, null=True,
+                                help_text='Location of sample as free text')
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
