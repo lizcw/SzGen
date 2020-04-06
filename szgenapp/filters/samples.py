@@ -18,14 +18,25 @@ class SampleFilter(django_filters.FilterSet):
                                             lookup_expr='exact', label='Participant Full Number (exact)'
                                             )
     participant__contains = django_filters.CharFilter(field_name='participant__fullnumber',
-                                            lookup_expr='icontains', label='Participant Full Number (contains)'
-                                            )
+                                                      lookup_expr='icontains',
+                                                      label='Participant Full Number (contains)'
+                                                      )
     alphacode = django_filters.CharFilter(field_name='participant__alphacode',
                                           lookup_expr='exact', label='Participant Alpha Code (exact)'
                                           )
     alphacode__contains = django_filters.CharFilter(field_name='participant__alphacode',
-                                            lookup_expr='icontains', label='Participant Alpha Code (contains)'
-                                            )
+                                                    lookup_expr='icontains', label='Participant Alpha Code (contains)'
+                                                    )
+    serum_location = django_filters.CharFilter(field_name='serum_location',
+                                               lookup_expr='exact', label='Serum Location (exact)'
+                                               )
+    serum_location__contains = django_filters.CharFilter(field_name='serum_location',
+                                                         lookup_expr='icontains', label='Serum Location (contains)')
+    plasma_location = django_filters.CharFilter(field_name='plasma_location',
+                                                lookup_expr='exact', label='Plasma Location (exact)'
+                                                )
+    plasma_location__contains = django_filters.CharFilter(field_name='plasma_location',
+                                                          lookup_expr='icontains', label='Plasma Location (contains)')
     study = django_filters.ModelChoiceFilter(
         field_name='participant__study', label='Study',
         queryset=Study.objects.all())
@@ -36,7 +47,9 @@ class SampleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Sample
-        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains','study', 'arrival_date', 'rebleed', 'notes']
+        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains', 'study', 'arrival_date',
+                  'rebleed', 'sample_types', 'serum_location', 'serum_location__contains', 'plasma_location',
+                  'plasma_location__contains', 'notes']
 
 
 class SubSampleListFilter(django_filters.FilterSet):
@@ -44,8 +57,9 @@ class SubSampleListFilter(django_filters.FilterSet):
                                             lookup_expr='exact', label='Participant Full Number (exact)'
                                             )
     participant__contains = django_filters.CharFilter(field_name='sample__participant__fullnumber',
-                                            lookup_expr='icontains', label='Participant Full Number (contains)'
-                                            )
+                                                      lookup_expr='icontains',
+                                                      label='Participant Full Number (contains)'
+                                                      )
     alphacode = django_filters.CharFilter(field_name='sample__participant__alphacode',
                                           lookup_expr='exact', label='Participant Alpha Code (exact)'
                                           )
@@ -64,7 +78,8 @@ class SubSampleListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains', 'study', 'sample_num', 'storage_date', 'used', 'tank',
+        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains', 'study', 'sample_num',
+                  'storage_date', 'used', 'tank',
                   'shelf', 'cell', 'cell__contains', 'notes__contains']
 
 
@@ -73,7 +88,8 @@ class SubSampleDNAListFilter(django_filters.FilterSet):
                                             lookup_expr='icontains', label='Participant Full Number (exact)'
                                             )
     participant__contains = django_filters.CharFilter(field_name='sample__participant__fullnumber',
-                                                      lookup_expr='icontains', label='Participant Full Number (contains)'
+                                                      lookup_expr='icontains',
+                                                      label='Participant Full Number (contains)'
                                                       )
     alphacode = django_filters.CharFilter(field_name='sample__participant__alphacode',
                                           lookup_expr='exact', label='Participant Alpha Code (exact)'
@@ -89,4 +105,5 @@ class SubSampleDNAListFilter(django_filters.FilterSet):
 
     class Meta:
         model = SubSample
-        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains','study', 'sample_num', 'storage_date', 'extraction_date', 'notes__contains']
+        fields = ['participant', 'participant__contains', 'alphacode', 'alphacode__contains', 'study', 'sample_num',
+                  'storage_date', 'extraction_date', 'notes__contains']

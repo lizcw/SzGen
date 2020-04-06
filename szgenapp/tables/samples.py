@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from django_tables2.utils import A
+
 from szgenapp.models.samples import Sample, SubSample
 
 
@@ -7,20 +8,22 @@ class SampleTable(tables.Table):
     id = tables.LinkColumn('sample_detail', text='View', args=[A('pk')], verbose_name='')
     participant = tables.LinkColumn('participant_detail', args=[A('participant.id')],
                                     accessor=A('participant.fullnumber'), verbose_name='Participant')
-    shipment = tables.Column(verbose_name="Shipments", accessor=A('shipment'))
-    qc = tables.Column(verbose_name="QC", accessor=A('sample_qc'))
+
+    # shipment = tables.Column(verbose_name="Shipments", accessor=A('shipment'))
+    # qc = tables.Column(verbose_name="QC", accessor=A('sample_qc'))
 
     class Meta:
         model = Sample
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
-        fields = ['id', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed', 'sample_location','notes']
-
-    def render_shipment(self, record):
-        return record.shipment.count()
-
-    def render_qc(self, record):
-        return record.sample_qc.count()
+        fields = ['id', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed',
+                  'serum_location', 'plasma_location', 'notes']
+    #
+    # def render_shipment(self, record):
+    #     return record.shipment.count()
+    #
+    # def render_qc(self, record):
+    #     return record.sample_qc.count()
 
 
 class SubSampleTable(tables.Table):
@@ -29,8 +32,8 @@ class SubSampleTable(tables.Table):
                                accessor=A('sample.participant.fullnumber'),
                                args=[A('sample.participant.id')])
     alphacode = tables.LinkColumn('participant_detail', verbose_name='Alpha code',
-                               accessor=A('sample.participant.alphacode'),
-                               args=[A('sample.participant.id')])
+                                  accessor=A('sample.participant.alphacode'),
+                                  args=[A('sample.participant.id')])
 
     class Meta:
         model = SubSample
@@ -46,6 +49,7 @@ class SubSampleTable(tables.Table):
             return '-'
         else:
             return value
+
 
 class SubSampleDNATable(tables.Table):
     """

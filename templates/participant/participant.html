@@ -183,6 +183,8 @@
                                     <th>Sample</th>
                                     <th>Date</th>
                                     <th>Rebleed</th>
+                                    <th>Serum</th>
+                                    <th>Plasma</th>
                                     <th>Transform</th>
                                     <th>Harvest</th>
                                     <th>Shipment</th>
@@ -197,6 +199,8 @@
                                         <td>{% for type in sample.sample_types.all %}  {{ type }} {% endfor %}</td>
                                         <td>{{ sample.arrival_date }}</td>
                                         <td>{{ sample.rebleed|yesno }}</td>
+                                        <td>{{ sample.serum_location }}</td>
+                                        <td>{{ sample.plasma_location }}</td>
                                         <td>
                                             <ul>
                                                 {% for transform in sample.transform.all %}
