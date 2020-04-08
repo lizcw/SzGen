@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'axes',
     'captcha',
     'django_cleanup.apps.CleanupConfig',
-    'session_security'
+    'session_security',
+    'ckeditor'
 ]
 
 REST_FRAMEWORK = {
@@ -178,3 +179,6 @@ LOG_DB_LEVEL = os.getenv("LOG_DB_LEVEL")
 SESSION_SECURITY_EXPIRE_AFTER = 1800
 SESSION_SECURITY_WARN_AFTER = 1730
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Text edito
+CKEDITOR_BASEPATH = STATIC_URL + "ckeditor/ckeditor/"
