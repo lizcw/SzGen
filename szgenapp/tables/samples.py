@@ -5,7 +5,8 @@ from szgenapp.models.samples import Sample, SubSample
 
 
 class SampleTable(tables.Table):
-    id = tables.LinkColumn('sample_detail', text='View', args=[A('pk')], verbose_name='')
+    id_view = tables.LinkColumn('sample_detail', text='View', args=[A('pk')], verbose_name='', exclude_from_export=True)
+    id = tables.Column(visible=False)
     participant = tables.LinkColumn('participant_detail', args=[A('participant.id')],
                                     accessor=A('participant.fullnumber'), verbose_name='Participant')
 
@@ -16,7 +17,7 @@ class SampleTable(tables.Table):
         model = Sample
         template_name = 'django_tables2/bootstrap.html'
         attrs = {"class": "ui-responsive table table-hover"}
-        fields = ['id', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed',
+        fields = ['id', 'id_view', 'participant', 'participant.alphacode', 'arrival_date', 'sample_types', 'rebleed',
                   'serum_location', 'plasma_location', 'notes']
     #
     # def render_shipment(self, record):

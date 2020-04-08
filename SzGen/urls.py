@@ -24,6 +24,7 @@ router.register(r'study', app_views.StudyViewSet)
 router.register(r'participant', app_views.ParticipantViewSet)
 router.register(r'clinical', app_views.ClinicalViewSet)
 router.register(r'sample', app_views.SampleViewSet)
+router.register(r'sample/update', app_views.SampleUpdateViewSet)
 router.register(r'dataset', app_views.DatasetViewSet)
 
 urlpatterns = [

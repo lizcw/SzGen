@@ -13,6 +13,7 @@ class StudySerializer(serializers.ModelSerializer):
 
 class StudyParticipantSerializer(serializers.ModelSerializer):
     study = StudySerializer()
+
     class Meta:
         model = StudyParticipant
         fields = '__all__'
@@ -39,8 +40,12 @@ class SampleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sample
-        fields = ('id', 'participant', 'sample_types', 'rebleed', 'arrival_date', 'subsamples')
+        fields = '__all__'
 
+class SampleOnlySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sample
+        fields = ('id', 'rebleed', 'serum_location', 'plasma_location', 'notes')
 
 class DatasetSerializer(serializers.ModelSerializer):
     class Meta:
@@ -117,5 +122,5 @@ class ClinicalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Clinical
         fields = (
-        'id', 'participant', 'demographic', 'diagnosis', 'medicalhistory', 'symptomsgeneral', 'symptomsdelusion',
-        'symptomshallucination', 'symptomsbehaviour', 'symptomsdepression', 'symptomsmania')
+            'id', 'participant', 'demographic', 'diagnosis', 'medicalhistory', 'symptomsgeneral', 'symptomsdelusion',
+            'symptomshallucination', 'symptomsbehaviour', 'symptomsdepression', 'symptomsmania')

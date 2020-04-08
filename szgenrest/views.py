@@ -1,11 +1,18 @@
 from rest_framework import viewsets, mixins
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from szgenapp.filters import ClinicalFilter, StudyParticipantFilter, SampleFilter
 from szgenapp.models import Study, StudyParticipant, Clinical, Sample, Dataset
 from szgenrest.serializers import StudySerializer, StudyParticipantSerializer, ClinicalSerializer, SampleSerializer, \
-    DatasetSerializer
+    DatasetSerializer, SampleOnlySerializer
 
+
+#################################################################################
+# PERMISSIONS RESTRICTED FOR UPDATE
+#################################################################################
+class IsSuperUser(IsAdminUser):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_superuser)
 
 #################################################################################
 #
@@ -49,6 +56,15 @@ class SampleViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.G
     serializer_class = SampleSerializer
     filter_class = SampleFilter
     permission_classes = (IsAuthenticated,)
+
+class SampleUpdateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint that allows superadmins to update Samples
+    """
+    queryset = Sample.objects.all()
+    serializer_class = SampleOnlySerializer
+    filter_class = SampleFilter
+    permission_classes = (IsAuthenticated, IsSuperUser,)
 
 
 class DatasetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
