@@ -1,11 +1,11 @@
-from django.http import HttpRequest
-from django.test import TestCase, SimpleTestCase
-from django.urls import reverse
 import datetime
 
-from szgenapp.models.studies import Study, STATUS_CHOICES
-from szgenapp.models.participants import Participant, PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
+from django.test import TestCase
+from django.urls import reverse
+
+from szgenapp.models.participants import PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
 from szgenapp.models.samples import *
+from szgenapp.models.studies import Study, STATUS_CHOICES
 
 
 class SamplesPageTests(TestCase):
@@ -21,22 +21,19 @@ class SamplesPageTests(TestCase):
         cls.study = Study.objects.create(title="TestStudy", precursor="T", description="My test study",
                                          status=STATUS_CHOICES[0])
         # Create a participant (no study)
-        cls.participant = Participant.objects.create(alphacode="ABC",
-                                                     country=COUNTRY_CHOICES[0],
-                                                     secondaryid="ABC001",
-                                                     status=PARTICIPANT_STATUS_CHOICES[0],
-                                                     npid=1460001,
-                                                     )
-        # Add a participant to a study with IDs
-        cls.studyparticipant = StudyParticipant.objects.create(participant=cls.participant,
-                                                               study=cls.study,
-                                                               fullnumber='',
-                                                               family='123',
-                                                               individual='001')
+        cls.participant = StudyParticipant.objects.create(alphacode="ABC",
+                                                          country=COUNTRY_CHOICES[0],
+                                                          secondaryid="ABC001",
+                                                          status=PARTICIPANT_STATUS_CHOICES[0],
+                                                          npid=1460001,
+                                                          study=cls.study,
+                                                          fullnumber='',
+                                                          family='123',
+                                                          individual='001')
         # Get a Sample type
         cls.sampletype = SampleType.objects.get(pk=1)
-        # Create a Sample for this studyparticipant
-        cls.sample = Sample.objects.create(participant=cls.studyparticipant,
+        # Create a Sample for this participant
+        cls.sample = Sample.objects.create(participant=cls.participant,
                                            sample_type=cls.sampletype,
                                            rebleed=False,
                                            arrival_date=datetime.date(2009, 9, 5),

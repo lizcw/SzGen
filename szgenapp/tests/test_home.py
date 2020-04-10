@@ -1,11 +1,4 @@
-from django.http import HttpRequest
-from django.test import TestCase, SimpleTestCase
-from django.urls import reverse
-import datetime
-
-from szgenapp.models.studies import Study, STATUS_CHOICES
-from szgenapp.models.participants import Participant, PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
-from szgenapp.models.samples import *
+from django.test import TestCase
 
 
 # Home page tests
@@ -22,7 +15,8 @@ class HomePageTests(TestCase):
 
     def test_home_page_contains_correct_html(self):
         response = self.client.get('/')
-        self.assertContains(response, '<span class="card-title">Welcome to the SZGEN Database</span>')
+        print(response)
+        self.assertContains(response, 'Welcome to the SZGEN Database')
 
     def test_home_page_does_not_contain_incorrect_html(self):
         response = self.client.get('/')

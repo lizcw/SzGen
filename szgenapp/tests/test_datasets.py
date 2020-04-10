@@ -1,13 +1,10 @@
-from django.http import HttpRequest
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase, Client
 from django.urls import reverse
-import datetime
 
-from szgenapp.models.studies import Study, STATUS_CHOICES
-from szgenapp.models.participants import Participant, PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
-from szgenapp.models.samples import *
 
 class DatasetsPageTests(TestCase):
+    def setUp(self):
+        self.client = Client(enforce_csrf_checks=True)
 
     def test_home_page_status_code(self):
         response = self.client.get('/datasets/')
@@ -24,11 +21,10 @@ class DatasetsPageTests(TestCase):
 
     def test_home_page_contains_correct_html(self):
         response = self.client.get('/datasets/')
-        self.assertContains(response, '<h2>Datasets :')
+        self.assertContains(response, 'Datasets')
 
     def test_home_page_does_not_contain_incorrect_html(self):
         response = self.client.get('/datasets/')
-        self.assertNotContains(
-            response, 'Welcome to the SZGEN Database')
+        self.assertNotContains(response, 'Welcome to the SZGEN Database')
 
 

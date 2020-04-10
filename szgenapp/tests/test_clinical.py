@@ -1,12 +1,9 @@
-from django.http import HttpRequest
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase
 from django.urls import reverse
-import datetime
 
-from szgenapp.models.studies import Study, STATUS_CHOICES
-from szgenapp.models.participants import Participant, PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
-from szgenapp.models.clinical import *
 from szgenapp.forms.clinical import *
+from szgenapp.models.participants import PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
+from szgenapp.models.studies import Study, STATUS_CHOICES
 
 
 class ClinicalTests(TestCase):
@@ -14,17 +11,15 @@ class ClinicalTests(TestCase):
     def setUpTestData(cls):
         cls.study = Study.objects.create(title="TestStudy", precursor="T", description="My test study",
                                          status=STATUS_CHOICES[0])
-        cls.participant = Participant.objects.create(alphacode="ABC",
-                                                     country=COUNTRY_CHOICES[0],
-                                                     secondaryid="ABC001",
-                                                     status=PARTICIPANT_STATUS_CHOICES[0],
-                                                     npid=1460001,
-                                                     )
-        cls.studyparticipant = StudyParticipant.objects.create(participant=cls.participant,
-                                                               study=cls.study,
-                                                               fullnumber='',
-                                                               family='123',
-                                                               individual='001')
+        cls.participant = StudyParticipant.objects.create(alphacode="ABC",
+                                                          country=COUNTRY_CHOICES[0],
+                                                          secondaryid="ABC001",
+                                                          status=PARTICIPANT_STATUS_CHOICES[0],
+                                                          npid=1460001,
+                                                          study=cls.study,
+                                                          fullnumber='',
+                                                          family='123',
+                                                          individual='001')
         # Create subparts first
         cls.demo = Demographic.objects.create(gender='M', age_assessment=24, marital_status=1, living_arr=1,
                                               years_school=4, current_emp_status=1, employment_history=1)
@@ -52,7 +47,7 @@ class ClinicalTests(TestCase):
                                                                           visual_hallucinations=1,
                                                                           olf_gust_hallucinations=1,
                                                                           somatic_hallucinations=1)
-        cls.symptoms_behaviour = SymptomsBehaviour.objects.create(disorg_speech=1,severe_disorg_speech=1,
+        cls.symptoms_behaviour = SymptomsBehaviour.objects.create(disorg_speech=1, severe_disorg_speech=1,
                                                                   disorg_catatonic_behav=1,
                                                                   severe_disorg_catatonic_behav=1,
                                                                   negative_symptoms=1,
@@ -78,7 +73,7 @@ class ClinicalTests(TestCase):
                                                           manic_count=4)
 
         # Create clinical record with all foreign keys
-        cls.clin1 = Clinical.objects.create(participant=cls.studyparticipant,
+        cls.clin1 = Clinical.objects.create(participant=cls.participant,
                                             demographic=cls.demo,
                                             diagnosis=cls.diag,
                                             medical=cls.medical,
@@ -144,7 +139,7 @@ class ClinicalTests(TestCase):
             response, 'Welcome to the SZGEN Database')
 
     def test_clinical_participant_set(self):
-        self.assertEqual(self.clin1.participant, self.studyparticipant)
+        self.assertEqual(self.clin1.participant, self.participant)
 
     def test_clinical_demographic_set(self):
         self.assertEqual(self.clin1.demographic, self.demo)
@@ -176,4 +171,3 @@ class ClinicalTests(TestCase):
         self.assertTrue(testform.is_valid(), 'Full form is valid')
         self.assertFalse(testform.cleaned_data['hospitalisation_number_approx'], 'Boolean field set to False')
         self.assertTrue(testform.cleaned_data['illness_duration_approx'], 'Boolean field set to True')
-

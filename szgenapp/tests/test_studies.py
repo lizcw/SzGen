@@ -1,19 +1,17 @@
-from django.http import HttpRequest
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase
 from django.urls import reverse
-import datetime
 
-from szgenapp.models.studies import Study, STATUS_CHOICES
-from szgenapp.models.participants import Participant, PARTICIPANT_STATUS_CHOICES, StudyParticipant, COUNTRY_CHOICES
-from szgenapp.models.samples import *
+from szgenapp.models.studies import Study, StudyStatus
+
 
 class StudyDetailsTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
+        studystatus = StudyStatus.objects.first()
         cls.study = Study.objects.create(title="TestStudy", precursor="T", description="My test study",
-                                         status=STATUS_CHOICES[0])
+                                         status=studystatus)
 
     def test_details_page_status_code(self):
         response = self.client.get('/study/1/')
