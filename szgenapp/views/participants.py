@@ -1,5 +1,6 @@
 import logging
 
+from django.db import transaction
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
@@ -94,6 +95,34 @@ class StudyParticipantAdd(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     context_object_name = 'participant'
     form_class = StudyParticipantRelatedForm
     permission_required = 'szgenapp.add_studyparticipant'
+
+    def form_valid(self, form):
+        """
+        Participant lookup by fullnumber (not select - too slow)
+        If the form is valid, redirect to the supplied URL.
+        """
+        related = form.cleaned_data['related_participant']
+        if related is not None:
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+                try:
+                    related_participant = StudyParticipant.objects.get(fullnumber__exact=related)
+                    self.object.related_participant.add(related_participant)
+                    self.object.save()
+                    return HttpResponseRedirect(self.get_success_url())
+                except StudyParticipant.DoesNotExist:
+                    form.add_error('related_participant', 'Participant does not exist')
+                    return super(StudyParticipantAdd, self).form_invalid(form)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        """Insert the form into the context dict."""
+        if 'form' not in kwargs:
+            form = self.get_form()
+            form['related_participant'].initial = None
+            kwargs['form'] = form
+        return super().get_context_data(**kwargs)
 
     def get_success_url(self):
         return reverse('participant_detail', args=[self.object.id])

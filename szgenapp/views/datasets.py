@@ -1,6 +1,7 @@
 import logging
 
 from django.db import IntegrityError, transaction
+from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django_filters.views import FilterView
@@ -112,8 +113,7 @@ class DatasetParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, Upda
 
     def get_initial(self):
         data = super(DatasetParticipantUpdate, self).get_initial()
-        data['participant'] = self.get_object().participant
-        data['dataset'] = self.get_object().dataset
+        data['participant_fullnumber'] = self.get_object().participant.fullnumber
         return data
 
     def get_context_data(self, **kwargs):
@@ -121,6 +121,25 @@ class DatasetParticipantUpdate(LoginRequiredMixin, PermissionRequiredMixin, Upda
         data['action'] = 'Edit'
         data['subtitle'] = 'Participant'
         return data
+
+    def form_valid(self, form):
+        """
+        Participant lookup by fullnumber (not select - too slow)
+        If the form is valid, redirect to the supplied URL.
+        """
+        participant_new = form.cleaned_data['participant_fullnumber']
+        if participant_new is not None:
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+                try:
+                    if self.object.participant is None or self.object.participant.fullnumber != participant_new:
+                        new_participant = StudyParticipant.objects.get(fullnumber__exact=participant_new)
+                        self.object.participant = new_participant
+                    self.object.save()
+                    return HttpResponseRedirect(self.get_success_url())
+                except StudyParticipant.DoesNotExist:
+                    form.add_error('participant_fullnumber', 'Participant does not exist')
+                    return super(DatasetParticipantUpdate, self).form_invalid(form)
 
     def get_success_url(self):
         return reverse('dataset_detail', args=[self.object.dataset.id])
@@ -204,8 +223,27 @@ class DatasetRowCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             initial['dataset'] = Dataset.objects.get(pk=did)
         if self.kwargs.get('participantid'):
             pid = self.kwargs.get('participantid')
-            initial['participant'] = StudyParticipant.objects.get(pk=pid)
+            participant = StudyParticipant.objects.get(pk=pid)
+            initial['participant_fullnumber'] = participant.fullnumber
         return initial
+
+    def form_valid(self, form):
+        """
+        Participant lookup by fullnumber (not select - too slow)
+        If the form is valid, redirect to the supplied URL.
+        """
+        participant_new = form.cleaned_data['participant_fullnumber']
+        if participant_new is not None:
+            with transaction.atomic():
+                self.object = form.save(commit=False)
+                try:
+                    new_participant = StudyParticipant.objects.get(fullnumber__exact=participant_new)
+                    self.object.participant = new_participant
+                    self.object.save()
+                    return HttpResponseRedirect(self.get_success_url())
+                except StudyParticipant.DoesNotExist:
+                    form.add_error('participant_fullnumber', 'Participant does not exist')
+                    return super(DatasetRowCreate, self).form_invalid(form)
 
     def get_context_data(self, **kwargs):
         data = super(DatasetRowCreate, self).get_context_data(**kwargs)

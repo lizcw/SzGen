@@ -1,5 +1,6 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, CharField
 from django.forms.models import inlineformset_factory
+from rest_framework.fields import HiddenField
 
 from szgenapp.models.datasets import DatasetRow, Dataset, DatasetFile
 from szgenapp.models.participants import StudyParticipant
@@ -22,20 +23,13 @@ class DatasetFileForm(ModelForm):
 
 
 class DatasetRowForm(ModelForm):
+    participant_fullnumber = CharField(required=True, min_length=2, max_length=50, strip=True,
+                            label="Participant Full Number")
 
-    def __init__(self, *args, **kwargs):
-        super(DatasetRowForm, self).__init__(*args, **kwargs)
-        init = kwargs.get('initial')
-        if init is not None:
-            p = init.get('participant')
-            if p is not None:
-                self.fields['participant'].queryset = StudyParticipant.objects.filter(pk=p.id)
-            else:
-                self.fields['participant'].queryset = StudyParticipant.objects.order_by('fullnumber')
 
     class Meta:
         model = DatasetRow
-        fields = '__all__'
+        fields = ('participant_fullnumber', 'dataset', 'digs', 'figs', 'narrative', 'records', 'consensus', 'ldps', 'notes')
 
 
 DatasetFileFormset = inlineformset_factory(Dataset, DatasetFile, form=DatasetFileForm, extra=0)
