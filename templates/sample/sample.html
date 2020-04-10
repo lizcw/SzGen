@@ -16,7 +16,8 @@
     {% autoescape on %}
         <div class="container">
             <div class="well col-md-12">
-                <h3>Sample for {{ sample.participant|force_escape }}  [{{ sample.participant.alphacode }}]</h3>
+                <h3>Sample for {{ sample.participant|force_escape }}</h3>
+                <p class="small-caps"><b>ALPHACODE: </b>{{ sample.participant.alphacode }}</p>
                 <p class="small-caps"><b>TYPE: </b>{% for type in  sample.sample_types.all %} {{ type.name }}{% endfor %}</p>
                 <div class="fixed-action-btn">
                     {% if perms.szgenapp.change_sample %}

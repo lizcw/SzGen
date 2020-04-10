@@ -28,7 +28,7 @@
                             </tr>
                             <tr>
                                 <th>Type</th>
-                                <td>{{ sample.sample_types }}</td>
+                                <td>{% for type in  sample.sample_types.all %} {{ type.name }}{% endfor %}</td>
                             </tr>
                             <tr>
                                 <th>Arrival Date</th>
