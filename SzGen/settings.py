@@ -24,7 +24,7 @@ LOG_DIR = os.getenv('LOG_DIR', '')
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['43.240.98.43', 'localhost', '127.0.0.1']
 
@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'captcha',
     'django_cleanup.apps.CleanupConfig',
     'session_security',
-    'ckeditor'
+    'ckeditor',
 ]
 
 REST_FRAMEWORK = {
@@ -184,5 +184,5 @@ SESSION_SECURITY_EXPIRE_AFTER = 1800
 SESSION_SECURITY_WARN_AFTER = 1730
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Text edito
+# Text editor
 CKEDITOR_BASEPATH = STATIC_URL + "ckeditor/ckeditor/"
